@@ -30,6 +30,7 @@ import (
 	scheduling "volcano.sh/apis/pkg/apis/scheduling"
 	schedulingv1 "volcano.sh/apis/pkg/apis/scheduling/v1beta1"
 	topologyv1alpha1 "volcano.sh/apis/pkg/apis/topology/v1alpha1"
+	"volcano.sh/volcano/pkg/scheduler/actions/allocate"
 	"volcano.sh/volcano/pkg/scheduler/api"
 	"volcano.sh/volcano/pkg/scheduler/cache"
 	"volcano.sh/volcano/pkg/scheduler/conf"
@@ -3708,15 +3709,10 @@ func TestHyperNodeGradientPreFiltering(t *testing.T) {
 				HyperNodesTiers:     []int{1, 2},
 			}
 
-			// Initialize hyperNodeResourceCache
-			plugin.initHyperNodeResourceCache(ssn)
-
-			// Override resource status for the first tier-1 HyperNode
+			// Override aggregate resources for the first tier-1 HyperNode via node status.
 			testHN := "hn-1-0"
-			plugin.hyperNodeResourceCache[testHN].idle = tt.idleResource
-			plugin.hyperNodeResourceCache[testHN].futureIdle = tt.futureIdleResource
+			setHyperNodeAggregateResources(nodes, realNodesSet[testHN], tt.idleResource, tt.futureIdleResource)
 
-			// Call hyperNodeGradientFn
 			result, err := plugin.hyperNodeGradientFn(
 				ssn,
 				hyperNodesMap[tier2HNName],
@@ -3725,8 +3721,8 @@ func TestHyperNodeGradientPreFiltering(t *testing.T) {
 				tt.minResource,
 				tt.purpose,
 			)
-
 			assert.NoError(t, err)
+			result = allocate.FilterGradientsByMinResource(ssn, result, tt.minResource, "")
 
 			// Check if the test HyperNode is in the result
 			found := false
@@ -3887,4 +3883,35 @@ func TestHyperNodeGradientForSubJobFn_NoSubJobPolicyRespectsHardTopology(t *test
 
 	gradients := ssn.HyperNodeGradientForSubJobFn(subJob, ssn.HyperNodes[rootName], api.PurposeEvict)
 	assert.Empty(t, gradients, "hard topology without feasible tier-1 domain should not fallback to root")
+}
+
+// setHyperNodeAggregateResources configures per-node idle/futureIdle so their sum matches targets.
+func setHyperNodeAggregateResources(nodes map[string]*api.NodeInfo, nodeNames sets.Set[string], idle, futureIdle *api.Resource) {
+	count := float64(nodeNames.Len())
+	if count == 0 {
+		return
+	}
+
+	perIdleCPU := idle.MilliCPU / count
+	perIdleMem := float64(idle.Memory) / count
+	perFutureCPU := futureIdle.MilliCPU / count
+	perFutureMem := float64(futureIdle.Memory) / count
+
+	for name := range nodeNames {
+		node := nodes[name]
+		node.Idle = &api.Resource{MilliCPU: perIdleCPU, Memory: perIdleMem}
+		node.Releasing = api.EmptyResource()
+		node.Pipelined = api.EmptyResource()
+		if perFutureCPU <= perIdleCPU {
+			node.Pipelined = &api.Resource{
+				MilliCPU: perIdleCPU - perFutureCPU,
+				Memory:   perIdleMem - perFutureMem,
+			}
+		} else {
+			node.Releasing = &api.Resource{
+				MilliCPU: perFutureCPU - perIdleCPU,
+				Memory:   perFutureMem - perIdleMem,
+			}
+		}
+	}
 }

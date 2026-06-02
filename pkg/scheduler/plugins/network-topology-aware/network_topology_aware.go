@@ -96,8 +96,6 @@ type hyperNodesTier struct {
 type resourceStatus struct {
 	allocatable *api.Resource
 	used        *api.Resource
-	idle        *api.Resource
-	futureIdle  *api.Resource
 }
 
 func (h *hyperNodesTier) init(hyperNodesSetByTier []int) {
@@ -117,14 +115,10 @@ func (nta *networkTopologyAwarePlugin) initHyperNodeResourceCache(ssn *framework
 		nta.hyperNodeResourceCache[hyperNode] = &resourceStatus{
 			allocatable: api.EmptyResource(),
 			used:        api.EmptyResource(),
-			idle:        api.EmptyResource(),
-			futureIdle:  api.EmptyResource(),
 		}
 		for node := range ssn.RealNodesSet[hyperNode] {
 			nta.hyperNodeResourceCache[hyperNode].allocatable.Add(ssn.Nodes[node].Allocatable)
 			nta.hyperNodeResourceCache[hyperNode].used.Add(ssn.Nodes[node].Used)
-			nta.hyperNodeResourceCache[hyperNode].idle.Add(ssn.Nodes[node].Idle)
-			nta.hyperNodeResourceCache[hyperNode].futureIdle.Add(ssn.Nodes[node].FutureIdle())
 		}
 	}
 }
