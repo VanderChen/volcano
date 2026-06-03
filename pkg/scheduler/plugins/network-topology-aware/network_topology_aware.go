@@ -23,6 +23,7 @@ import (
 	"strings"
 
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/klog/v2"
 	fwk "k8s.io/kube-scheduler/framework"
 	"k8s.io/utils/set"
@@ -285,20 +286,21 @@ func (nta *networkTopologyAwarePlugin) OnSessionOpen(ssn *framework.Session) {
 	})
 
 	ssn.AddHyperNodeGradientForJobFn(nta.Name(), func(job *api.JobInfo, hyperNode *api.HyperNodeInfo, purpose api.SearchPurpose) [][]*api.HyperNodeInfo {
-		if hardMode, highestAllowedTier := job.IsHardTopologyMode(); hardMode {
-			jobMinResource := job.GetMinResources()
-			result, err := nta.hyperNodeGradientFn(ssn, hyperNode, highestAllowedTier, job.AllocatedHyperNode, jobMinResource, purpose)
-			if err != nil {
-				klog.ErrorS(err, "build hyperNode gradient fail", "job", job.UID, "hyperNode", hyperNode.Name,
-					"highestAllowedTier", highestAllowedTier, "allocatedHyperNode", job.AllocatedHyperNode)
-				return nil
-			}
-			if purpose != api.PurposeEvict {
-				return result
-			}
+		highestAllowedTier := maxHyperNodeTier(ssn.HyperNodesSetByTier)
+		if hardMode, tier := job.IsHardTopologyMode(); hardMode {
+			highestAllowedTier = tier
+		}
+		jobMinResource := job.GetMinResources()
+		result, err := nta.hyperNodeGradientFn(ssn, hyperNode, highestAllowedTier, job.AllocatedHyperNode, jobMinResource, purpose)
+		if err != nil {
+			klog.ErrorS(err, "build hyperNode gradient fail", "job", job.UID, "hyperNode", hyperNode.Name,
+				"highestAllowedTier", highestAllowedTier, "allocatedHyperNode", job.AllocatedHyperNode)
+			return [][]*api.HyperNodeInfo{}
+		}
+		if purpose == api.PurposeEvict {
 			return nta.reverseAndCapEvictionGradients(result)
 		}
-		return [][]*api.HyperNodeInfo{{hyperNode}}
+		return result
 	})
 
 	ssn.AddHyperNodeGradientForSubJobFn(nta.Name(), func(subJob *api.SubJobInfo, hyperNode *api.HyperNodeInfo, purpose api.SearchPurpose) [][]*api.HyperNodeInfo {
@@ -308,7 +310,7 @@ func (nta *networkTopologyAwarePlugin) OnSessionOpen(ssn *framework.Session) {
 			if err != nil {
 				klog.ErrorS(err, "build hyperNode gradient fail", "subJob", subJob.UID, "hyperNode", hyperNode.Name,
 					"highestAllowedTier", highestAllowedTier, "allocatedHyperNode", subJob.AllocatedHyperNode)
-				return nil
+				return [][]*api.HyperNodeInfo{}
 			}
 			if purpose != api.PurposeEvict {
 				return result
@@ -805,4 +807,14 @@ func (nta *networkTopologyAwarePlugin) scaleFinalScore(scores map[string]float64
 		scaledScores[name] = float64(fwk.MaxNodeScore) * float64(nta.weight.GlobalWeight) * score
 	}
 	return scaledScores
+}
+
+func maxHyperNodeTier(hyperNodesSetByTier map[int]sets.Set[string]) int {
+	maxTier := 0
+	for tier := range hyperNodesSetByTier {
+		if tier > maxTier {
+			maxTier = tier
+		}
+	}
+	return maxTier
 }

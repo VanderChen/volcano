@@ -316,6 +316,8 @@ func TestHyperNodeGradientForJobFn_NoPluginKeepsCurrentFallback(t *testing.T) {
 	root := &api.HyperNodeInfo{Name: "root"}
 	result := ssn.HyperNodeGradientForJobFn(&api.JobInfo{}, root, api.PurposeEvict)
 	assert.Equal(t, [][]*api.HyperNodeInfo{{root}}, result)
+}
+
 func testHyperNodeInfo(name string, tier int) *api.HyperNodeInfo {
 	return api.NewHyperNodeInfo(api.BuildHyperNode(name, tier, nil))
 }
@@ -345,6 +347,15 @@ func TestIntersectHyperNodeGradients(t *testing.T) {
 func TestIntersectHyperNodeGradientsSinglePlugin(t *testing.T) {
 	gradients := [][]*api.HyperNodeInfo{{testHyperNodeInfo("x", 1)}}
 	assert.Equal(t, gradients, intersectHyperNodeGradients([][][]*api.HyperNodeInfo{gradients}))
+
+	empty := [][]*api.HyperNodeInfo{}
+	assert.Equal(t, empty, intersectHyperNodeGradients([][][]*api.HyperNodeInfo{empty}))
+}
+
+func TestIntersectHyperNodeGradientsWithEmptyPluginResult(t *testing.T) {
+	full := [][]*api.HyperNodeInfo{{testHyperNodeInfo("a", 1)}}
+	empty := [][]*api.HyperNodeInfo{}
+	assert.Nil(t, intersectHyperNodeGradients([][][]*api.HyperNodeInfo{full, empty}))
 }
 
 func hyperNodeNamesAtTier(gradients [][]*api.HyperNodeInfo, tierIdx int) []string {
