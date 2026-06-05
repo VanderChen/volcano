@@ -3712,6 +3712,7 @@ func TestHyperNodeGradientPreFiltering(t *testing.T) {
 			// Override aggregate resources for the first tier-1 HyperNode via node status.
 			testHN := "hn-1-0"
 			setHyperNodeAggregateResources(nodes, realNodesSet[testHN], tt.idleResource, tt.futureIdleResource)
+			plugin.initHyperNodeResourceCache(ssn)
 
 			result, err := plugin.hyperNodeGradientFn(
 				ssn,
@@ -3722,7 +3723,9 @@ func TestHyperNodeGradientPreFiltering(t *testing.T) {
 				tt.purpose,
 			)
 			assert.NoError(t, err)
-			result = allocate.FilterGradientsByMinResource(ssn, result, tt.minResource, "")
+			if tt.purpose == api.PurposeAllocate {
+				result, _ = allocate.FilterGradientsByMinResource(ssn, result, tt.minResource, "")
+			}
 
 			// Check if the test HyperNode is in the result
 			found := false
@@ -3881,7 +3884,7 @@ func TestHyperNodeGradientForSubJobFn_NoSubJobPolicyRespectsHardTopology(t *test
 	}
 	plugin.OnSessionOpen(ssn)
 
-	gradients := ssn.HyperNodeGradientForSubJobFn(subJob, ssn.HyperNodes[rootName], api.PurposeEvict)
+	gradients, _ := ssn.HyperNodeGradientForSubJobFn(subJob, ssn.HyperNodes[rootName], api.PurposeEvict)
 	assert.Empty(t, gradients, "hard topology without feasible tier-1 domain should not fallback to root")
 }
 

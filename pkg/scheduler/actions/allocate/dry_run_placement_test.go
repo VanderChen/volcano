@@ -128,9 +128,9 @@ func TestAllocateResourcesForTasks_KeepsPlacementWhenSubJobPipelined(t *testing.
 			{name: "p2", cpu: "4", mem: "4G", role: "worker"},
 			{name: "p3", cpu: "4", mem: "4G", role: "worker"},
 		},
-		minMember:              3,
-		subGroupSize:           3,
-		forceSubJobPipelined:   true,
+		minMember:            3,
+		subGroupSize:         3,
+		forceSubJobPipelined: true,
 	})
 
 	subJob := env.subJob
@@ -188,7 +188,7 @@ func TestAllocateForSubJob_DryRunSelectsSiblingNotLCA(t *testing.T) {
 		tasks: []dryRunTaskSpec{
 			{name: "p1", cpu: "4", mem: "4G"},
 		},
-		minMember: 1,
+		minMember:       1,
 		subJobGradients: [][]string{{"sn-a", "sn-b"}},
 		hyperNodeScores: map[string]float64{
 			"sn-a": 1,
@@ -455,7 +455,7 @@ func newDryRunPlacementEnv(t *testing.T, opts dryRunEnvOptions) *dryRunPlacement
 				gradientLayers[i] = append(gradientLayers[i], ssn.HyperNodes[name])
 			}
 		}
-		ssn.AddHyperNodeGradientForSubJobFn(dryRunTestPlugin, func(_ *api.SubJobInfo, _ *api.HyperNodeInfo) [][]*api.HyperNodeInfo {
+		ssn.AddHyperNodeGradientForSubJobFn(dryRunTestPlugin, func(_ *api.SubJobInfo, _ *api.HyperNodeInfo, _ api.SearchPurpose) [][]*api.HyperNodeInfo {
 			return gradientLayers
 		})
 	}
