@@ -740,6 +740,7 @@ func (alloc *Action) allocateResourcesForTasks(subJob *api.SubJobInfo, tasks *ut
 	ph := util.NewPredicateHelper()
 
 	allocatedHyperNode := subJob.AllocatedHyperNode
+	trackHyperNodePlacement := subJob.WithNetworkTopology() || ssn.HyperNodesReadyToSchedule
 
 	for !tasks.Empty() {
 		task := tasks.Pop().(*api.TaskInfo)
@@ -828,7 +829,7 @@ func (alloc *Action) allocateResourcesForTasks(subJob *api.SubJobInfo, tasks *ut
 			}
 		}
 
-		if subJob.WithNetworkTopology() {
+		if trackHyperNodePlacement {
 			task.JobAllocatedHyperNode = allocatedHyperNode
 		}
 
@@ -842,8 +843,17 @@ func (alloc *Action) allocateResourcesForTasks(subJob *api.SubJobInfo, tasks *ut
 			continue
 		}
 
-		if subJob.WithNetworkTopology() {
+		if trackHyperNodePlacement {
 			allocatedHyperNode = getNewAllocatedHyperNode(ssn, bestNode.Name, allocatedHyperNode)
+			subJob.AllocatedHyperNode = allocatedHyperNode
+			jobAllocatedHyperNode := allocatedHyperNode
+			if job.AllocatedHyperNode != "" {
+				jobAllocatedHyperNode = ssn.HyperNodes.GetLCAHyperNode(job.AllocatedHyperNode, allocatedHyperNode)
+			}
+			if job.AllocatedHyperNode != jobAllocatedHyperNode {
+				job.AllocatedHyperNode = jobAllocatedHyperNode
+				ssn.MarkJobDirty(job.UID)
+			}
 		}
 
 		if ssn.SubJobReady(job, subJob) {
