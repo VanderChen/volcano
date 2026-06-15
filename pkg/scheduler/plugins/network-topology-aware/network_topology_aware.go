@@ -33,6 +33,8 @@ import (
 	"volcano.sh/volcano/pkg/scheduler/util"
 )
 
+var emptyHyperNodeGradients = [][]*api.HyperNodeInfo{}
+
 const (
 	// PluginName indicates name of volcano scheduler plugin.
 	PluginName            = "network-topology-aware"
@@ -296,7 +298,7 @@ func (nta *networkTopologyAwarePlugin) OnSessionOpen(ssn *framework.Session) {
 		if err != nil {
 			klog.ErrorS(err, "build hyperNode gradient fail", "job", job.UID, "hyperNode", hyperNode.Name,
 				"highestAllowedTier", highestAllowedTier, "allocatedHyperNode", job.AllocatedHyperNode)
-			return [][]*api.HyperNodeInfo{}
+			return emptyHyperNodeGradients
 		}
 		if purpose == api.PurposeEvict {
 			return nta.reverseAndCapEvictionGradients(result)
@@ -312,7 +314,7 @@ func (nta *networkTopologyAwarePlugin) OnSessionOpen(ssn *framework.Session) {
 			if err != nil {
 				klog.ErrorS(err, "build hyperNode gradient fail", "subJob", subJob.UID, "hyperNode", hyperNode.Name,
 					"highestAllowedTier", highestAllowedTier, "allocatedHyperNode", subJob.AllocatedHyperNode)
-				return [][]*api.HyperNodeInfo{}
+				return emptyHyperNodeGradients
 			}
 			if purpose != api.PurposeEvict {
 				return result
@@ -610,7 +612,7 @@ func (nta *networkTopologyAwarePlugin) hyperNodeGradientFn(
 	}
 	sort.Ints(tiers)
 
-	var result [][]*api.HyperNodeInfo
+	result := make([][]*api.HyperNodeInfo, 0, len(tiers))
 	for _, tier := range tiers {
 		result = append(result, eligibleByTier[tier])
 	}
