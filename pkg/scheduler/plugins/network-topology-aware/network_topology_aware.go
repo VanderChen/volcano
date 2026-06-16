@@ -152,7 +152,7 @@ func New(arguments framework.Arguments) framework.Plugin {
 		maxHyperNodesForEviction: getMaxHyperNodesForEviction(arguments),
 		hyperNodeResourceCache:   make(map[string]*resourceStatus),
 	}
-	klog.V(5).InfoS("successfully built plugin", "name", PluginName, "arguments", plugin.String())
+	klog.V(5).Infof("successfully built plugin, name=%s, arguments=%s", PluginName, plugin.String())
 	return &plugin
 }
 
@@ -296,8 +296,8 @@ func (nta *networkTopologyAwarePlugin) OnSessionOpen(ssn *framework.Session) {
 			ssn, hyperNode, highestAllowedTier, job.AllocatedHyperNode, job.GetMinResources(), purpose,
 		)
 		if err != nil {
-			klog.ErrorS(err, "build hyperNode gradient fail", "job", job.UID, "hyperNode", hyperNode.Name,
-				"highestAllowedTier", highestAllowedTier, "allocatedHyperNode", job.AllocatedHyperNode)
+			klog.Errorf("build hyperNode gradient fail, job=%s, hyperNode=%s, highestAllowedTier=%d, allocatedHyperNode=%s, err=%v",
+				job.UID, hyperNode.Name, highestAllowedTier, job.AllocatedHyperNode, err)
 			return emptyHyperNodeGradients
 		}
 		if purpose == api.PurposeEvict {
@@ -312,8 +312,8 @@ func (nta *networkTopologyAwarePlugin) OnSessionOpen(ssn *framework.Session) {
 				ssn, hyperNode, highestAllowedTier, subJob.AllocatedHyperNode, subJob.GetMinResources(), purpose,
 			)
 			if err != nil {
-				klog.ErrorS(err, "build hyperNode gradient fail", "subJob", subJob.UID, "hyperNode", hyperNode.Name,
-					"highestAllowedTier", highestAllowedTier, "allocatedHyperNode", subJob.AllocatedHyperNode)
+				klog.Errorf("build hyperNode gradient fail, subJob=%s, hyperNode=%s, highestAllowedTier=%d, allocatedHyperNode=%s, err=%v",
+					subJob.UID, hyperNode.Name, highestAllowedTier, subJob.AllocatedHyperNode, err)
 				return emptyHyperNodeGradients
 			}
 			if purpose != api.PurposeEvict {
@@ -378,7 +378,7 @@ func (nta *networkTopologyAwarePlugin) HyperNodeOrderFn(ssn *framework.Session, 
 	}
 
 	hyperNodeScores = nta.scaleFinalScore(hyperNodeScores)
-	klog.V(4).Infof("networkTopologyAware hyperNode score is: %v", hyperNodeScores)
+	klog.V(3).Infof("networkTopologyAware hyperNode score is: %v", hyperNodeScores)
 	return hyperNodeScores, nil
 }
 
@@ -415,14 +415,14 @@ func (nta *networkTopologyAwarePlugin) getSubJobHyperNodeBinPackingScore(subJob 
 			used := status.used.Get(resourceName)
 
 			if used+request > allocatable {
-				klog.V(4).InfoS("cannot binpack the hyperNode", "subJob", subJob.UID, "hyperNode", hyperNode,
-					"resource", resourceName, "allocatable", allocatable, "used", used, "request", request)
+				klog.V(4).Infof("cannot binpack the hyperNode, subJob=%s, hyperNode=%s, resource=%s, allocatable=%v, used=%v, request=%v",
+					subJob.UID, hyperNode, resourceName, allocatable, used, request)
 				overused = true
 				break
 			}
 			score := (used + request) / allocatable
-			klog.V(5).InfoS("hyperNode binpacking score calculation", "subJob", subJob.UID, "hyperNode", hyperNode,
-				"resource", resourceName, "allocatable", allocatable, "used", used, "request", request)
+			klog.V(5).Infof("hyperNode binpacking score calculation, subJob=%s, hyperNode=%s, resource=%s, allocatable=%v, used=%v, request=%v",
+				subJob.UID, hyperNode, resourceName, allocatable, used, request)
 
 			totalScore += float64(weight) * score
 			totalWeight += weight
@@ -535,14 +535,14 @@ func (nta *networkTopologyAwarePlugin) getPodHyperNodeBinPackingScore(task *api.
 
 		request := task.Resreq.Get(resource)
 		if used+request > allocatable {
-			klog.V(4).InfoS("cannot binpack the hyperNode", "task", task.UID, "hyperNode", hyperNode,
-				"resource", resource, "allocatable", allocatable, "used", used, "request", request)
+			klog.V(4).Infof("cannot binpack the hyperNode, task=%s, hyperNode=%s, resource=%s, allocatable=%v, used=%v, request=%v",
+				task.UID, hyperNode, resource, allocatable, used, request)
 			return ZeroScore
 		}
 
 		score := (used + request) / allocatable
-		klog.V(5).InfoS("hyperNode binpacking score calculation", "task", task.UID, "hyperNode", hyperNode,
-			"resource", resource, "allocatable", allocatable, "used", used, "request", request)
+		klog.V(5).Infof("hyperNode binpacking score calculation, task=%s, hyperNode=%s, resource=%s, allocatable=%v, used=%v, request=%v",
+			task.UID, hyperNode, resource, allocatable, used, request)
 
 		totalScore += float64(weight) * score
 		totalWeight += weight
