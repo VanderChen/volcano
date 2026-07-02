@@ -50,6 +50,7 @@ import (
 	"volcano.sh/volcano/pkg/scheduler/plugins/binpack"
 	"volcano.sh/volcano/pkg/scheduler/plugins/drf"
 	"volcano.sh/volcano/pkg/scheduler/plugins/gang"
+	grouptopologyaffinity "volcano.sh/volcano/pkg/scheduler/plugins/group-topology-affinity"
 	networktopologyaware "volcano.sh/volcano/pkg/scheduler/plugins/network-topology-aware"
 	"volcano.sh/volcano/pkg/scheduler/plugins/nodeorder"
 	"volcano.sh/volcano/pkg/scheduler/plugins/predicates"
@@ -5585,6 +5586,169 @@ func TestAllocateWithPartitionPolicyNetworkTopology(t *testing.T) {
 				t.Fatal(err)
 			}
 		})
+	}
+}
+
+func TestAllocateWithCompositeGroupTopologyAffinity(t *testing.T) {
+	plugins := map[string]framework.PluginBuilder{
+		predicates.PluginName:            predicates.New,
+		gang.PluginName:                  gang.New,
+		networktopologyaware.PluginName:  networktopologyaware.New,
+		grouptopologyaffinity.PluginName: grouptopologyaffinity.New,
+	}
+
+	one := int32(1)
+	rackTier := 1
+	groupLabel := map[string]string{"topology.volcano.sh/group": "prod"}
+	roleAPolicy := schedulingv1.SubGroupPolicySpec{
+		Name:         "role-a",
+		SubGroupSize: &one,
+		MinSubGroups: &one,
+		LabelSelector: &metav1.LabelSelector{
+			MatchLabels: map[string]string{"role": "a"},
+		},
+		MatchLabelKeys: []string{"shard"},
+		NetworkTopology: &schedulingv1.NetworkTopologySpec{
+			Mode:               schedulingv1.HardNetworkTopologyMode,
+			HighestTierAllowed: &rackTier,
+		},
+	}
+	roleBPolicy := schedulingv1.SubGroupPolicySpec{
+		Name:         "role-b",
+		SubGroupSize: &one,
+		MinSubGroups: &one,
+		LabelSelector: &metav1.LabelSelector{
+			MatchLabels: map[string]string{"role": "b"},
+		},
+		MatchLabelKeys: []string{"shard"},
+		NetworkTopology: &schedulingv1.NetworkTopologySpec{
+			Mode:               schedulingv1.HardNetworkTopologyMode,
+			HighestTierAllowed: &rackTier,
+		},
+	}
+	pg := util.BuildPodGroupWithSubGroupPolicy("pg1", "c1", "", "q1", 2, nil, schedulingv1.PodGroupInqueue, "", 0,
+		[]schedulingv1.SubGroupPolicySpec{roleAPolicy, roleBPolicy})
+	pg.Labels = groupLabel
+	pg.Spec.TopologyAffinity = &schedulingv1.TopologyAffinitySpec{
+		PodGroupAntiAffinity: &schedulingv1.PodGroupAntiAffinity{
+			Required: []schedulingv1.PodGroupAffinityTerm{
+				{
+					PodGroupSelector: &metav1.LabelSelector{MatchLabels: groupLabel},
+					TopologyTierName: "supernode",
+				},
+			},
+		},
+		SubGroupAffinity: &schedulingv1.SubGroupAffinity{
+			Required: []schedulingv1.SubGroupAffinityTerm{
+				{SubGroups: []string{"role-a", "role-b"}, TopologyTierName: "supernode"},
+			},
+		},
+		SubGroupAntiAffinity: &schedulingv1.SubGroupAntiAffinity{
+			Required: []schedulingv1.SubGroupAffinityTerm{
+				{SubGroups: []string{"role-a", "role-b"}, TopologyTierName: "rack"},
+			},
+		},
+	}
+
+	peerPG := util.BuildPodGroup("pg-peer", "c1", "q1", 1, nil, schedulingv1.PodGroupRunning)
+	peerPG.Labels = groupLabel
+
+	test := uthelper.TestCommonStruct{
+		Name: "podGroup anti-affinity plus subGroup affinity and anti-affinity backtracks to feasible rack layout",
+		PodGroups: []*schedulingv1.PodGroup{
+			peerPG,
+			pg,
+		},
+		Pods: []*v1.Pod{
+			util.BuildPod("c1", "peer", "peer-n", v1.PodRunning, api.BuildResourceList("1", "1Gi"), "pg-peer", map[string]string{"role": "peer"}, nil),
+			util.BuildPod("c1", "existing-rack-b1", "b1-a", v1.PodRunning, api.BuildResourceList("1", "1Gi"), "", map[string]string{"role": "other"}, nil),
+			util.BuildPod("c1", "a", "", v1.PodPending, api.BuildResourceList("1", "1Gi"), "pg1", map[string]string{"role": "a", "shard": "0"}, map[string]string{"nodeRole": "a"}),
+			util.BuildPod("c1", "b", "", v1.PodPending, api.BuildResourceList("1", "1Gi"), "pg1", map[string]string{"role": "b", "shard": "1"}, map[string]string{"nodeRole": "b"}),
+		},
+		Nodes: []*v1.Node{
+			util.BuildNode("peer-n", api.BuildResourceList("2", "4Gi", []api.ScalarResource{{Name: "pods", Value: "10"}}...), nil),
+			util.BuildNode("b1-a", api.BuildResourceList("4", "8Gi", []api.ScalarResource{{Name: "pods", Value: "10"}}...), map[string]string{"nodeRole": "a"}),
+			util.BuildNode("b1-b", api.BuildResourceList("2", "4Gi", []api.ScalarResource{{Name: "pods", Value: "10"}}...), map[string]string{"nodeRole": "b"}),
+			util.BuildNode("b2-a", api.BuildResourceList("4", "8Gi", []api.ScalarResource{{Name: "pods", Value: "10"}}...), map[string]string{"nodeRole": "a"}),
+		},
+		HyperNodesSetByTier: map[int]sets.Set[string]{
+			1: sets.New[string]("peer-rack", "rack-b1", "rack-b2"),
+			2: sets.New[string]("peer-sn", "sn-b"),
+		},
+		HyperNodesMap: map[string]*api.HyperNodeInfo{
+			"peer-rack": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("peer-rack", 1, "rack", []api.MemberConfig{
+				{Name: "peer-n", Type: topologyv1alpha1.MemberTypeNode, Selector: "exact"},
+			})),
+			"rack-b1": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("rack-b1", 1, "rack", []api.MemberConfig{
+				{Name: "b1-a", Type: topologyv1alpha1.MemberTypeNode, Selector: "exact"},
+				{Name: "b1-b", Type: topologyv1alpha1.MemberTypeNode, Selector: "exact"},
+			})),
+			"rack-b2": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("rack-b2", 1, "rack", []api.MemberConfig{
+				{Name: "b2-a", Type: topologyv1alpha1.MemberTypeNode, Selector: "exact"},
+			})),
+			"peer-sn": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("peer-sn", 2, "supernode", []api.MemberConfig{
+				{Name: "peer-rack", Type: topologyv1alpha1.MemberTypeHyperNode, Selector: "exact"},
+			})),
+			"sn-b": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("sn-b", 2, "supernode", []api.MemberConfig{
+				{Name: "rack-b1", Type: topologyv1alpha1.MemberTypeHyperNode, Selector: "exact"},
+				{Name: "rack-b2", Type: topologyv1alpha1.MemberTypeHyperNode, Selector: "exact"},
+			})),
+		},
+		HyperNodes: map[string]sets.Set[string]{
+			"peer-rack": sets.New[string]("peer-n"),
+			"rack-b1":   sets.New[string]("b1-a", "b1-b"),
+			"rack-b2":   sets.New[string]("b2-a"),
+			"peer-sn":   sets.New[string]("peer-n"),
+			"sn-b":      sets.New[string]("b1-a", "b1-b", "b2-a"),
+		},
+		Queues: []*schedulingv1.Queue{
+			util.BuildQueue("q1", 1, nil),
+		},
+		ExpectBindMap: map[string]string{
+			"c1/a": "b2-a",
+			"c1/b": "b1-b",
+		},
+		ExpectBindsNum: 2,
+	}
+
+	trueValue := true
+	tiers := []conf.Tier{
+		{
+			Plugins: []conf.PluginOption{
+				{
+					Name:                gang.PluginName,
+					EnabledJobOrder:     &trueValue,
+					EnabledJobReady:     &trueValue,
+					EnabledJobPipelined: &trueValue,
+					EnabledJobStarving:  &trueValue,
+					EnabledSubJobReady:  &trueValue,
+					EnabledSubJobOrder:  &trueValue,
+				},
+				{
+					Name:             predicates.PluginName,
+					EnabledPredicate: &trueValue,
+				},
+				{
+					Name:                     networktopologyaware.PluginName,
+					EnabledNodeOrder:         &trueValue,
+					EnabledHyperNodeOrder:    &trueValue,
+					EnabledHyperNodeGradient: &trueValue,
+				},
+				{
+					Name:                     grouptopologyaffinity.PluginName,
+					EnabledHyperNodeOrder:    &trueValue,
+					EnabledHyperNodeGradient: &trueValue,
+				},
+			},
+		},
+	}
+
+	test.Plugins = plugins
+	test.RegisterSession(tiers, nil)
+	defer test.Close()
+	test.Run([]framework.Action{New()})
+	if err := test.CheckAll(0); err != nil {
+		t.Fatal(err)
 	}
 }
 

@@ -178,11 +178,101 @@ func (in *PodGroupAntiAffinity) DeepCopy() *PodGroupAntiAffinity {
 	return out
 }
 
+func (in *SubGroupAffinityTerm) DeepCopyInto(out *SubGroupAffinityTerm) {
+	*out = *in
+	if in.SubGroups != nil {
+		in, out := &in.SubGroups, &out.SubGroups
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
+	if in.TopologyTier != nil {
+		in, out := &in.TopologyTier, &out.TopologyTier
+		*out = new(int32)
+		**out = **in
+	}
+	return
+}
+
+func (in *SubGroupAffinityTerm) DeepCopy() *SubGroupAffinityTerm {
+	if in == nil {
+		return nil
+	}
+	out := new(SubGroupAffinityTerm)
+	in.DeepCopyInto(out)
+	return out
+}
+
+func (in *SubGroupAffinity) DeepCopyInto(out *SubGroupAffinity) {
+	*out = *in
+	if in.Required != nil {
+		in, out := &in.Required, &out.Required
+		*out = make([]SubGroupAffinityTerm, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
+	if in.Preferred != nil {
+		in, out := &in.Preferred, &out.Preferred
+		*out = make([]SubGroupAffinityTerm, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
+	return
+}
+
+func (in *SubGroupAffinity) DeepCopy() *SubGroupAffinity {
+	if in == nil {
+		return nil
+	}
+	out := new(SubGroupAffinity)
+	in.DeepCopyInto(out)
+	return out
+}
+
+func (in *SubGroupAntiAffinity) DeepCopyInto(out *SubGroupAntiAffinity) {
+	*out = *in
+	if in.Required != nil {
+		in, out := &in.Required, &out.Required
+		*out = make([]SubGroupAffinityTerm, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
+	if in.Preferred != nil {
+		in, out := &in.Preferred, &out.Preferred
+		*out = make([]SubGroupAffinityTerm, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
+	return
+}
+
+func (in *SubGroupAntiAffinity) DeepCopy() *SubGroupAntiAffinity {
+	if in == nil {
+		return nil
+	}
+	out := new(SubGroupAntiAffinity)
+	in.DeepCopyInto(out)
+	return out
+}
+
 func (in *TopologyAffinitySpec) DeepCopyInto(out *TopologyAffinitySpec) {
 	*out = *in
 	if in.PodGroupAntiAffinity != nil {
 		in, out := &in.PodGroupAntiAffinity, &out.PodGroupAntiAffinity
 		*out = new(PodGroupAntiAffinity)
+		(*in).DeepCopyInto(*out)
+	}
+	if in.SubGroupAffinity != nil {
+		in, out := &in.SubGroupAffinity, &out.SubGroupAffinity
+		*out = new(SubGroupAffinity)
+		(*in).DeepCopyInto(*out)
+	}
+	if in.SubGroupAntiAffinity != nil {
+		in, out := &in.SubGroupAntiAffinity, &out.SubGroupAntiAffinity
+		*out = new(SubGroupAntiAffinity)
 		(*in).DeepCopyInto(*out)
 	}
 	return
