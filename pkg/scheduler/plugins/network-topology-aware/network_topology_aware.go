@@ -295,28 +295,7 @@ func (nta *networkTopologyAwarePlugin) OnSessionOpen(ssn *framework.Session) {
 	})
 
 	ssn.AddHyperNodeGradientForSubJobFn(nta.Name(), func(subJob *api.SubJobInfo, hyperNode *api.HyperNodeInfo) [][]*api.HyperNodeInfo {
-		if job, found := ssn.Jobs[subJob.Job]; found && !job.ContainsSubJobPolicy() {
-			return [][]*api.HyperNodeInfo{{hyperNode}} // it is unnecessary to try child hyperNode when there is no actual subJob
-		}
-		if hardMode, highestAllowedTier := subJob.IsHardTopologyMode(); hardMode {
-			result, err := nta.hyperNodeGradientFn(ssn, hyperNode, highestAllowedTier, subJob.AllocatedHyperNode)
-			if err != nil {
-				klog.Errorf("build hyperNode gradient fail, subJob=%s, hyperNode=%s, highestAllowedTier=%d, allocatedHyperNode=%s, err=%v",
-					subJob.UID, hyperNode.Name, highestAllowedTier, subJob.AllocatedHyperNode, err)
-				return emptyHyperNodeGradients
-			}
-			return result
-		}
-		if softMode, preferredTier := subJob.SoftTopologyPreferredTier(); softMode {
-			result, err := nta.softHyperNodeGradientFn(ssn, hyperNode, preferredTier, subJob.AllocatedHyperNode)
-			if err != nil {
-				klog.Errorf("build soft hyperNode gradient fail, subJob=%s, hyperNode=%s, preferredTier=%d, allocatedHyperNode=%s, err=%v",
-					subJob.UID, hyperNode.Name, preferredTier, subJob.AllocatedHyperNode, err)
-				return emptyHyperNodeGradients
-			}
-			return result
-		}
-		return [][]*api.HyperNodeInfo{{hyperNode}}
+		return nta.hyperNodeGradientForSubJob(ssn, subJob, hyperNode)
 	})
 
 	ssn.AddEventHandler(&framework.EventHandler{
@@ -349,6 +328,42 @@ func (nta *networkTopologyAwarePlugin) OnSessionOpen(ssn *framework.Session) {
 			}
 		},
 	})
+}
+
+func (nta *networkTopologyAwarePlugin) hyperNodeGradientForSubJob(ssn *framework.Session, subJob *api.SubJobInfo, hyperNode *api.HyperNodeInfo) [][]*api.HyperNodeInfo {
+	if job, found := ssn.Jobs[subJob.Job]; found {
+		if !job.ContainsSubJobPolicy() {
+			return [][]*api.HyperNodeInfo{{hyperNode}} // it is unnecessary to try child hyperNode when there is no actual subJob
+		}
+		if !subJob.WithNetworkTopology() && job.WithTopologyAffinity() {
+			result, err := nta.hyperNodeGradientFn(ssn, hyperNode, maxHyperNodeTier(ssn.HyperNodesSetByTier), subJob.AllocatedHyperNode)
+			if err != nil {
+				klog.Errorf("build neutral hyperNode gradient fail, subJob=%s, hyperNode=%s, allocatedHyperNode=%s, err=%v",
+					subJob.UID, hyperNode.Name, subJob.AllocatedHyperNode, err)
+				return emptyHyperNodeGradients
+			}
+			return result
+		}
+	}
+	if hardMode, highestAllowedTier := subJob.IsHardTopologyMode(); hardMode {
+		result, err := nta.hyperNodeGradientFn(ssn, hyperNode, highestAllowedTier, subJob.AllocatedHyperNode)
+		if err != nil {
+			klog.Errorf("build hyperNode gradient fail, subJob=%s, hyperNode=%s, highestAllowedTier=%d, allocatedHyperNode=%s, err=%v",
+				subJob.UID, hyperNode.Name, highestAllowedTier, subJob.AllocatedHyperNode, err)
+			return emptyHyperNodeGradients
+		}
+		return result
+	}
+	if softMode, preferredTier := subJob.SoftTopologyPreferredTier(); softMode {
+		result, err := nta.softHyperNodeGradientFn(ssn, hyperNode, preferredTier, subJob.AllocatedHyperNode)
+		if err != nil {
+			klog.Errorf("build soft hyperNode gradient fail, subJob=%s, hyperNode=%s, preferredTier=%d, allocatedHyperNode=%s, err=%v",
+				subJob.UID, hyperNode.Name, preferredTier, subJob.AllocatedHyperNode, err)
+			return emptyHyperNodeGradients
+		}
+		return result
+	}
+	return [][]*api.HyperNodeInfo{{hyperNode}}
 }
 
 func (nta *networkTopologyAwarePlugin) HyperNodeOrderFn(ssn *framework.Session, subJob *api.SubJobInfo, hyperNodes map[string][]*api.NodeInfo) (map[string]float64, error) {

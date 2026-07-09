@@ -26,6 +26,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/sets"
 
+	"volcano.sh/apis/pkg/apis/scheduling"
 	schedulingv1 "volcano.sh/apis/pkg/apis/scheduling/v1beta1"
 	topologyv1alpha1 "volcano.sh/apis/pkg/apis/topology/v1alpha1"
 	"volcano.sh/volcano/pkg/scheduler/actions/allocate"
@@ -3723,6 +3724,56 @@ func TestSoftHyperNodeGradientFnPrefersConfiguredTier(t *testing.T) {
 		{"sn-a", "sn-b"},
 		{"root"},
 	}, hyperNodeGradientNames(got))
+}
+
+func TestSubJobNeutralGradientWithTopologyAffinityReturnsFullSubtree(t *testing.T) {
+	plugin := &networkTopologyAwarePlugin{}
+	root := api.NewHyperNodeInfo(api.BuildHyperNode("root", 3, nil))
+	snA := api.NewHyperNodeInfo(api.BuildHyperNode("sn-a", 2, nil), api.ParentOpt("root"))
+	snB := api.NewHyperNodeInfo(api.BuildHyperNode("sn-b", 2, nil), api.ParentOpt("root"))
+	rackA := api.NewHyperNodeInfo(api.BuildHyperNode("rack-a", 1, nil), api.ParentOpt("sn-a"))
+	rackB := api.NewHyperNodeInfo(api.BuildHyperNode("rack-b", 1, nil), api.ParentOpt("sn-b"))
+	root.Children.Insert("sn-a", "sn-b")
+	snA.Children.Insert("rack-a")
+	snB.Children.Insert("rack-b")
+
+	jobID := api.JobID("job")
+	subJob := api.NewSubJobInfo(api.SubJobGID("role-a"), api.SubJobID("role-a-0"), jobID,
+		&scheduling.SubGroupPolicySpec{Name: "role-a"}, nil)
+	ssn := &framework.Session{
+		Jobs: map[api.JobID]*api.JobInfo{
+			jobID: {
+				UID: jobID,
+				PodGroup: &api.PodGroup{
+					PodGroup: scheduling.PodGroup{
+						Spec: scheduling.PodGroupSpec{
+							SubGroupPolicy: []scheduling.SubGroupPolicySpec{{Name: "role-a"}},
+							TopologyAffinity: &scheduling.TopologyAffinitySpec{
+								SubGroupAntiAffinity: &scheduling.SubGroupAntiAffinity{},
+							},
+						},
+					},
+				},
+			},
+		},
+		HyperNodes: api.HyperNodeInfoMap{
+			"root":   root,
+			"sn-a":   snA,
+			"sn-b":   snB,
+			"rack-a": rackA,
+			"rack-b": rackB,
+		},
+		HyperNodesSetByTier: map[int]sets.Set[string]{
+			1: sets.New[string]("rack-a", "rack-b"),
+			2: sets.New[string]("sn-a", "sn-b"),
+			3: sets.New[string]("root"),
+		},
+	}
+
+	got := plugin.hyperNodeGradientForSubJob(ssn, subJob, root)
+	assert.ElementsMatch(t, []string{"rack-a", "rack-b"}, hyperNodeGradientNames(got)[0])
+	assert.ElementsMatch(t, []string{"sn-a", "sn-b"}, hyperNodeGradientNames(got)[1])
+	assert.Equal(t, []string{"root"}, hyperNodeGradientNames(got)[2])
 }
 
 func hyperNodeGradientNames(gradients [][]*api.HyperNodeInfo) [][]string {

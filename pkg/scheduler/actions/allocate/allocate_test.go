@@ -6087,6 +6087,163 @@ func TestAllocateWithCompositeGroupTopologyAffinity(t *testing.T) {
 	}
 }
 
+func TestAllocateWithHardSubGroupTopologyAffinityAndNeutralNetworkGradient(t *testing.T) {
+	plugins := map[string]framework.PluginBuilder{
+		predicates.PluginName:            predicates.New,
+		gang.PluginName:                  gang.New,
+		networktopologyaware.PluginName:  networktopologyaware.New,
+		grouptopologyaffinity.PluginName: grouptopologyaffinity.New,
+	}
+
+	one := int32(1)
+	two := int32(2)
+	prefillPolicy := schedulingv1.SubGroupPolicySpec{
+		Name:         "prefill",
+		SubGroupSize: &one,
+		MinSubGroups: &two,
+		LabelSelector: &metav1.LabelSelector{
+			MatchLabels: map[string]string{"role": "prefill"},
+		},
+		MatchLabelKeys: []string{"shard"},
+	}
+	decodePolicy := schedulingv1.SubGroupPolicySpec{
+		Name:         "decode",
+		SubGroupSize: &one,
+		MinSubGroups: &two,
+		LabelSelector: &metav1.LabelSelector{
+			MatchLabels: map[string]string{"role": "decode"},
+		},
+		MatchLabelKeys: []string{"shard"},
+	}
+	pg := util.BuildPodGroupWithSubGroupPolicy("pg1", "c1", "", "q1", 4, nil, schedulingv1.PodGroupInqueue, "", 0,
+		[]schedulingv1.SubGroupPolicySpec{prefillPolicy, decodePolicy})
+	pg.Spec.TopologyAffinity = &schedulingv1.TopologyAffinitySpec{
+		SubGroupAffinity: &schedulingv1.SubGroupAffinity{
+			Required: []schedulingv1.SubGroupAffinityTerm{
+				{SubGroups: []string{"prefill", "decode"}, TopologyTierName: "tier3"},
+			},
+		},
+		SubGroupAntiAffinity: &schedulingv1.SubGroupAntiAffinity{
+			Required: []schedulingv1.SubGroupAffinityTerm{
+				{SubGroups: []string{"prefill"}, TopologyTierName: "tier1"},
+				{SubGroups: []string{"decode"}, TopologyTierName: "tier1"},
+				{SubGroups: []string{"prefill", "decode"}, TopologyTierName: "tier1"},
+			},
+		},
+	}
+
+	test := uthelper.TestCommonStruct{
+		Name:      "hard subgroup affinity with no network topology keeps network plugin neutral",
+		PodGroups: []*schedulingv1.PodGroup{pg},
+		Pods: []*v1.Pod{
+			util.BuildPod("c1", "prefill-0", "", v1.PodPending, api.BuildResourceList("100m", "64Mi"), "pg1",
+				map[string]string{"role": "prefill", "shard": "p0"}, map[string]string{"topo-test/slot": "p0"}),
+			util.BuildPod("c1", "prefill-1", "", v1.PodPending, api.BuildResourceList("100m", "64Mi"), "pg1",
+				map[string]string{"role": "prefill", "shard": "p1"}, map[string]string{"topo-test/slot": "p1"}),
+			util.BuildPod("c1", "decode-0", "", v1.PodPending, api.BuildResourceList("100m", "64Mi"), "pg1",
+				map[string]string{"role": "decode", "shard": "d0"}, map[string]string{"topo-test/slot": "d0"}),
+			util.BuildPod("c1", "decode-1", "", v1.PodPending, api.BuildResourceList("100m", "64Mi"), "pg1",
+				map[string]string{"role": "decode", "shard": "d1"}, map[string]string{"topo-test/slot": "d1"}),
+		},
+		Nodes: []*v1.Node{
+			util.BuildNode("kind-control-plane", api.BuildResourceList("2", "4Gi", []api.ScalarResource{{Name: "pods", Value: "10"}}...), map[string]string{"topo-test/slot": "d0"}),
+			util.BuildNode("kind-worker", api.BuildResourceList("2", "4Gi", []api.ScalarResource{{Name: "pods", Value: "10"}}...), map[string]string{"topo-test/slot": "d1"}),
+			util.BuildNode("kind-worker2", api.BuildResourceList("2", "4Gi", []api.ScalarResource{{Name: "pods", Value: "10"}}...), map[string]string{"topo-test/slot": "p0"}),
+			util.BuildNode("kind-worker3", api.BuildResourceList("2", "4Gi", []api.ScalarResource{{Name: "pods", Value: "10"}}...), map[string]string{"topo-test/slot": "p1"}),
+		},
+		HyperNodesSetByTier: map[int]sets.Set[string]{
+			1: sets.New[string]("kind-tier1-control-plane", "kind-tier1-worker", "kind-tier1-worker2", "kind-tier1-worker3"),
+			2: sets.New[string]("kind-tier2-pair-a", "kind-tier2-pair-b"),
+			3: sets.New[string]("kind-tier3-all"),
+		},
+		HyperNodesMap: map[string]*api.HyperNodeInfo{
+			"kind-tier1-control-plane": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("kind-tier1-control-plane", 1, "tier1", []api.MemberConfig{
+				{Name: "kind-control-plane", Type: topologyv1alpha1.MemberTypeNode, Selector: "exact"},
+			})),
+			"kind-tier1-worker": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("kind-tier1-worker", 1, "tier1", []api.MemberConfig{
+				{Name: "kind-worker", Type: topologyv1alpha1.MemberTypeNode, Selector: "exact"},
+			})),
+			"kind-tier1-worker2": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("kind-tier1-worker2", 1, "tier1", []api.MemberConfig{
+				{Name: "kind-worker2", Type: topologyv1alpha1.MemberTypeNode, Selector: "exact"},
+			})),
+			"kind-tier1-worker3": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("kind-tier1-worker3", 1, "tier1", []api.MemberConfig{
+				{Name: "kind-worker3", Type: topologyv1alpha1.MemberTypeNode, Selector: "exact"},
+			})),
+			"kind-tier2-pair-a": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("kind-tier2-pair-a", 2, "tier2", []api.MemberConfig{
+				{Name: "kind-tier1-control-plane", Type: topologyv1alpha1.MemberTypeHyperNode, Selector: "exact"},
+				{Name: "kind-tier1-worker", Type: topologyv1alpha1.MemberTypeHyperNode, Selector: "exact"},
+			})),
+			"kind-tier2-pair-b": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("kind-tier2-pair-b", 2, "tier2", []api.MemberConfig{
+				{Name: "kind-tier1-worker2", Type: topologyv1alpha1.MemberTypeHyperNode, Selector: "exact"},
+				{Name: "kind-tier1-worker3", Type: topologyv1alpha1.MemberTypeHyperNode, Selector: "exact"},
+			})),
+			"kind-tier3-all": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("kind-tier3-all", 3, "tier3", []api.MemberConfig{
+				{Name: "kind-tier2-pair-a", Type: topologyv1alpha1.MemberTypeHyperNode, Selector: "exact"},
+				{Name: "kind-tier2-pair-b", Type: topologyv1alpha1.MemberTypeHyperNode, Selector: "exact"},
+			})),
+		},
+		HyperNodes: map[string]sets.Set[string]{
+			"kind-tier1-control-plane": sets.New[string]("kind-control-plane"),
+			"kind-tier1-worker":        sets.New[string]("kind-worker"),
+			"kind-tier1-worker2":       sets.New[string]("kind-worker2"),
+			"kind-tier1-worker3":       sets.New[string]("kind-worker3"),
+			"kind-tier2-pair-a":        sets.New[string]("kind-control-plane", "kind-worker"),
+			"kind-tier2-pair-b":        sets.New[string]("kind-worker2", "kind-worker3"),
+			"kind-tier3-all":           sets.New[string]("kind-control-plane", "kind-worker", "kind-worker2", "kind-worker3"),
+		},
+		Queues: []*schedulingv1.Queue{
+			util.BuildQueue("q1", 1, nil),
+		},
+		ExpectBindMap: map[string]string{
+			"c1/decode-0":  "kind-control-plane",
+			"c1/decode-1":  "kind-worker",
+			"c1/prefill-0": "kind-worker2",
+			"c1/prefill-1": "kind-worker3",
+		},
+		ExpectBindsNum: 4,
+	}
+
+	trueValue := true
+	tiers := []conf.Tier{
+		{
+			Plugins: []conf.PluginOption{
+				{
+					Name:                gang.PluginName,
+					EnabledJobOrder:     &trueValue,
+					EnabledJobReady:     &trueValue,
+					EnabledJobPipelined: &trueValue,
+					EnabledJobStarving:  &trueValue,
+					EnabledSubJobReady:  &trueValue,
+					EnabledSubJobOrder:  &trueValue,
+				},
+				{
+					Name:             predicates.PluginName,
+					EnabledPredicate: &trueValue,
+				},
+				{
+					Name:                     networktopologyaware.PluginName,
+					EnabledNodeOrder:         &trueValue,
+					EnabledHyperNodeOrder:    &trueValue,
+					EnabledHyperNodeGradient: &trueValue,
+				},
+				{
+					Name:                     grouptopologyaffinity.PluginName,
+					EnabledHyperNodeOrder:    &trueValue,
+					EnabledHyperNodeGradient: &trueValue,
+				},
+			},
+		},
+	}
+
+	test.Plugins = plugins
+	test.RegisterSession(tiers, nil)
+	defer test.Close()
+	test.Run([]framework.Action{New()})
+	if err := test.CheckAll(0); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestAllocateWithHardSubGroupTopologyAffinityWhenMinMemberIsZero(t *testing.T) {
 	plugins := map[string]framework.PluginBuilder{
 		predicates.PluginName:            predicates.New,
