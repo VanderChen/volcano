@@ -6087,6 +6087,266 @@ func TestAllocateWithCompositeGroupTopologyAffinity(t *testing.T) {
 	}
 }
 
+func TestAllocateWithHardSubGroupTopologyAffinityWhenMinMemberIsZero(t *testing.T) {
+	plugins := map[string]framework.PluginBuilder{
+		predicates.PluginName:            predicates.New,
+		gang.PluginName:                  gang.New,
+		networktopologyaware.PluginName:  networktopologyaware.New,
+		grouptopologyaffinity.PluginName: grouptopologyaffinity.New,
+	}
+
+	zero := int32(0)
+	one := int32(1)
+	roleAPolicy := schedulingv1.SubGroupPolicySpec{
+		Name:         "role-a",
+		SubGroupSize: &one,
+		MinSubGroups: &zero,
+		LabelSelector: &metav1.LabelSelector{
+			MatchLabels: map[string]string{"role": "a"},
+		},
+		MatchLabelKeys: []string{"shard"},
+	}
+	roleBPolicy := schedulingv1.SubGroupPolicySpec{
+		Name:         "role-b",
+		SubGroupSize: &one,
+		MinSubGroups: &zero,
+		LabelSelector: &metav1.LabelSelector{
+			MatchLabels: map[string]string{"role": "b"},
+		},
+		MatchLabelKeys: []string{"shard"},
+	}
+	pg := util.BuildPodGroupWithSubGroupPolicy("pg1", "c1", "", "q1", 0, nil, schedulingv1.PodGroupInqueue, "", 0,
+		[]schedulingv1.SubGroupPolicySpec{roleAPolicy, roleBPolicy})
+	pg.Spec.TopologyAffinity = &schedulingv1.TopologyAffinitySpec{
+		SubGroupAffinity: &schedulingv1.SubGroupAffinity{
+			Required: []schedulingv1.SubGroupAffinityTerm{
+				{SubGroups: []string{"role-a", "role-b"}, TopologyTierName: "supernode"},
+			},
+		},
+	}
+
+	test := uthelper.TestCommonStruct{
+		Name:      "hard subgroup affinity still schedules target subgroups when ordinary gang minMember is zero",
+		PodGroups: []*schedulingv1.PodGroup{pg},
+		Pods: []*v1.Pod{
+			util.BuildPod("c1", "a", "", v1.PodPending, api.BuildResourceList("1", "1Gi"), "pg1", map[string]string{"role": "a", "shard": "0"}, map[string]string{"nodeRole": "a"}),
+			util.BuildPod("c1", "b", "", v1.PodPending, api.BuildResourceList("1", "1Gi"), "pg1", map[string]string{"role": "b", "shard": "0"}, map[string]string{"nodeRole": "b"}),
+		},
+		Nodes: []*v1.Node{
+			util.BuildNode("a1", api.BuildResourceList("2", "4Gi", []api.ScalarResource{{Name: "pods", Value: "10"}}...), map[string]string{"nodeRole": "a"}),
+			util.BuildNode("a2", api.BuildResourceList("2", "4Gi", []api.ScalarResource{{Name: "pods", Value: "10"}}...), map[string]string{"nodeRole": "b"}),
+			util.BuildNode("b1", api.BuildResourceList("2", "4Gi", []api.ScalarResource{{Name: "pods", Value: "10"}}...), map[string]string{"nodeRole": "b"}),
+		},
+		HyperNodesSetByTier: map[int]sets.Set[string]{
+			1: sets.New[string]("rack-a1", "rack-a2", "rack-b1"),
+			2: sets.New[string]("sn-a", "sn-b"),
+		},
+		HyperNodesMap: map[string]*api.HyperNodeInfo{
+			"rack-a1": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("rack-a1", 1, "rack", []api.MemberConfig{
+				{Name: "a1", Type: topologyv1alpha1.MemberTypeNode, Selector: "exact"},
+			})),
+			"rack-a2": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("rack-a2", 1, "rack", []api.MemberConfig{
+				{Name: "a2", Type: topologyv1alpha1.MemberTypeNode, Selector: "exact"},
+			})),
+			"rack-b1": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("rack-b1", 1, "rack", []api.MemberConfig{
+				{Name: "b1", Type: topologyv1alpha1.MemberTypeNode, Selector: "exact"},
+			})),
+			"sn-a": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("sn-a", 2, "supernode", []api.MemberConfig{
+				{Name: "rack-a1", Type: topologyv1alpha1.MemberTypeHyperNode, Selector: "exact"},
+				{Name: "rack-a2", Type: topologyv1alpha1.MemberTypeHyperNode, Selector: "exact"},
+			})),
+			"sn-b": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("sn-b", 2, "supernode", []api.MemberConfig{
+				{Name: "rack-b1", Type: topologyv1alpha1.MemberTypeHyperNode, Selector: "exact"},
+			})),
+		},
+		HyperNodes: map[string]sets.Set[string]{
+			"rack-a1": sets.New[string]("a1"),
+			"rack-a2": sets.New[string]("a2"),
+			"rack-b1": sets.New[string]("b1"),
+			"sn-a":    sets.New[string]("a1", "a2"),
+			"sn-b":    sets.New[string]("b1"),
+		},
+		Queues: []*schedulingv1.Queue{
+			util.BuildQueue("q1", 1, nil),
+		},
+		ExpectBindMap: map[string]string{
+			"c1/a": "a1",
+			"c1/b": "a2",
+		},
+		ExpectBindsNum: 2,
+	}
+
+	trueValue := true
+	tiers := []conf.Tier{
+		{
+			Plugins: []conf.PluginOption{
+				{
+					Name:                gang.PluginName,
+					EnabledJobOrder:     &trueValue,
+					EnabledJobReady:     &trueValue,
+					EnabledJobPipelined: &trueValue,
+					EnabledJobStarving:  &trueValue,
+					EnabledSubJobReady:  &trueValue,
+					EnabledSubJobOrder:  &trueValue,
+				},
+				{
+					Name:             predicates.PluginName,
+					EnabledPredicate: &trueValue,
+				},
+				{
+					Name:                     networktopologyaware.PluginName,
+					EnabledNodeOrder:         &trueValue,
+					EnabledHyperNodeOrder:    &trueValue,
+					EnabledHyperNodeGradient: &trueValue,
+				},
+				{
+					Name:                     grouptopologyaffinity.PluginName,
+					EnabledHyperNodeOrder:    &trueValue,
+					EnabledHyperNodeGradient: &trueValue,
+				},
+			},
+		},
+	}
+
+	test.Plugins = plugins
+	test.RegisterSession(tiers, nil)
+	defer test.Close()
+	test.Run([]framework.Action{New()})
+	if err := test.CheckAll(0); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestAllocateWithPreferredSubGroupTopologyAffinityContinuesAfterJobReady(t *testing.T) {
+	plugins := map[string]framework.PluginBuilder{
+		predicates.PluginName:            predicates.New,
+		gang.PluginName:                  gang.New,
+		networktopologyaware.PluginName:  networktopologyaware.New,
+		grouptopologyaffinity.PluginName: grouptopologyaffinity.New,
+	}
+
+	zero := int32(0)
+	one := int32(1)
+	roleAPolicy := schedulingv1.SubGroupPolicySpec{
+		Name:         "role-a",
+		SubGroupSize: &one,
+		MinSubGroups: &zero,
+		LabelSelector: &metav1.LabelSelector{
+			MatchLabels: map[string]string{"role": "a"},
+		},
+		MatchLabelKeys: []string{"shard"},
+	}
+	roleBPolicy := schedulingv1.SubGroupPolicySpec{
+		Name:         "role-b",
+		SubGroupSize: &one,
+		MinSubGroups: &zero,
+		LabelSelector: &metav1.LabelSelector{
+			MatchLabels: map[string]string{"role": "b"},
+		},
+		MatchLabelKeys: []string{"shard"},
+	}
+	pg := util.BuildPodGroupWithSubGroupPolicy("pg1", "c1", "", "q1", 1, nil, schedulingv1.PodGroupInqueue, "", 0,
+		[]schedulingv1.SubGroupPolicySpec{roleAPolicy, roleBPolicy})
+	pg.Spec.TopologyAffinity = &schedulingv1.TopologyAffinitySpec{
+		SubGroupAffinity: &schedulingv1.SubGroupAffinity{
+			Preferred: []schedulingv1.SubGroupAffinityTerm{
+				{SubGroups: []string{"role-a", "role-b"}, TopologyTierName: "supernode", Weight: 100},
+			},
+		},
+	}
+
+	test := uthelper.TestCommonStruct{
+		Name:      "preferred subgroup affinity continues scheduling peer subgroup after ordinary job ready",
+		PodGroups: []*schedulingv1.PodGroup{pg},
+		Pods: []*v1.Pod{
+			util.BuildPod("c1", "a", "", v1.PodPending, api.BuildResourceList("1", "1Gi"), "pg1", map[string]string{"role": "a", "shard": "0"}, map[string]string{"nodeRole": "a"}),
+			util.BuildPod("c1", "b", "", v1.PodPending, api.BuildResourceList("1", "1Gi"), "pg1", map[string]string{"role": "b", "shard": "0"}, map[string]string{"nodeRole": "b"}),
+		},
+		Nodes: []*v1.Node{
+			util.BuildNode("a1", api.BuildResourceList("2", "4Gi", []api.ScalarResource{{Name: "pods", Value: "10"}}...), map[string]string{"nodeRole": "a"}),
+			util.BuildNode("a2", api.BuildResourceList("2", "4Gi", []api.ScalarResource{{Name: "pods", Value: "10"}}...), map[string]string{"nodeRole": "b"}),
+			util.BuildNode("b1", api.BuildResourceList("2", "4Gi", []api.ScalarResource{{Name: "pods", Value: "10"}}...), map[string]string{"nodeRole": "b"}),
+		},
+		HyperNodesSetByTier: map[int]sets.Set[string]{
+			1: sets.New[string]("rack-a1", "rack-a2", "rack-b1"),
+			2: sets.New[string]("sn-a", "sn-b"),
+		},
+		HyperNodesMap: map[string]*api.HyperNodeInfo{
+			"rack-a1": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("rack-a1", 1, "rack", []api.MemberConfig{
+				{Name: "a1", Type: topologyv1alpha1.MemberTypeNode, Selector: "exact"},
+			})),
+			"rack-a2": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("rack-a2", 1, "rack", []api.MemberConfig{
+				{Name: "a2", Type: topologyv1alpha1.MemberTypeNode, Selector: "exact"},
+			})),
+			"rack-b1": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("rack-b1", 1, "rack", []api.MemberConfig{
+				{Name: "b1", Type: topologyv1alpha1.MemberTypeNode, Selector: "exact"},
+			})),
+			"sn-a": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("sn-a", 2, "supernode", []api.MemberConfig{
+				{Name: "rack-a1", Type: topologyv1alpha1.MemberTypeHyperNode, Selector: "exact"},
+				{Name: "rack-a2", Type: topologyv1alpha1.MemberTypeHyperNode, Selector: "exact"},
+			})),
+			"sn-b": api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("sn-b", 2, "supernode", []api.MemberConfig{
+				{Name: "rack-b1", Type: topologyv1alpha1.MemberTypeHyperNode, Selector: "exact"},
+			})),
+		},
+		HyperNodes: map[string]sets.Set[string]{
+			"rack-a1": sets.New[string]("a1"),
+			"rack-a2": sets.New[string]("a2"),
+			"rack-b1": sets.New[string]("b1"),
+			"sn-a":    sets.New[string]("a1", "a2"),
+			"sn-b":    sets.New[string]("b1"),
+		},
+		Queues: []*schedulingv1.Queue{
+			util.BuildQueue("q1", 1, nil),
+		},
+		ExpectBindMap: map[string]string{
+			"c1/a": "a1",
+			"c1/b": "a2",
+		},
+		ExpectBindsNum: 2,
+	}
+
+	trueValue := true
+	tiers := []conf.Tier{
+		{
+			Plugins: []conf.PluginOption{
+				{
+					Name:                gang.PluginName,
+					EnabledJobOrder:     &trueValue,
+					EnabledJobReady:     &trueValue,
+					EnabledJobPipelined: &trueValue,
+					EnabledJobStarving:  &trueValue,
+					EnabledSubJobReady:  &trueValue,
+					EnabledSubJobOrder:  &trueValue,
+				},
+				{
+					Name:             predicates.PluginName,
+					EnabledPredicate: &trueValue,
+				},
+				{
+					Name:                     networktopologyaware.PluginName,
+					EnabledNodeOrder:         &trueValue,
+					EnabledHyperNodeOrder:    &trueValue,
+					EnabledHyperNodeGradient: &trueValue,
+				},
+				{
+					Name:                     grouptopologyaffinity.PluginName,
+					EnabledHyperNodeOrder:    &trueValue,
+					EnabledHyperNodeGradient: &trueValue,
+				},
+			},
+		},
+	}
+
+	test.Plugins = plugins
+	test.RegisterSession(tiers, nil)
+	defer test.Close()
+	test.Run([]framework.Action{New()})
+	if err := test.CheckAll(0); err != nil {
+		t.Fatal(err)
+	}
+}
+
 // BenchmarkHyperNodeGradientFnPerformance tests the performance optimization
 // of hyperNodeGradientFn with SubGroup policy in large-scale cluster scenarios.
 func BenchmarkHyperNodeGradientFnPerformance(b *testing.B) {

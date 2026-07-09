@@ -396,6 +396,7 @@ func (alloc *Action) allocateForJob(job *api.JobInfo, jobWorksheet *JobWorksheet
 	_, softTopologyPreferredTier := jobSoftTopologyPreferredTier(job)
 	softTopologyTargetSubJobs := softTopologyTargetSubJobCount(job, jobWorksheet)
 	softTopologySearch := softTopologyTargetSubJobs > 1
+	preferredSubGroupTopologyTargetSubJobs := preferredSubGroupTopologyTargetSubJobCount(job, jobWorksheet)
 	var fallbackHyperNode string
 	var fallbackSolution *jobAllocationSolution
 	for gradient, hyperNodes := range hyperNodeGradients {
@@ -408,7 +409,8 @@ func (alloc *Action) allocateForJob(job *api.JobInfo, jobWorksheet *JobWorksheet
 			jobWorksheetCopy := jobWorksheet.Clone()
 			klog.V(3).Infof("Try to allocate resource for job in hyperNode, job=%s, hyperNode=%s, tierLayer=%d", job.UID, hyperNode.Name, gradient)
 
-			solution := alloc.allocateForJobInHyperNode(job, jobWorksheetCopy, hyperNode, jobHyperNodeBaseline, softTopologyTargetSubJobs)
+			solution := alloc.allocateForJobInHyperNode(job, jobWorksheetCopy, hyperNode, jobHyperNodeBaseline,
+				softTopologyTargetSubJobs, preferredSubGroupTopologyTargetSubJobs)
 			// reset the subJobs to initial status
 			alloc.recorder.RecoverSubJobStatus(job)
 
@@ -507,6 +509,84 @@ func isSoftTopologyTargetSubJob(subJob *api.SubJobInfo) bool {
 	return subJob != nil && subJob.IsSoftTopologyMode()
 }
 
+func hasPendingHardSubGroupTopologyTargetSubJob(job *api.JobInfo, jobWorksheet *JobWorksheet) bool {
+	if job == nil || jobWorksheet == nil || jobWorksheet.subJobs == nil || !job.ContainsHardSubGroupTopologyAffinity() {
+		return false
+	}
+
+	subJobs := jobWorksheet.subJobs.Clone()
+	for !subJobs.Empty() {
+		subJob := subJobs.Pop().(*api.SubJobInfo)
+		if isHardSubGroupTopologyTargetSubJob(job, subJob) {
+			return true
+		}
+	}
+	return false
+}
+
+func isHardSubGroupTopologyTargetSubJob(job *api.JobInfo, subJob *api.SubJobInfo) bool {
+	policyName := api.SubJobPolicyName(subJob)
+	if policyName == "" {
+		return false
+	}
+
+	for _, term := range job.RequiredSubGroupAffinityTerms() {
+		if subGroupTopologyTermIncludes(term, policyName) {
+			return true
+		}
+	}
+	for _, term := range job.RequiredSubGroupAntiAffinityTerms() {
+		if subGroupTopologyTermIncludes(term, policyName) {
+			return true
+		}
+	}
+	return false
+}
+
+func preferredSubGroupTopologyTargetSubJobCount(job *api.JobInfo, jobWorksheet *JobWorksheet) int {
+	if job == nil || jobWorksheet == nil || jobWorksheet.subJobs == nil || !job.HasPreferredSubGroupTopologyAffinity() {
+		return 0
+	}
+
+	subJobs := jobWorksheet.subJobs.Clone()
+	targetSubJobs := sets.New[api.SubJobID]()
+	for !subJobs.Empty() {
+		subJob := subJobs.Pop().(*api.SubJobInfo)
+		if isPreferredSubGroupTopologyTargetSubJob(job, subJob) {
+			targetSubJobs.Insert(subJob.UID)
+		}
+	}
+	return targetSubJobs.Len()
+}
+
+func isPreferredSubGroupTopologyTargetSubJob(job *api.JobInfo, subJob *api.SubJobInfo) bool {
+	policyName := api.SubJobPolicyName(subJob)
+	if policyName == "" {
+		return false
+	}
+
+	for _, term := range job.PreferredSubGroupAffinityTerms() {
+		if subGroupTopologyTermIncludes(term, policyName) {
+			return true
+		}
+	}
+	for _, term := range job.PreferredSubGroupAntiAffinityTerms() {
+		if subGroupTopologyTermIncludes(term, policyName) {
+			return true
+		}
+	}
+	return false
+}
+
+func subGroupTopologyTermIncludes(term scheduling.SubGroupAffinityTerm, policyName string) bool {
+	for _, subGroup := range term.SubGroups {
+		if subGroup == policyName {
+			return true
+		}
+	}
+	return false
+}
+
 func (alloc *Action) isPreferredSoftTopologySolution(solution *jobAllocationSolution, targetSubJobs, preferredTier int) bool {
 	if solution == nil || targetSubJobs <= 1 || solution.softTopologyAllocatedSubJobs < targetSubJobs {
 		return false
@@ -520,6 +600,7 @@ func (alloc *Action) allocateForJobInHyperNode(
 	hyperNode *api.HyperNodeInfo,
 	jobHyperNodeBaseline string,
 	softTopologyTargetSubJobs int,
+	preferredSubGroupTopologyTargetSubJobs int,
 ) *jobAllocationSolution {
 	if job.ContainsHardSubGroupTopologyAffinity() {
 		solution, err := alloc.searchSubJobAllocations(job, jobWorksheet, hyperNode, jobHyperNodeBaseline)
@@ -533,6 +614,7 @@ func (alloc *Action) allocateForJobInHyperNode(
 	var stmtList []*framework.Statement
 	var subJobsAllocationScore float64
 	softTopologyAllocatedSubJobs := sets.New[api.SubJobID]()
+	preferredSubGroupTopologyAllocatedSubJobs := sets.New[api.SubJobID]()
 	ssn := alloc.session
 	for !jobWorksheet.subJobs.Empty() {
 		subJob := jobWorksheet.subJobs.Pop().(*api.SubJobInfo)
@@ -546,6 +628,9 @@ func (alloc *Action) allocateForJobInHyperNode(
 			if isSoftTopologyTargetSubJob(subJob) {
 				softTopologyAllocatedSubJobs.Insert(subJob.UID)
 			}
+			if isPreferredSubGroupTopologyTargetSubJob(job, subJob) {
+				preferredSubGroupTopologyAllocatedSubJobs.Insert(subJob.UID)
+			}
 			// push back when subJob is ready and remain pending task
 			if !subJobWorksheet.Empty() {
 				jobWorksheet.subJobs.Push(subJob)
@@ -555,9 +640,14 @@ func (alloc *Action) allocateForJobInHyperNode(
 				if softTopologyTargetSubJobs > 1 && softTopologyAllocatedSubJobs.Len() < softTopologyTargetSubJobs {
 					continue
 				}
+				if preferredSubGroupTopologyTargetSubJobs > 1 &&
+					preferredSubGroupTopologyAllocatedSubJobs.Len() < preferredSubGroupTopologyTargetSubJobs {
+					continue
+				}
 				break
 			}
-		} else if softTopologyTargetSubJobs > 1 && isSoftTopologyTargetSubJob(subJob) {
+		} else if softTopologyTargetSubJobs > 1 && isSoftTopologyTargetSubJob(subJob) ||
+			preferredSubGroupTopologyTargetSubJobs > 1 && isPreferredSubGroupTopologyTargetSubJob(job, subJob) {
 			jobWorksheet.subJobs.Push(subJob)
 			break
 		}
@@ -600,12 +690,18 @@ func (alloc *Action) searchSubJobAllocations(
 ) (*jobAllocationSolution, error) {
 	ssn := alloc.session
 	if ssn.JobReady(job) || ssn.JobPipelined(job) {
-		return &jobAllocationSolution{
-			stmt:               framework.NewStatement(ssn),
-			worksheet:          jobWorksheet.Clone(),
-			allocatedHyperNode: job.AllocatedHyperNode,
-			subJobDecisions:    map[api.SubJobID]string{},
-		}, nil
+		if !hasPendingHardSubGroupTopologyTargetSubJob(job, jobWorksheet) {
+			var clonedWorksheet *JobWorksheet
+			if jobWorksheet != nil {
+				clonedWorksheet = jobWorksheet.Clone()
+			}
+			return &jobAllocationSolution{
+				stmt:               framework.NewStatement(ssn),
+				worksheet:          clonedWorksheet,
+				allocatedHyperNode: job.AllocatedHyperNode,
+				subJobDecisions:    map[api.SubJobID]string{},
+			}, nil
+		}
 	}
 	if jobWorksheet == nil || jobWorksheet.Empty() {
 		return nil, nil
