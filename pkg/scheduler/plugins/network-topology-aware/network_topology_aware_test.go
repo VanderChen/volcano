@@ -3688,6 +3688,55 @@ func TestHyperNodeGradientPreFiltering(t *testing.T) {
 	}
 }
 
+func TestSoftHyperNodeGradientFnPrefersConfiguredTier(t *testing.T) {
+	plugin := &networkTopologyAwarePlugin{}
+	root := api.NewHyperNodeInfo(api.BuildHyperNode("root", 3, nil))
+	snA := api.NewHyperNodeInfo(api.BuildHyperNode("sn-a", 2, nil), api.ParentOpt("root"))
+	snB := api.NewHyperNodeInfo(api.BuildHyperNode("sn-b", 2, nil), api.ParentOpt("root"))
+	rackA := api.NewHyperNodeInfo(api.BuildHyperNode("rack-a", 1, nil), api.ParentOpt("sn-a"))
+	rackB := api.NewHyperNodeInfo(api.BuildHyperNode("rack-b", 1, nil), api.ParentOpt("sn-b"))
+	root.Children.Insert("sn-a", "sn-b")
+	snA.Children.Insert("rack-a")
+	snB.Children.Insert("rack-b")
+
+	ssn := &framework.Session{
+		HyperNodes: api.HyperNodeInfoMap{
+			"root":   root,
+			"sn-a":   snA,
+			"sn-b":   snB,
+			"rack-a": rackA,
+			"rack-b": rackB,
+		},
+		HyperNodesSetByTier: map[int]sets.Set[string]{
+			1: sets.New[string]("rack-a", "rack-b"),
+			2: sets.New[string]("sn-a", "sn-b"),
+			3: sets.New[string]("root"),
+		},
+	}
+
+	got, err := plugin.softHyperNodeGradientFn(ssn, root, 1, "")
+	if err != nil {
+		t.Fatalf("softHyperNodeGradientFn returned error: %v", err)
+	}
+	assert.Equal(t, [][]string{
+		{"rack-a", "rack-b"},
+		{"sn-a", "sn-b"},
+		{"root"},
+	}, hyperNodeGradientNames(got))
+}
+
+func hyperNodeGradientNames(gradients [][]*api.HyperNodeInfo) [][]string {
+	result := make([][]string, 0, len(gradients))
+	for _, gradient := range gradients {
+		names := make([]string, 0, len(gradient))
+		for _, hyperNode := range gradient {
+			names = append(names, hyperNode.Name)
+		}
+		result = append(result, names)
+	}
+	return result
+}
+
 // setHyperNodeAggregateResources configures per-node idle/futureIdle so their sum matches targets.
 func setHyperNodeAggregateResources(nodes map[string]*api.NodeInfo, nodeNames sets.Set[string], idle, futureIdle *api.Resource) {
 	count := float64(nodeNames.Len())

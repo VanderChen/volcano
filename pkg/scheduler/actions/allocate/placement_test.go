@@ -20,6 +20,7 @@ import (
 	"testing"
 
 	"k8s.io/apimachinery/pkg/util/sets"
+	"volcano.sh/apis/pkg/apis/scheduling"
 	topologyv1alpha1 "volcano.sh/apis/pkg/apis/topology/v1alpha1"
 	"volcano.sh/volcano/pkg/scheduler/api"
 	"volcano.sh/volcano/pkg/scheduler/framework"
@@ -59,9 +60,9 @@ func TestUpdateJobAllocatedHyperNodeFromSubJob(t *testing.T) {
 		"sn-b": newPlacementTestHyperNode("sn-b", 2, "root"),
 	}
 	ssn := &framework.Session{
-		HyperNodes:                 hn,
+		HyperNodes:                hn,
 		HyperNodesReadyToSchedule: true,
-		DirtyJobs:                  sets.New[api.JobID](),
+		DirtyJobs:                 sets.New[api.JobID](),
 	}
 	job := &api.JobInfo{UID: "job-1", AllocatedHyperNode: "sn-a"}
 	subJob := &api.SubJobInfo{UID: "sub-1"}
@@ -69,6 +70,50 @@ func TestUpdateJobAllocatedHyperNodeFromSubJob(t *testing.T) {
 	updateJobAllocatedHyperNodeFromSubJob(ssn, job, subJob, "sn-b")
 	if job.AllocatedHyperNode != "root" {
 		t.Fatalf("job AllocatedHyperNode = %q, want root", job.AllocatedHyperNode)
+	}
+}
+
+func TestSelectBestHyperNodeForJobPrefersSoftJobPlacement(t *testing.T) {
+	tierTwo := 2
+	alloc := &Action{
+		session: &framework.Session{
+			HyperNodes: api.HyperNodeInfoMap{
+				"root": newPlacementTestHyperNode("root", 3, ""),
+				"sn-a": newPlacementTestHyperNode("sn-a", 2, "root"),
+				"sn-b": newPlacementTestHyperNode("sn-b", 2, "root"),
+			},
+		},
+	}
+	job := &api.JobInfo{
+		UID: "job-1",
+		PodGroup: &api.PodGroup{
+			PodGroup: scheduling.PodGroup{
+				Spec: scheduling.PodGroupSpec{
+					NetworkTopology: &scheduling.NetworkTopologySpec{
+						Mode:               scheduling.SoftNetworkTopologyMode,
+						HighestTierAllowed: &tierTwo,
+					},
+				},
+			},
+		},
+	}
+	solutions := map[string]*jobAllocationSolution{
+		"candidate-a": {
+			score:              10,
+			allocatedHyperNode: "sn-a",
+		},
+		"candidate-b": {
+			score:              100,
+			allocatedHyperNode: "root",
+		},
+	}
+
+	best, err := alloc.selectBestHyperNodeForJob(solutions, job)
+	if err != nil {
+		t.Fatalf("selectBestHyperNodeForJob returned error: %v", err)
+	}
+	if best != "candidate-a" {
+		t.Fatalf("best HyperNode = %q, want candidate-a", best)
 	}
 }
 

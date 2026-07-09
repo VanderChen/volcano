@@ -276,6 +276,14 @@ func (nta *networkTopologyAwarePlugin) OnSessionOpen(ssn *framework.Session) {
 		highestAllowedTier := maxHyperNodeTier(ssn.HyperNodesSetByTier)
 		if hardMode, tier := job.IsHardTopologyMode(); hardMode {
 			highestAllowedTier = tier
+		} else if job.IsSoftTopologyMode() && job.PodGroup.Spec.NetworkTopology.HighestTierAllowed != nil {
+			result, err := nta.softHyperNodeGradientFn(ssn, hyperNode, *job.PodGroup.Spec.NetworkTopology.HighestTierAllowed, job.AllocatedHyperNode)
+			if err != nil {
+				klog.Errorf("build soft hyperNode gradient fail, job=%s, hyperNode=%s, preferredTier=%d, allocatedHyperNode=%s, err=%v",
+					job.UID, hyperNode.Name, *job.PodGroup.Spec.NetworkTopology.HighestTierAllowed, job.AllocatedHyperNode, err)
+				return emptyHyperNodeGradients
+			}
+			return result
 		}
 		result, err := nta.hyperNodeGradientFn(ssn, hyperNode, highestAllowedTier, job.AllocatedHyperNode)
 		if err != nil {
@@ -295,6 +303,15 @@ func (nta *networkTopologyAwarePlugin) OnSessionOpen(ssn *framework.Session) {
 			if err != nil {
 				klog.Errorf("build hyperNode gradient fail, subJob=%s, hyperNode=%s, highestAllowedTier=%d, allocatedHyperNode=%s, err=%v",
 					subJob.UID, hyperNode.Name, highestAllowedTier, subJob.AllocatedHyperNode, err)
+				return emptyHyperNodeGradients
+			}
+			return result
+		}
+		if softMode, preferredTier := subJob.SoftTopologyPreferredTier(); softMode {
+			result, err := nta.softHyperNodeGradientFn(ssn, hyperNode, preferredTier, subJob.AllocatedHyperNode)
+			if err != nil {
+				klog.Errorf("build soft hyperNode gradient fail, subJob=%s, hyperNode=%s, preferredTier=%d, allocatedHyperNode=%s, err=%v",
+					subJob.UID, hyperNode.Name, preferredTier, subJob.AllocatedHyperNode, err)
 				return emptyHyperNodeGradients
 			}
 			return result
@@ -570,6 +587,42 @@ func (nta *networkTopologyAwarePlugin) hyperNodeGradientFn(ssn *framework.Sessio
 	return result, nil
 }
 
+func (nta *networkTopologyAwarePlugin) softHyperNodeGradientFn(
+	ssn *framework.Session,
+	hyperNode *api.HyperNodeInfo,
+	preferredTier int,
+	allocatedHyperNode string,
+) ([][]*api.HyperNodeInfo, error) {
+	eligibleByTier, _, err := nta.hyperNodeGradientStats(ssn, hyperNode, maxHyperNodeTier(ssn.HyperNodesSetByTier), allocatedHyperNode)
+	if err != nil {
+		return nil, err
+	}
+
+	eligibleByPlacementTier := make(map[int][]*api.HyperNodeInfo)
+	for _, hyperNodes := range eligibleByTier {
+		for _, hn := range hyperNodes {
+			placementTier, ok := softPlacementTier(ssn.HyperNodes, hn.Name, allocatedHyperNode)
+			if !ok {
+				continue
+			}
+			eligibleByPlacementTier[placementTier] = append(eligibleByPlacementTier[placementTier], hn)
+		}
+	}
+
+	preferredTiers, fallbackTiers := splitSoftPlacementTiers(eligibleByPlacementTier, preferredTier)
+	tiers := append(preferredTiers, fallbackTiers...)
+	result := make([][]*api.HyperNodeInfo, 0, len(tiers))
+	for _, tier := range tiers {
+		hyperNodes := eligibleByPlacementTier[tier]
+		sort.SliceStable(hyperNodes, func(i, j int) bool {
+			return hyperNodes[i].Name < hyperNodes[j].Name
+		})
+		result = append(result, hyperNodes)
+	}
+
+	return result, nil
+}
+
 func (nta *networkTopologyAwarePlugin) hyperNodeGradientStats(
 	ssn *framework.Session,
 	hyperNode *api.HyperNodeInfo,
@@ -609,6 +662,33 @@ func (nta *networkTopologyAwarePlugin) hyperNodeGradientStats(
 	}
 
 	return eligibleByTier, totalByTier, nil
+}
+
+func softPlacementTier(hyperNodes api.HyperNodeInfoMap, hyperNodeName, allocatedHyperNode string) (int, bool) {
+	placementHyperNode := hyperNodeName
+	if allocatedHyperNode != "" {
+		placementHyperNode = hyperNodes.GetLCAHyperNode(hyperNodeName, allocatedHyperNode)
+	}
+	hni, ok := hyperNodes[placementHyperNode]
+	if !ok {
+		return 0, false
+	}
+	return hni.Tier(), true
+}
+
+func splitSoftPlacementTiers(eligibleByPlacementTier map[int][]*api.HyperNodeInfo, preferredTier int) ([]int, []int) {
+	preferredTiers := make([]int, 0)
+	fallbackTiers := make([]int, 0)
+	for tier := range eligibleByPlacementTier {
+		if tier <= preferredTier {
+			preferredTiers = append(preferredTiers, tier)
+		} else {
+			fallbackTiers = append(fallbackTiers, tier)
+		}
+	}
+	sort.Ints(preferredTiers)
+	sort.Ints(fallbackTiers)
+	return preferredTiers, fallbackTiers
 }
 
 func (nta *networkTopologyAwarePlugin) isEligibleHyperNode(hn *api.HyperNodeInfo, highestAllowedTier int, allocatedHyperNode string) bool {
