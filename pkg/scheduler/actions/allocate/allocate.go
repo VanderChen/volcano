@@ -1007,22 +1007,29 @@ func (alloc *Action) jobAllocationSolutionLess(
 	rightHyperNode string,
 	right *jobAllocationSolution,
 ) bool {
-	if softMode, preferredTier := jobSoftTopologyPreferredTier(job); softMode {
-		leftRank := alloc.jobSoftTopologyRank(left.allocatedHyperNode, preferredTier)
-		rightRank := alloc.jobSoftTopologyRank(right.allocatedHyperNode, preferredTier)
+	softMode, preferredTier := jobSoftTopologyPreferredTier(job)
+	var leftRank, rightRank jobSoftTopologyRank
+	if softMode {
+		leftRank = alloc.jobSoftTopologyRank(left.allocatedHyperNode, preferredTier)
+		rightRank = alloc.jobSoftTopologyRank(right.allocatedHyperNode, preferredTier)
 		if leftRank.preferred != rightRank.preferred {
 			return leftRank.preferred
 		}
+	}
+
+	if left.score != right.score {
+		return left.score > right.score
+	}
+	if softMode {
+		// A soft preferred tier is a boundary, not an implicit absolute
+		// compactness priority. Once both solutions are inside (or outside) the
+		// boundary, their merged soft/plugin score decides before compactness.
 		if left.softTopologyAllocatedSubJobs != right.softTopologyAllocatedSubJobs {
 			return left.softTopologyAllocatedSubJobs > right.softTopologyAllocatedSubJobs
 		}
 		if leftRank.tier != rightRank.tier {
 			return leftRank.tier < rightRank.tier
 		}
-	}
-
-	if left.score != right.score {
-		return left.score > right.score
 	}
 	leftCandidate, leftFound := alloc.session.HyperNodes[leftHyperNode]
 	rightCandidate, rightFound := alloc.session.HyperNodes[rightHyperNode]

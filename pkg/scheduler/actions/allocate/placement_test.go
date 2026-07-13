@@ -151,6 +151,72 @@ func TestSelectBestHyperNodeForJobUsesSoftScoreWithinPreferredTier(t *testing.T)
 	}
 }
 
+func TestSelectBestHyperNodeForJobUsesSoftScoreAcrossInBoundLCATiers(t *testing.T) {
+	tierThree := 3
+	alloc := &Action{
+		session: &framework.Session{
+			HyperNodes: api.HyperNodeInfoMap{
+				"tier1": newPlacementTestHyperNode("tier1", 1, "tier3"),
+				"tier3": newPlacementTestHyperNode("tier3", 3, ""),
+			},
+		},
+	}
+	job := &api.JobInfo{
+		UID: "job-1",
+		PodGroup: &api.PodGroup{PodGroup: scheduling.PodGroup{Spec: scheduling.PodGroupSpec{
+			NetworkTopology: &scheduling.NetworkTopologySpec{
+				Mode:               scheduling.SoftNetworkTopologyMode,
+				HighestTierAllowed: &tierThree,
+			},
+		}}},
+	}
+	solutions := map[string]*jobAllocationSolution{
+		"compact": {score: 10, allocatedHyperNode: "tier1", softTopologyAllocatedSubJobs: 2},
+		"spread":  {score: 100, allocatedHyperNode: "tier3", softTopologyAllocatedSubJobs: 2},
+	}
+
+	best, err := alloc.selectBestHyperNodeForJob(solutions, job)
+	if err != nil {
+		t.Fatalf("selectBestHyperNodeForJob returned error: %v", err)
+	}
+	if best != "spread" {
+		t.Fatalf("best HyperNode = %q, want spread with the higher in-bound merged score", best)
+	}
+}
+
+func TestSelectBestHyperNodeForJobUsesCompactnessOnSoftScoreTie(t *testing.T) {
+	tierThree := 3
+	alloc := &Action{
+		session: &framework.Session{
+			HyperNodes: api.HyperNodeInfoMap{
+				"tier1": newPlacementTestHyperNode("tier1", 1, "tier3"),
+				"tier3": newPlacementTestHyperNode("tier3", 3, ""),
+			},
+		},
+	}
+	job := &api.JobInfo{
+		UID: "job-1",
+		PodGroup: &api.PodGroup{PodGroup: scheduling.PodGroup{Spec: scheduling.PodGroupSpec{
+			NetworkTopology: &scheduling.NetworkTopologySpec{
+				Mode:               scheduling.SoftNetworkTopologyMode,
+				HighestTierAllowed: &tierThree,
+			},
+		}}},
+	}
+	solutions := map[string]*jobAllocationSolution{
+		"compact": {score: 100, allocatedHyperNode: "tier1", softTopologyAllocatedSubJobs: 2},
+		"spread":  {score: 100, allocatedHyperNode: "tier3", softTopologyAllocatedSubJobs: 2},
+	}
+
+	best, err := alloc.selectBestHyperNodeForJob(solutions, job)
+	if err != nil {
+		t.Fatalf("selectBestHyperNodeForJob returned error: %v", err)
+	}
+	if best != "compact" {
+		t.Fatalf("best HyperNode = %q, want compact on an in-bound merged-score tie", best)
+	}
+}
+
 func TestSelectBestHyperNodeForJobIsDeterministicOnTie(t *testing.T) {
 	hyperNodes := api.HyperNodeInfoMap{}
 	solutions := map[string]*jobAllocationSolution{}
