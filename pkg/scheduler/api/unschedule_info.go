@@ -93,6 +93,7 @@ type HyperNodeGradientStats struct {
 // HyperNodePluginGradient carries one plugin's HyperNode gradient result for intersection.
 type HyperNodePluginGradient struct {
 	PluginName string
+	Applied    bool
 	Gradients  [][]*HyperNodeInfo
 }
 
@@ -133,6 +134,9 @@ func ComputePluginExcludedHyperNodes(
 	pluginSets := make(map[string]sets.Set[string], len(gradientByPlugin))
 	union := sets.New[string]()
 	for _, pluginGradient := range gradientByPlugin {
+		if !pluginGradient.Applied {
+			continue
+		}
 		names := HyperNodeNamesInGradients(pluginGradient.Gradients)
 		pluginSets[pluginGradient.PluginName] = names
 		union = union.Union(names)

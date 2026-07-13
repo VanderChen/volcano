@@ -268,7 +268,8 @@ type NetworkTopologySpec struct {
 	// +optional
 	Mode NetworkTopologyMode `json:"mode,omitempty" protobuf:"bytes,1,opt,name=mode"`
 
-	// HighestTierAllowed specifies the highest tier that a job allowed to cross when scheduling.
+	// HighestTierAllowed is a mandatory maximum LCA tier in hard mode and a preferred,
+	// fallback-capable maximum LCA tier in soft mode. It is optional in soft mode.
 	// +optional
 	HighestTierAllowed *int `json:"highestTierAllowed,omitempty" protobuf:"varint,2,opt,name=highestTierAllowed"`
 

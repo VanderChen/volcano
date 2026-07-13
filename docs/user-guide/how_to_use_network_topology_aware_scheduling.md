@@ -45,7 +45,10 @@ In Volcano Jobs, the `NetworkTopology` field can be configured to describe the n
 - `mode`: Supports `hard` and `soft` modes.
   - `hard`: Hard constraint, tasks within the job must be deployed within the same HyperNode.
   - `soft`: Soft constraint, tasks are deployed within the same HyperNode as much as possible.
-- `highestTierAllowed`: Used with hard mode, indicating the highest tier of HyperNode allowed for job deployment. This field is not required when mode is soft.
+- `highestTierAllowed`: Defines how far the workload should span in the HyperNode tree.
+  - With `hard` mode, it is a mandatory maximum LCA tier. The workload remains Pending when no placement satisfies the limit.
+  - With `soft` mode, it is a preferred maximum LCA tier. The scheduler first tries that domain and falls back to a wider domain when necessary.
+  - It may be omitted in `soft` mode. The scheduler still prefers tighter locality and HyperNode-level bin packing, but does not apply a discrete preferred-tier threshold.
 
 For example, the following configuration means the job can only be deployed within HyperNodes of tier 2 or lower, such as s4 and s5, and their child nodes s0, s1, s2, s3. Otherwise, the job will remain in the Pending state:
 
