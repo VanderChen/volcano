@@ -3690,6 +3690,116 @@ func TestHyperNodeGradientPreFiltering(t *testing.T) {
 	}
 }
 
+func TestSoftTopologyScoresUseResultingLCATier(t *testing.T) {
+	plugin := &networkTopologyAwarePlugin{hyperNodesTier: &hyperNodesTier{minTier: 1, maxTier: 3}}
+	root := api.NewHyperNodeInfo(api.BuildHyperNode("root", 3, nil))
+	snA := api.NewHyperNodeInfo(api.BuildHyperNode("sn-a", 2, nil), api.ParentOpt("root"))
+	snB := api.NewHyperNodeInfo(api.BuildHyperNode("sn-b", 2, nil), api.ParentOpt("root"))
+	rackA := api.NewHyperNodeInfo(api.BuildHyperNode("rack-a", 1, nil), api.ParentOpt("sn-a"))
+	rackB := api.NewHyperNodeInfo(api.BuildHyperNode("rack-b", 1, nil), api.ParentOpt("sn-b"))
+	root.Children.Insert("sn-a", "sn-b")
+	snA.Children.Insert("rack-a")
+	snB.Children.Insert("rack-b")
+
+	ssn := &framework.Session{
+		HyperNodes: api.HyperNodeInfoMap{
+			"root":   root,
+			"sn-a":   snA,
+			"sn-b":   snB,
+			"rack-a": rackA,
+			"rack-b": rackB,
+		},
+		HyperNodesSetByTier: map[int]sets.Set[string]{
+			1: sets.New[string]("rack-a", "rack-b"),
+			2: sets.New[string]("sn-a", "sn-b"),
+			3: sets.New[string]("root"),
+		},
+	}
+
+	preferredTier := 2
+	subJob := api.NewSubJobInfo(
+		"job/policy", "job/policy-0", "job",
+		&scheduling.SubGroupPolicySpec{
+			Name: "policy",
+			NetworkTopology: &scheduling.NetworkTopologySpec{
+				Mode:               scheduling.SoftNetworkTopologyMode,
+				HighestTierAllowed: &preferredTier,
+			},
+		},
+		nil,
+	)
+	subJob.AllocatedHyperNode = "rack-a"
+	scores := map[string]float64{"sn-a": 0, "rack-b": 0}
+	plugin.addSoftTopologyScores(ssn, subJob, scores)
+
+	assert.Greater(t, scores["sn-a"], scores["rack-b"])
+	assert.Equal(t, 1.5, scores["sn-a"])
+	assert.Equal(t, 0.0, scores["rack-b"])
+}
+
+func TestSoftTopologyWithoutPreferredTierScoresEveryCandidate(t *testing.T) {
+	plugin := &networkTopologyAwarePlugin{hyperNodesTier: &hyperNodesTier{minTier: 1, maxTier: 3}}
+	jobID := api.JobID("job")
+	subJob := api.NewSubJobInfo(
+		"job/policy", "job/policy-0", jobID,
+		&scheduling.SubGroupPolicySpec{
+			Name: "policy",
+			NetworkTopology: &scheduling.NetworkTopologySpec{
+				Mode: scheduling.SoftNetworkTopologyMode,
+			},
+		},
+		nil,
+	)
+	ssn := &framework.Session{
+		HyperNodes: api.HyperNodeInfoMap{
+			"root":   api.NewHyperNodeInfo(api.BuildHyperNode("root", 3, nil)),
+			"rack-a": api.NewHyperNodeInfo(api.BuildHyperNode("rack-a", 1, nil), api.ParentOpt("root")),
+		},
+	}
+
+	scores := map[string]float64{"root": 0, "rack-a": 0}
+	plugin.addSoftTopologyScores(ssn, subJob, scores)
+
+	assert.Equal(t, 1.0, scores["rack-a"])
+	assert.Equal(t, 0.0, scores["root"])
+}
+
+func TestJobSoftTopologyScoresNeutralSubJob(t *testing.T) {
+	plugin := &networkTopologyAwarePlugin{hyperNodesTier: &hyperNodesTier{minTier: 1, maxTier: 3}}
+	root := api.NewHyperNodeInfo(api.BuildHyperNode("root", 3, nil))
+	snA := api.NewHyperNodeInfo(api.BuildHyperNode("sn-a", 2, nil), api.ParentOpt("root"))
+	snB := api.NewHyperNodeInfo(api.BuildHyperNode("sn-b", 2, nil), api.ParentOpt("root"))
+	rackA := api.NewHyperNodeInfo(api.BuildHyperNode("rack-a", 1, nil), api.ParentOpt("sn-a"))
+	rackB := api.NewHyperNodeInfo(api.BuildHyperNode("rack-b", 1, nil), api.ParentOpt("sn-b"))
+	root.Children.Insert("sn-a", "sn-b")
+	snA.Children.Insert("rack-a")
+	snB.Children.Insert("rack-b")
+
+	preferredTier := 2
+	jobID := api.JobID("job")
+	job := &api.JobInfo{
+		UID:                jobID,
+		AllocatedHyperNode: "rack-a",
+		PodGroup: &api.PodGroup{PodGroup: scheduling.PodGroup{Spec: scheduling.PodGroupSpec{
+			NetworkTopology: &scheduling.NetworkTopologySpec{
+				Mode:               scheduling.SoftNetworkTopologyMode,
+				HighestTierAllowed: &preferredTier,
+			},
+		}}},
+	}
+	subJob := api.NewSubJobInfo("job/policy", "job/policy-0", jobID, &scheduling.SubGroupPolicySpec{Name: "policy"}, nil)
+	ssn := &framework.Session{
+		Jobs: map[api.JobID]*api.JobInfo{jobID: job},
+		HyperNodes: api.HyperNodeInfoMap{
+			"root": root, "sn-a": snA, "sn-b": snB, "rack-a": rackA, "rack-b": rackB,
+		},
+	}
+	scores := map[string]float64{"sn-a": 0, "rack-b": 0}
+	plugin.addSoftTopologyScores(ssn, subJob, scores)
+
+	assert.Greater(t, scores["sn-a"], scores["rack-b"])
+}
+
 func TestSubJobWithoutHardNetworkTopologyReturnsFullGradient(t *testing.T) {
 	plugin := &networkTopologyAwarePlugin{}
 	root := api.NewHyperNodeInfo(api.BuildHyperNode("root", 3, nil))

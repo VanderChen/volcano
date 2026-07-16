@@ -17,9 +17,11 @@ limitations under the License.
 package allocate
 
 import (
+	"fmt"
 	"testing"
 
 	"k8s.io/apimachinery/pkg/util/sets"
+	"volcano.sh/apis/pkg/apis/scheduling"
 	topologyv1alpha1 "volcano.sh/apis/pkg/apis/topology/v1alpha1"
 	"volcano.sh/volcano/pkg/scheduler/api"
 	"volcano.sh/volcano/pkg/scheduler/framework"
@@ -59,9 +61,9 @@ func TestUpdateJobAllocatedHyperNodeFromSubJob(t *testing.T) {
 		"sn-b": newPlacementTestHyperNode("sn-b", 2, "root"),
 	}
 	ssn := &framework.Session{
-		HyperNodes:                 hn,
+		HyperNodes:                hn,
 		HyperNodesReadyToSchedule: true,
-		DirtyJobs:                  sets.New[api.JobID](),
+		DirtyJobs:                 sets.New[api.JobID](),
 	}
 	job := &api.JobInfo{UID: "job-1", AllocatedHyperNode: "sn-a"}
 	subJob := &api.SubJobInfo{UID: "sub-1"}
@@ -69,6 +71,232 @@ func TestUpdateJobAllocatedHyperNodeFromSubJob(t *testing.T) {
 	updateJobAllocatedHyperNodeFromSubJob(ssn, job, subJob, "sn-b")
 	if job.AllocatedHyperNode != "root" {
 		t.Fatalf("job AllocatedHyperNode = %q, want root", job.AllocatedHyperNode)
+	}
+}
+
+func TestSelectBestHyperNodeForJobPrefersSoftJobPlacement(t *testing.T) {
+	tierTwo := 2
+	alloc := &Action{
+		session: &framework.Session{
+			HyperNodes: api.HyperNodeInfoMap{
+				"root": newPlacementTestHyperNode("root", 3, ""),
+				"sn-a": newPlacementTestHyperNode("sn-a", 2, "root"),
+				"sn-b": newPlacementTestHyperNode("sn-b", 2, "root"),
+			},
+		},
+	}
+	job := &api.JobInfo{
+		UID: "job-1",
+		PodGroup: &api.PodGroup{
+			PodGroup: scheduling.PodGroup{
+				Spec: scheduling.PodGroupSpec{
+					NetworkTopology: &scheduling.NetworkTopologySpec{
+						Mode:               scheduling.SoftNetworkTopologyMode,
+						HighestTierAllowed: &tierTwo,
+					},
+				},
+			},
+		},
+	}
+	solutions := map[string]*jobAllocationSolution{
+		"candidate-a": {
+			score:              10,
+			allocatedHyperNode: "sn-a",
+		},
+		"candidate-b": {
+			score:              100,
+			allocatedHyperNode: "root",
+		},
+	}
+
+	best, err := alloc.selectBestHyperNodeForJob(solutions, job)
+	if err != nil {
+		t.Fatalf("selectBestHyperNodeForJob returned error: %v", err)
+	}
+	if best != "candidate-a" {
+		t.Fatalf("best HyperNode = %q, want candidate-a", best)
+	}
+}
+
+func TestSelectBestHyperNodeForJobUsesSoftScoreWithinPreferredTier(t *testing.T) {
+	tierTwo := 2
+	alloc := &Action{
+		session: &framework.Session{
+			HyperNodes: api.HyperNodeInfoMap{
+				"sn-a": newPlacementTestHyperNode("sn-a", 2, "root"),
+				"sn-b": newPlacementTestHyperNode("sn-b", 2, "root"),
+			},
+		},
+	}
+	job := &api.JobInfo{
+		UID: "job-1",
+		PodGroup: &api.PodGroup{PodGroup: scheduling.PodGroup{Spec: scheduling.PodGroupSpec{
+			NetworkTopology: &scheduling.NetworkTopologySpec{
+				Mode:               scheduling.SoftNetworkTopologyMode,
+				HighestTierAllowed: &tierTwo,
+			},
+		}}},
+	}
+	solutions := map[string]*jobAllocationSolution{
+		"sn-a": {score: 10, allocatedHyperNode: "sn-a", softTopologyAllocatedSubJobs: 2},
+		"sn-b": {score: 100, allocatedHyperNode: "sn-b", softTopologyAllocatedSubJobs: 2},
+	}
+
+	best, err := alloc.selectBestHyperNodeForJob(solutions, job)
+	if err != nil {
+		t.Fatalf("selectBestHyperNodeForJob returned error: %v", err)
+	}
+	if best != "sn-b" {
+		t.Fatalf("best HyperNode = %q, want sn-b with the higher merged soft score", best)
+	}
+}
+
+func TestSelectBestHyperNodeForJobUsesSoftScoreAcrossInBoundLCATiers(t *testing.T) {
+	tierThree := 3
+	alloc := &Action{
+		session: &framework.Session{
+			HyperNodes: api.HyperNodeInfoMap{
+				"tier1": newPlacementTestHyperNode("tier1", 1, "tier3"),
+				"tier3": newPlacementTestHyperNode("tier3", 3, ""),
+			},
+		},
+	}
+	job := &api.JobInfo{
+		UID: "job-1",
+		PodGroup: &api.PodGroup{PodGroup: scheduling.PodGroup{Spec: scheduling.PodGroupSpec{
+			NetworkTopology: &scheduling.NetworkTopologySpec{
+				Mode:               scheduling.SoftNetworkTopologyMode,
+				HighestTierAllowed: &tierThree,
+			},
+		}}},
+	}
+	solutions := map[string]*jobAllocationSolution{
+		"compact": {score: 10, allocatedHyperNode: "tier1", softTopologyAllocatedSubJobs: 2},
+		"spread":  {score: 100, allocatedHyperNode: "tier3", softTopologyAllocatedSubJobs: 2},
+	}
+
+	best, err := alloc.selectBestHyperNodeForJob(solutions, job)
+	if err != nil {
+		t.Fatalf("selectBestHyperNodeForJob returned error: %v", err)
+	}
+	if best != "spread" {
+		t.Fatalf("best HyperNode = %q, want spread with the higher in-bound merged score", best)
+	}
+}
+
+func TestSelectBestHyperNodeForJobUsesCompactnessOnSoftScoreTie(t *testing.T) {
+	tierThree := 3
+	alloc := &Action{
+		session: &framework.Session{
+			HyperNodes: api.HyperNodeInfoMap{
+				"tier1": newPlacementTestHyperNode("tier1", 1, "tier3"),
+				"tier3": newPlacementTestHyperNode("tier3", 3, ""),
+			},
+		},
+	}
+	job := &api.JobInfo{
+		UID: "job-1",
+		PodGroup: &api.PodGroup{PodGroup: scheduling.PodGroup{Spec: scheduling.PodGroupSpec{
+			NetworkTopology: &scheduling.NetworkTopologySpec{
+				Mode:               scheduling.SoftNetworkTopologyMode,
+				HighestTierAllowed: &tierThree,
+			},
+		}}},
+	}
+	solutions := map[string]*jobAllocationSolution{
+		"compact": {score: 100, allocatedHyperNode: "tier1", softTopologyAllocatedSubJobs: 2},
+		"spread":  {score: 100, allocatedHyperNode: "tier3", softTopologyAllocatedSubJobs: 2},
+	}
+
+	best, err := alloc.selectBestHyperNodeForJob(solutions, job)
+	if err != nil {
+		t.Fatalf("selectBestHyperNodeForJob returned error: %v", err)
+	}
+	if best != "compact" {
+		t.Fatalf("best HyperNode = %q, want compact on an in-bound merged-score tie", best)
+	}
+}
+
+func TestSelectBestHyperNodeForJobIsDeterministicOnTie(t *testing.T) {
+	hyperNodes := api.HyperNodeInfoMap{}
+	solutions := map[string]*jobAllocationSolution{}
+	for i := 0; i < 8; i++ {
+		name := fmt.Sprintf("rack-%d", i)
+		hyperNodes[name] = newPlacementTestHyperNode(name, 1, "root")
+		solutions[name] = &jobAllocationSolution{score: 10, allocatedHyperNode: name}
+	}
+	alloc := &Action{
+		session: &framework.Session{
+			HyperNodes: hyperNodes,
+		},
+	}
+	job := &api.JobInfo{UID: "job-1"}
+
+	for i := 0; i < 100; i++ {
+		best, err := alloc.selectBestHyperNodeForJob(solutions, job)
+		if err != nil {
+			t.Fatalf("selectBestHyperNodeForJob returned error: %v", err)
+		}
+		if best != "rack-0" {
+			t.Fatalf("iteration %d selected %q, want deterministic rack-0", i, best)
+		}
+	}
+}
+
+func TestTopologySearchContextPrunesDominatedEquivalentStates(t *testing.T) {
+	ctx := newTopologySearchContext()
+
+	if !ctx.shouldExplore("same-state", 10) {
+		t.Fatal("first state visit must be explored")
+	}
+	if ctx.shouldExplore("same-state", 9) {
+		t.Fatal("lower-scored equivalent state must be pruned")
+	}
+	if ctx.shouldExplore("same-state", 10) {
+		t.Fatal("equal-scored equivalent state must be pruned")
+	}
+	if !ctx.shouldExplore("same-state", 11) {
+		t.Fatal("higher-scored equivalent state must remain explorable")
+	}
+
+	if ctx.exploredStates != 2 || ctx.prunedStates != 2 {
+		t.Fatalf("search stats explored=%d pruned=%d, want 2 and 2", ctx.exploredStates, ctx.prunedStates)
+	}
+}
+
+func TestEffectiveHyperNodeForOptionUsesDryRunPlacement(t *testing.T) {
+	candidate := &subJobPlacementCandidate{hyperNode: "root", allocatedHyperNode: "rack-a"}
+	if got := effectiveHyperNodeForSubJobPlacement(candidate); got != "rack-a" {
+		t.Fatalf("effective HyperNode=%q, want dry-run placement rack-a", got)
+	}
+	candidate.allocatedHyperNode = ""
+	if got := effectiveHyperNodeForSubJobPlacement(candidate); got != "root" {
+		t.Fatalf("effective HyperNode=%q, want search fallback root", got)
+	}
+}
+
+func TestBuildTopologyWorkingSetUsesRequiredSubJobsOnly(t *testing.T) {
+	less := func(left, right interface{}) bool {
+		return left.(*api.SubJobInfo).UID < right.(*api.SubJobInfo).UID
+	}
+	queue := util.NewPriorityQueue(less)
+	for _, id := range []api.SubJobID{"sub-3", "sub-1", "sub-2", "sub-0"} {
+		queue.Push(&api.SubJobInfo{UID: id})
+	}
+	worksheet := &JobWorksheet{
+		subJobs:         queue,
+		requiredSubJobs: sets.New[api.SubJobID]("sub-2"),
+	}
+
+	workingSet := buildTopologyWorkingSet(worksheet)
+	if !workingSet.Equal(sets.New[api.SubJobID]("sub-2")) {
+		t.Fatalf("working set = %v, want only required sub-2", workingSet)
+	}
+
+	worksheet.requiredSubJobs = sets.New[api.SubJobID]()
+	workingSet = buildTopologyWorkingSet(worksheet)
+	if !workingSet.Equal(sets.New[api.SubJobID]("sub-0")) {
+		t.Fatalf("zero-minimum working set = %v, want one deterministic progress SubJob sub-0", workingSet)
 	}
 }
 

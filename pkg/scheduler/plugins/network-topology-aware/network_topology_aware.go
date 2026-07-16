@@ -348,6 +348,7 @@ func (nta *networkTopologyAwarePlugin) hyperNodeGradientForSubJob(
 
 func (nta *networkTopologyAwarePlugin) HyperNodeOrderFn(ssn *framework.Session, subJob *api.SubJobInfo, hyperNodes map[string][]*api.NodeInfo) (map[string]float64, error) {
 	hyperNodeScores := nta.getSubJobHyperNodeBinPackingScore(subJob, hyperNodes)
+	nta.addSoftTopologyScores(ssn, subJob, hyperNodeScores)
 
 	scoreToHyperNodes := map[float64][]string{}
 	var maxScore float64 = -1
@@ -370,6 +371,53 @@ func (nta *networkTopologyAwarePlugin) HyperNodeOrderFn(ssn *framework.Session, 
 	hyperNodeScores = nta.scaleFinalScore(hyperNodeScores)
 	klog.V(3).Infof("networkTopologyAware hyperNode score is: %v", hyperNodeScores)
 	return hyperNodeScores, nil
+}
+
+func (nta *networkTopologyAwarePlugin) addSoftTopologyScores(
+	ssn *framework.Session,
+	subJob *api.SubJobInfo,
+	scores map[string]float64,
+) {
+	if subJob == nil {
+		return
+	}
+
+	if subJob.IsSoftTopologyMode() {
+		softMode, preferredTier := subJob.SoftTopologyPreferredTier()
+		nta.addSoftPlacementScore(ssn, scores, subJob.AllocatedHyperNode, softMode, preferredTier)
+	}
+
+	job, found := ssn.Jobs[subJob.Job]
+	if !found || !job.IsSoftTopologyMode() {
+		return
+	}
+	preferred := false
+	preferredTier := 0
+	if job.PodGroup != nil && job.PodGroup.Spec.NetworkTopology != nil &&
+		job.PodGroup.Spec.NetworkTopology.HighestTierAllowed != nil {
+		preferred = true
+		preferredTier = *job.PodGroup.Spec.NetworkTopology.HighestTierAllowed
+	}
+	nta.addSoftPlacementScore(ssn, scores, job.AllocatedHyperNode, preferred, preferredTier)
+}
+
+func (nta *networkTopologyAwarePlugin) addSoftPlacementScore(
+	ssn *framework.Session,
+	scores map[string]float64,
+	allocatedHyperNode string,
+	preferred bool,
+	preferredTier int,
+) {
+	for hyperNode := range scores {
+		placementTier, found := softPlacementTier(ssn.HyperNodes, hyperNode, allocatedHyperNode)
+		if !found {
+			continue
+		}
+		scores[hyperNode] += nta.scoreHyperNodeWithTier(placementTier)
+		if preferred && placementTier <= preferredTier {
+			scores[hyperNode] += FullScore
+		}
+	}
 }
 
 func (nta *networkTopologyAwarePlugin) getSubJobHyperNodeBinPackingScore(subJob *api.SubJobInfo, hyperNodes map[string][]*api.NodeInfo) map[string]float64 {
@@ -621,6 +669,18 @@ func (nta *networkTopologyAwarePlugin) hyperNodeGradientStats(
 	}
 
 	return eligibleByTier, totalByTier, nil
+}
+
+func softPlacementTier(hyperNodes api.HyperNodeInfoMap, hyperNodeName, allocatedHyperNode string) (int, bool) {
+	placementHyperNode := hyperNodeName
+	if allocatedHyperNode != "" {
+		placementHyperNode = hyperNodes.GetLCAHyperNode(hyperNodeName, allocatedHyperNode)
+	}
+	hni, ok := hyperNodes[placementHyperNode]
+	if !ok {
+		return 0, false
+	}
+	return hni.Tier(), true
 }
 
 func (nta *networkTopologyAwarePlugin) isEligibleHyperNode(hn *api.HyperNodeInfo, highestAllowedTier int, allocatedHyperNode string) bool {

@@ -18,8 +18,9 @@ package allocate
 
 import (
 	"fmt"
-	"math"
 	"slices"
+	"sort"
+	"strings"
 	"time"
 
 	"k8s.io/apimachinery/pkg/util/sets"
@@ -45,6 +46,7 @@ type allocateContext struct {
 type JobWorksheet struct {
 	subJobs          *util.PriorityQueue // queue of *api.SubJobInfo
 	subJobWorksheets map[api.SubJobID]*SubJobWorksheet
+	requiredSubJobs  sets.Set[api.SubJobID]
 }
 
 func (w *JobWorksheet) ShallowCopyFrom(another *JobWorksheet) {
@@ -53,6 +55,7 @@ func (w *JobWorksheet) ShallowCopyFrom(another *JobWorksheet) {
 	}
 	w.subJobs = another.subJobs
 	w.subJobWorksheets = another.subJobWorksheets
+	w.requiredSubJobs = another.requiredSubJobs
 }
 
 func (w *JobWorksheet) Empty() bool {
@@ -67,6 +70,7 @@ func (w *JobWorksheet) Clone() *JobWorksheet {
 	return &JobWorksheet{
 		subJobs:          w.subJobs.Clone(),
 		subJobWorksheets: subJobWorksheets,
+		requiredSubJobs:  w.requiredSubJobs.Clone(),
 	}
 }
 
@@ -97,6 +101,48 @@ type Action struct {
 	enablePredicateErrorCache bool
 
 	recorder *Recorder
+}
+
+// subJobPlacementCandidate is the recoverable result of one SubJob dry-run
+// placement. Topology plugins provide candidate HyperNodes and scores; the
+// allocate action owns the statement and worksheet state used to try them.
+type subJobPlacementCandidate struct {
+	hyperNode          string
+	stmt               *framework.Statement
+	worksheet          *SubJobWorksheet
+	allocatedHyperNode string
+	score              float64
+	gradient           int
+}
+
+type jobAllocationSolution struct {
+	stmt                         *framework.Statement
+	worksheet                    *JobWorksheet
+	score                        float64
+	allocatedHyperNode           string
+	softTopologyTargetSubJobs    int
+	softTopologyAllocatedSubJobs int
+	subJobDecisions              map[api.SubJobID]string
+}
+
+type topologySearchContext struct {
+	bestScoreByState map[string]float64
+	exploredStates   int
+	prunedStates     int
+}
+
+func newTopologySearchContext() *topologySearchContext {
+	return &topologySearchContext{bestScoreByState: make(map[string]float64)}
+}
+
+func (ctx *topologySearchContext) shouldExplore(state string, cumulativeScore float64) bool {
+	if bestScore, found := ctx.bestScoreByState[state]; found && bestScore >= cumulativeScore {
+		ctx.prunedStates++
+		return false
+	}
+	ctx.bestScoreByState[state] = cumulativeScore
+	ctx.exploredStates++
+	return true
 }
 
 func New() *Action {
@@ -244,6 +290,7 @@ func (alloc *Action) organizeJobWorksheet(job *api.JobInfo) *JobWorksheet {
 			return ssn.SubJobOrderFn(l, r)
 		}),
 		subJobWorksheets: make(map[api.SubJobID]*SubJobWorksheet),
+		requiredSubJobs:  requireSubJobs,
 	}
 
 	for subJobID, subJob := range job.SubJobs {
@@ -375,96 +422,413 @@ func (alloc *Action) allocateForJob(job *api.JobInfo, jobWorksheet *JobWorksheet
 	if resourceStats != nil && len(resourceStats.ExcludedByReason) > 0 {
 		klog.V(3).Infof("HyperNode excluded by minResource, job=%s, excluded=%v", job.UID, resourceStats.ExcludedByReason)
 	}
+	workingSet := buildTopologyWorkingSet(jobWorksheet)
+	solutions := make(map[string]*jobAllocationSolution)
 	for gradient, hyperNodes := range hyperNodeGradients {
-		stmtBackup := make(map[string]*framework.Statement)   // backup the statement after the job is allocated to a hyperNode
-		jobWorksheetsBackup := make(map[string]*JobWorksheet) // backup the job worksheet after the job is allocated to a hyperNode
-		subJobsAllocationScores := make(map[string]float64)   // save the subJobs allocation score of the job allocated to a hyperNode
-
 		for _, hyperNode := range hyperNodes {
-			var stmtList []*framework.Statement
-			var subJobsAllocationScore float64
-
 			// Clone jobWorksheet and rest job's fit err to make sure it's a clean cache when everytime filter a hyperNode and do not affect each other between hyperNodes.
 			job.JobFitErrors = jobHyperNodeBaseline // drop subJob overlay from prior HyperNode attempt
 			job.ResetFitErr()
 			jobWorksheetCopy := jobWorksheet.Clone()
 			klog.V(3).Infof("Try to allocate resource for job in hyperNode, job=%s, hyperNode=%s, tierLayer=%d", job.UID, hyperNode.Name, gradient)
 
-			for !jobWorksheetCopy.subJobs.Empty() {
-				subJob := jobWorksheetCopy.subJobs.Pop().(*api.SubJobInfo)
-				subJobWorksheet := jobWorksheetCopy.subJobWorksheets[subJob.UID]
-
-				stmt, allocationScore := alloc.allocateForSubJob(subJob, subJobWorksheet, hyperNode, jobHyperNodeBaseline)
-
-				if stmt != nil && len(stmt.Operations()) > 0 {
-					stmtList = append(stmtList, stmt)
-					subJobsAllocationScore += allocationScore
-					// push back when subJob is ready and remain pending task
-					if !subJobWorksheet.Empty() {
-						jobWorksheetCopy.subJobs.Push(subJob)
-					}
-
-					if ssn.JobReady(job) {
-						break
-					}
-				}
-			}
+			solution := alloc.allocateForJobInHyperNode(
+				job, jobWorksheetCopy, hyperNode, jobHyperNodeBaseline, workingSet.Clone(),
+			)
 			// reset the subJobs to initial status
 			alloc.recorder.RecoverSubJobStatus(job)
 
-			mergedStmt := framework.SaveOperations(stmtList...)
-			if len(mergedStmt.Operations()) == 0 {
+			if solution == nil || solution.stmt == nil || len(solution.stmt.Operations()) == 0 {
 				klog.V(3).Infof("Try to allocate resource for job in hyperNode fail, job=%s, hyperNode=%s, tierLayer=%d, reason=no allocatable solution",
 					job.UID, hyperNode.Name, gradient)
 				continue // skip recording this empty solution
 			}
-			if ssn.JobReady(job) || ssn.JobPipelined(job) {
-				klog.V(3).Infof("Try to allocate resource for job in hyperNode success, job=%s, hyperNode=%s, tierLayer=%d, jobReady=%t, jobPipelined=%t",
-					job.UID, hyperNode.Name, gradient, ssn.JobReady(job), ssn.JobPipelined(job))
-				stmtBackup[hyperNode.Name] = mergedStmt                          // backup successful solution
-				jobWorksheetsBackup[hyperNode.Name] = jobWorksheetCopy           // backup remains subJobs
-				subJobsAllocationScores[hyperNode.Name] = subJobsAllocationScore // save the subJobs allocation score of the job
-			} else {
-				klog.V(3).Infof("Try to allocate resource for job in hyperNode fail, job=%s, hyperNode=%s, tierLayer=%d, reason=job not ready or pipelined",
-					job.UID, hyperNode.Name, gradient)
-			}
-
-			// dry run in every hyperNode
-			for _, stmt := range stmtList {
-				stmt.Discard()
+			klog.V(3).Infof("Try to allocate resource for job in hyperNode success, job=%s, hyperNode=%s, tierLayer=%d",
+				job.UID, hyperNode.Name, gradient)
+			solutions[hyperNode.Name] = solution
+			for subJobID, subJobHyperNode := range solution.subJobDecisions {
+				alloc.recorder.SaveSubJobDecision(job.UID, hyperNode.Name, subJobID, subJobHyperNode)
 			}
 		}
 
-		if len(subJobsAllocationScores) == 0 {
-			klog.V(5).Infof("Find solution for job fail, job=%s, gradient=%d", job.UID, gradient)
-			continue // try next gradient
-		}
-
-		bestHyperNode, err := alloc.selectBestHyperNodeForJob(subJobsAllocationScores, job)
-		if err != nil {
-			klog.Errorf("Cannot find best hyper node for job, job=%s, gradient=%d, err=%v", job.UID, gradient, err)
-			return nil
-		}
-
-		// recover the stmt
-		bestStmt := stmtBackup[bestHyperNode]
-		finalStmt := framework.NewStatement(ssn)
-		if err = finalStmt.RecoverOperations(bestStmt); err != nil {
-			klog.Errorf("Failed to recover operations, job=%s, hyperNode=%s, err=%v", job.UID, bestHyperNode, err)
-			return nil
-		}
-
-		// inherit the remains worksheet after allocate to the best hyperNode
-		jobWorksheet.ShallowCopyFrom(jobWorksheetsBackup[bestHyperNode])
-
-		alloc.recorder.SaveJobDecision(job.UID, bestHyperNode)
-		klog.V(3).Infof("Allocate job to hyperNode success, job=%s, hyperNode=%s", job.UID, bestHyperNode)
-
-		return finalStmt
 	}
 
-	klog.V(5).Infof("Cannot find any solution for job, job=%s, fitError=%s", job.UID, job.JobFitErrors)
-	return nil
+	if len(solutions) == 0 {
+		klog.V(5).Infof("Cannot find any solution for job, job=%s, fitError=%s", job.UID, job.JobFitErrors)
+		return nil
+	}
+
+	bestHyperNode, err := alloc.selectBestHyperNodeForJob(solutions, job)
+	if err != nil {
+		klog.Errorf("Cannot find best hyper node for job, job=%s, err=%v", job.UID, err)
+		return nil
+	}
+	return alloc.recoverJobAllocationSolution(job, jobWorksheet, bestHyperNode, solutions[bestHyperNode])
+}
+
+func (alloc *Action) recoverJobAllocationSolution(
+	job *api.JobInfo,
+	jobWorksheet *JobWorksheet,
+	hyperNode string,
+	solution *jobAllocationSolution,
+) *framework.Statement {
+	if solution == nil || solution.stmt == nil {
+		return nil
+	}
+
+	finalStmt := framework.NewStatement(alloc.session)
+	if err := finalStmt.RecoverOperations(solution.stmt); err != nil {
+		klog.Errorf("Failed to recover operations, job=%s, hyperNode=%s, err=%v", job.UID, hyperNode, err)
+		finalStmt.Discard()
+		return nil
+	}
+
+	jobWorksheet.ShallowCopyFrom(solution.worksheet)
+	alloc.recorder.SaveJobDecision(job.UID, hyperNode)
+	klog.V(3).Infof("Allocate job to hyperNode success, job=%s, hyperNode=%s", job.UID, hyperNode)
+
+	return finalStmt
+}
+
+func buildTopologyWorkingSet(jobWorksheet *JobWorksheet) sets.Set[api.SubJobID] {
+	workingSet := sets.New[api.SubJobID]()
+	if jobWorksheet == nil || jobWorksheet.subJobs == nil {
+		return workingSet
+	}
+
+	pending := jobWorksheet.subJobs.Clone()
+	var first api.SubJobID
+	for !pending.Empty() {
+		subJob := pending.Pop().(*api.SubJobInfo)
+		if first == "" {
+			first = subJob.UID
+		}
+		if jobWorksheet.requiredSubJobs.Has(subJob.UID) {
+			workingSet.Insert(subJob.UID)
+		}
+	}
+	if workingSet.Len() == 0 && first != "" {
+		workingSet.Insert(first)
+	}
+	return workingSet
+}
+
+func (alloc *Action) allocateForJobInHyperNode(
+	job *api.JobInfo,
+	jobWorksheet *JobWorksheet,
+	hyperNode *api.HyperNodeInfo,
+	jobHyperNodeBaseline string,
+	workingSet sets.Set[api.SubJobID],
+) *jobAllocationSolution {
+	if job.ContainsHardSubGroupTopologyAffinity() {
+		searchContext := newTopologySearchContext()
+		solution, err := alloc.searchSubJobAllocations(
+			job, jobWorksheet, hyperNode, jobHyperNodeBaseline, workingSet, sets.New[api.SubJobID](),
+			searchContext, 0,
+		)
+		klog.V(3).Infof("Topology allocation search completed, job=%s, hyperNode=%s, exploredStates=%d, prunedStates=%d",
+			job.UID, hyperNode.Name, searchContext.exploredStates, searchContext.prunedStates)
+		if err != nil {
+			klog.Errorf("Search subJob allocations failed, job=%s, hyperNode=%s, err=%v", job.UID, hyperNode.Name, err)
+			return nil
+		}
+		return solution
+	}
+
+	var stmtList []*framework.Statement
+	var subJobsAllocationScore float64
+	processed := sets.New[api.SubJobID]()
+	failed := sets.New[api.SubJobID]()
+	subJobDecisions := make(map[api.SubJobID]string)
+	ssn := alloc.session
+	for !jobWorksheet.subJobs.Empty() {
+		ready := ssn.JobReady(job) || ssn.JobPipelined(job)
+		if ready && workingSet.Difference(processed).Len() == 0 {
+			break
+		}
+		subJob := popNextTransactionSubJob(jobWorksheet, workingSet, processed, failed, ready)
+		if subJob == nil {
+			break
+		}
+		subJobWorksheet := jobWorksheet.subJobWorksheets[subJob.UID]
+
+		stmt, allocationScore := alloc.allocateForSubJob(subJob, subJobWorksheet, hyperNode, jobHyperNodeBaseline)
+
+		if stmt != nil && len(stmt.Operations()) > 0 {
+			stmtList = append(stmtList, stmt)
+			subJobsAllocationScore += allocationScore
+			processed.Insert(subJob.UID)
+			subJobDecisions[subJob.UID] = subJob.AllocatedHyperNode
+			// push back when subJob is ready and remain pending task
+			if !subJobWorksheet.Empty() {
+				jobWorksheet.subJobs.Push(subJob)
+			}
+		} else {
+			if !subJobWorksheet.Empty() {
+				jobWorksheet.subJobs.Push(subJob)
+			}
+			processed.Insert(subJob.UID)
+			failed.Insert(subJob.UID)
+			if workingSet.Has(subJob.UID) {
+				break
+			}
+		}
+	}
+
+	mergedStmt := framework.SaveOperations(stmtList...)
+	if len(mergedStmt.Operations()) == 0 {
+		return nil
+	}
+	if !ssn.JobReady(job) && !ssn.JobPipelined(job) {
+		klog.V(3).Infof("Try to allocate resource for job in hyperNode fail, job=%s, hyperNode=%s, reason=job not ready or pipelined",
+			job.UID, hyperNode.Name)
+		for _, stmt := range stmtList {
+			stmt.Discard()
+		}
+		return nil
+	}
+
+	for _, stmt := range stmtList {
+		stmt.Discard()
+	}
+	return &jobAllocationSolution{
+		stmt:                         mergedStmt,
+		worksheet:                    jobWorksheet,
+		score:                        subJobsAllocationScore,
+		allocatedHyperNode:           job.AllocatedHyperNode,
+		softTopologyTargetSubJobs:    workingSet.Len(),
+		softTopologyAllocatedSubJobs: processed.Intersection(workingSet).Len(),
+		subJobDecisions:              subJobDecisions,
+	}
+}
+
+func popNextTransactionSubJob(
+	jobWorksheet *JobWorksheet,
+	workingSet sets.Set[api.SubJobID],
+	processed sets.Set[api.SubJobID],
+	failed sets.Set[api.SubJobID],
+	workingSetOnly bool,
+) *api.SubJobInfo {
+	if jobWorksheet == nil || jobWorksheet.subJobs == nil {
+		return nil
+	}
+
+	skipped := make([]*api.SubJobInfo, 0)
+	var selected *api.SubJobInfo
+	for !jobWorksheet.subJobs.Empty() {
+		subJob := jobWorksheet.subJobs.Pop().(*api.SubJobInfo)
+		if failed.Has(subJob.UID) ||
+			workingSetOnly && (processed.Has(subJob.UID) || !workingSet.Has(subJob.UID)) {
+			skipped = append(skipped, subJob)
+			continue
+		}
+		selected = subJob
+		break
+	}
+	for _, subJob := range skipped {
+		jobWorksheet.subJobs.Push(subJob)
+	}
+	return selected
+}
+
+// searchSubJobAllocations compares feasible placements for the SubJobs needed
+// by the current gang transaction. A ready SubJob is processed at most once;
+// remaining replicas stay in the worksheet for a later transaction.
+func (alloc *Action) searchSubJobAllocations(
+	job *api.JobInfo,
+	jobWorksheet *JobWorksheet,
+	hyperNodeForJob *api.HyperNodeInfo,
+	jobHyperNodeBaseline string,
+	workingSet sets.Set[api.SubJobID],
+	processed sets.Set[api.SubJobID],
+	searchContext *topologySearchContext,
+	cumulativeScore float64,
+) (*jobAllocationSolution, error) {
+	ssn := alloc.session
+	if searchContext == nil {
+		searchContext = newTopologySearchContext()
+	}
+	state := topologySearchStateKey(job, jobWorksheet, processed)
+	if !searchContext.shouldExplore(state, cumulativeScore) {
+		return nil, nil
+	}
+	if ssn.JobReady(job) || ssn.JobPipelined(job) {
+		if workingSet.Difference(processed).Len() == 0 {
+			var clonedWorksheet *JobWorksheet
+			if jobWorksheet != nil {
+				clonedWorksheet = jobWorksheet.Clone()
+			}
+			return &jobAllocationSolution{
+				stmt:                         framework.NewStatement(ssn),
+				worksheet:                    clonedWorksheet,
+				allocatedHyperNode:           job.AllocatedHyperNode,
+				softTopologyTargetSubJobs:    workingSet.Len(),
+				softTopologyAllocatedSubJobs: processed.Intersection(workingSet).Len(),
+				subJobDecisions:              map[api.SubJobID]string{},
+			}, nil
+		}
+	}
+	if jobWorksheet == nil || jobWorksheet.Empty() {
+		return nil, nil
+	}
+
+	remainingWorksheet := jobWorksheet.Clone()
+	ready := ssn.JobReady(job) || ssn.JobPipelined(job)
+	subJob := popNextTransactionSubJob(
+		remainingWorksheet, workingSet, processed, sets.New[api.SubJobID](), ready,
+	)
+	if subJob == nil {
+		return nil, nil
+	}
+	subJobWorksheet := remainingWorksheet.subJobWorksheets[subJob.UID]
+	options, err := alloc.collectSubJobPlacementCandidates(subJob, subJobWorksheet, hyperNodeForJob, jobHyperNodeBaseline)
+	if err != nil {
+		return nil, err
+	}
+
+	var bestSolution *jobAllocationSolution
+	for _, option := range options {
+		placementBeforeTry := captureHyperNodePlacement(job, subJob)
+		finalStmt := framework.NewStatement(ssn)
+		if err := finalStmt.RecoverOperations(option.stmt); err != nil {
+			restoreHyperNodePlacement(job, subJob, placementBeforeTry)
+			return nil, err
+		}
+
+		subJob.AllocatedHyperNode = option.allocatedHyperNode
+		updateJobAllocatedHyperNodeFromSubJob(ssn, job, subJob, option.allocatedHyperNode)
+
+		nextWorksheet := remainingWorksheet.Clone()
+		nextWorksheet.subJobWorksheets[subJob.UID] = option.worksheet.Clone()
+		if !option.worksheet.Empty() {
+			nextWorksheet.subJobs.Push(subJob)
+		}
+		nextProcessed := processed.Clone()
+		nextProcessed.Insert(subJob.UID)
+
+		childSolution, err := alloc.searchSubJobAllocations(
+			job, nextWorksheet, hyperNodeForJob, jobHyperNodeBaseline, workingSet, nextProcessed,
+			searchContext, cumulativeScore+option.score,
+		)
+		if err != nil {
+			finalStmt.Discard()
+			restoreHyperNodePlacement(job, subJob, placementBeforeTry)
+			return nil, err
+		}
+		if childSolution != nil {
+			combinedStmt := framework.SaveOperations(finalStmt, childSolution.stmt)
+			decisions := make(map[api.SubJobID]string, len(childSolution.subJobDecisions)+1)
+			for subJobID, hyperNode := range childSolution.subJobDecisions {
+				decisions[subJobID] = hyperNode
+			}
+			decisions[subJob.UID] = option.allocatedHyperNode
+
+			allocatedHyperNode := childSolution.allocatedHyperNode
+			candidate := &jobAllocationSolution{
+				stmt:                         combinedStmt,
+				worksheet:                    childSolution.worksheet,
+				score:                        option.score + childSolution.score,
+				allocatedHyperNode:           allocatedHyperNode,
+				softTopologyTargetSubJobs:    workingSet.Len(),
+				softTopologyAllocatedSubJobs: nextProcessed.Intersection(workingSet).Len(),
+				subJobDecisions:              decisions,
+			}
+			if bestSolution == nil || alloc.jobAllocationSolutionLess(
+				job,
+				subJobDecisionKey(candidate.subJobDecisions),
+				candidate,
+				subJobDecisionKey(bestSolution.subJobDecisions),
+				bestSolution,
+			) {
+				bestSolution = candidate
+			}
+
+			finalStmt.Discard()
+			restoreHyperNodePlacement(job, subJob, placementBeforeTry)
+			continue
+		}
+
+		finalStmt.Discard()
+		restoreHyperNodePlacement(job, subJob, placementBeforeTry)
+	}
+	return bestSolution, nil
+}
+
+func topologySearchStateKey(
+	job *api.JobInfo,
+	jobWorksheet *JobWorksheet,
+	processed sets.Set[api.SubJobID],
+) string {
+	parts := make([]string, 0)
+	if job != nil {
+		parts = append(parts, "job="+job.AllocatedHyperNode)
+
+		subJobIDs := make([]string, 0, len(job.SubJobs))
+		for subJobID := range job.SubJobs {
+			subJobIDs = append(subJobIDs, string(subJobID))
+		}
+		sort.Strings(subJobIDs)
+		for _, subJobID := range subJobIDs {
+			parts = append(parts, "subJob="+subJobID+"@"+job.SubJobs[api.SubJobID(subJobID)].AllocatedHyperNode)
+		}
+
+		taskIDs := make([]string, 0, len(job.Tasks))
+		for taskID := range job.Tasks {
+			taskIDs = append(taskIDs, string(taskID))
+		}
+		sort.Strings(taskIDs)
+		for _, taskID := range taskIDs {
+			task := job.Tasks[api.TaskID(taskID)]
+			parts = append(parts, fmt.Sprintf("task=%s@%s#%s", taskID, task.NodeName, task.Status))
+		}
+	}
+
+	processedIDs := make([]string, 0, processed.Len())
+	for subJobID := range processed {
+		processedIDs = append(processedIDs, string(subJobID))
+	}
+	sort.Strings(processedIDs)
+	parts = append(parts, "processed="+strings.Join(processedIDs, ","))
+
+	if jobWorksheet != nil {
+		worksheetIDs := make([]string, 0, len(jobWorksheet.subJobWorksheets))
+		for subJobID := range jobWorksheet.subJobWorksheets {
+			worksheetIDs = append(worksheetIDs, string(subJobID))
+		}
+		sort.Strings(worksheetIDs)
+		for _, subJobID := range worksheetIDs {
+			worksheet := jobWorksheet.subJobWorksheets[api.SubJobID(subJobID)]
+			if worksheet == nil || worksheet.tasks == nil {
+				parts = append(parts, "pending="+subJobID+":")
+				continue
+			}
+			pending := worksheet.tasks.Clone()
+			pendingTaskIDs := make([]string, 0, pending.Len())
+			for !pending.Empty() {
+				pendingTaskIDs = append(pendingTaskIDs, string(pending.Pop().(*api.TaskInfo).UID))
+			}
+			sort.Strings(pendingTaskIDs)
+			parts = append(parts, "pending="+subJobID+":"+strings.Join(pendingTaskIDs, ","))
+		}
+	}
+
+	return strings.Join(parts, "|")
+}
+
+func subJobDecisionKey(decisions map[api.SubJobID]string) string {
+	if len(decisions) == 0 {
+		return ""
+	}
+	ids := make([]string, 0, len(decisions))
+	for subJobID := range decisions {
+		ids = append(ids, string(subJobID))
+	}
+	sort.Strings(ids)
+	parts := make([]string, 0, len(ids))
+	for _, id := range ids {
+		parts = append(parts, id+"="+decisions[api.SubJobID(id)])
+	}
+	return strings.Join(parts, ",")
 }
 
 func (alloc *Action) allocateForSubJob(
@@ -475,14 +839,43 @@ func (alloc *Action) allocateForSubJob(
 ) (*framework.Statement, float64) {
 	ssn := alloc.session
 	job := ssn.Jobs[subJob.Job]
-
-	if subJobWorksheet == nil || subJobWorksheet.Empty() {
-		klog.V(4).Infof("Empty subJob worksheet, job=%s, subJob=%s", subJob.Job, subJob.UID)
+	options, err := alloc.collectSubJobPlacementCandidates(
+		subJob, subJobWorksheet, hyperNodeForJob, jobHyperNodeBaseline,
+	)
+	if err != nil {
+		klog.Errorf("Collect allocation options for subJob failed, job=%s, subJob=%s, err=%v", subJob.Job, subJob.UID, err)
+		return nil, 0
+	}
+	if len(options) == 0 {
+		return nil, 0
+	}
+	best := options[0]
+	finalStmt := framework.NewStatement(ssn)
+	if err := finalStmt.RecoverOperations(best.stmt); err != nil {
+		klog.Errorf("Failed to recover operations, subJob=%s, hyperNode=%s, err=%v", subJob.UID, best.hyperNode, err)
 		return nil, 0
 	}
 
-	klog.V(3).Infof("Try to allocate resource for subJob, job=%s, subJob=%s, allocatedHyperNode=%s, taskNum=%d",
-		subJob.Job, subJob.UID, subJob.AllocatedHyperNode, subJobWorksheet.tasks.Len())
+	subJob.AllocatedHyperNode = best.allocatedHyperNode
+	updateJobAllocatedHyperNodeFromSubJob(ssn, job, subJob, best.allocatedHyperNode)
+	subJobWorksheet.ShallowCopyFrom(best.worksheet)
+	alloc.recorder.SaveSubJobDecision(subJob.Job, hyperNodeForJob.Name, subJob.UID, best.allocatedHyperNode)
+	klog.V(3).Infof("Allocate subJob to hyperNode success, subJob=%s, searchHyperNode=%s, score=%v, allocatedHyperNode=%s",
+		subJob.UID, best.hyperNode, best.score, best.allocatedHyperNode)
+	return finalStmt, best.score
+}
+
+func (alloc *Action) collectSubJobPlacementCandidates(
+	subJob *api.SubJobInfo,
+	subJobWorksheet *SubJobWorksheet,
+	hyperNodeForJob *api.HyperNodeInfo,
+	jobHyperNodeBaseline string,
+) ([]*subJobPlacementCandidate, error) {
+	ssn := alloc.session
+	job := ssn.Jobs[subJob.Job]
+	if subJobWorksheet == nil || subJobWorksheet.Empty() {
+		return nil, nil
+	}
 
 	hyperNodeGradients, gradientStats := ssn.HyperNodeGradientForSubJobFn(subJob, hyperNodeForJob)
 	hyperNodeGradients, resourceStats := FilterGradientsByMinResource(
@@ -492,92 +885,107 @@ func (alloc *Action) allocateForSubJob(
 		job.MergeSubJobHyperNodeFitErrors(jobHyperNodeBaseline, subJob.UID, gradientStats, resourceStats,
 			subJob.GetMinResources(), ssn.HyperNodesSetByTier, ssn.HyperNodeTierNameMap, ssn.HyperNodes)
 		klog.V(3).Infof("No hyperNode gradient for subJob, job=%s, subJob=%s, fitError=%s", subJob.Job, subJob.UID, job.JobFitErrors)
-		return nil, 0
+		return nil, nil
 	}
-	klog.V(3).Infof("HyperNode screening for subJob, job=%s, subJob=%s, fitError=%s", subJob.Job, subJob.UID,
-		api.FormatHyperNodeFitSummary(gradientStats, resourceStats, subJob.GetMinResources(),
-			ssn.HyperNodesSetByTier, ssn.HyperNodeTierNameMap, ssn.HyperNodes))
-	if gradientStats != nil && len(gradientStats.ExcludedByReason) > 0 {
-		klog.V(3).Infof("HyperNode excluded by plugin, job=%s, subJob=%s, excluded=%v", subJob.Job, subJob.UID,
-			gradientStats.ExcludedByReason)
-	}
-	if resourceStats != nil && len(resourceStats.ExcludedByReason) > 0 {
-		klog.V(3).Infof("HyperNode excluded by minResource, job=%s, subJob=%s, excluded=%v", subJob.Job, subJob.UID,
-			resourceStats.ExcludedByReason)
-	}
-	for gradient, hyperNodes := range hyperNodeGradients {
-		stmtBackup := make(map[string]*framework.Statement)         // backup the statement after the subJob is allocated to a hyperNode
-		subJobWorksheetsBackup := make(map[string]*SubJobWorksheet) // backup the subJob worksheet after the subJob is allocated to a hyperNode
 
+	var candidates []*subJobPlacementCandidate
+	for gradient, hyperNodes := range hyperNodeGradients {
 		for _, hyperNode := range hyperNodes {
-			// Clone subJobWorksheet and rest subJob's fit err to make sure it's a clean cache when everytime filter a hyperNode and do not affect each other between hyperNodes.
 			job.ResetSubJobFitErr(subJob.UID)
 			subJobWorksheetCopy := subJobWorksheet.Clone()
 			placementBeforeTry := captureHyperNodePlacement(job, subJob)
 
-			klog.V(3).Infof("Try to allocate resource for tasks in subJob, job=%s, subJob=%s, taskNum=%d, hyperNode=%s, tierLayer=%d",
+			klog.V(3).Infof("Try SubJob placement candidate, job=%s, subJob=%s, taskNum=%d, hyperNode=%s, tierLayer=%d",
 				subJob.Job, subJob.UID, subJobWorksheetCopy.tasks.Len(), hyperNode.Name, gradient)
 			stmt := alloc.allocateResourcesForTasks(subJob, subJobWorksheetCopy.tasks, hyperNode.Name)
 
 			if stmt != nil && len(stmt.Operations()) > 0 {
-				klog.V(3).Infof("Try to allocate resource for tasks in subJob success, job=%s, subJob=%s, hyperNode=%s, tierLayer=%d, operations=%d",
-					subJob.Job, subJob.UID, hyperNode.Name, gradient, len(stmt.Operations()))
-				stmtBackup[hyperNode.Name] = framework.SaveOperations(stmt)  // backup successful solution
-				subJobWorksheetsBackup[hyperNode.Name] = subJobWorksheetCopy // backup remains tasks
-				stmt.Discard()                                               // dry run in every hyperNode
-			} else {
-				klog.V(3).Infof("Try to allocate resource for tasks in subJob fail, job=%s, subJob=%s, hyperNode=%s, tierLayer=%d, reason=no allocatable solution",
-					subJob.Job, subJob.UID, hyperNode.Name, gradient)
+				candidates = append(candidates, &subJobPlacementCandidate{
+					hyperNode:          hyperNode.Name,
+					stmt:               framework.SaveOperations(stmt),
+					worksheet:          subJobWorksheetCopy,
+					allocatedHyperNode: subJob.AllocatedHyperNode,
+					gradient:           gradient,
+				})
+				stmt.Discard()
 			}
 			restoreHyperNodePlacement(job, subJob, placementBeforeTry)
 		}
-
-		if len(stmtBackup) == 0 {
-			klog.V(5).Infof("Find solution for subJob fail, subJob=%s, gradient=%d", subJob.UID, gradient)
-			continue // try next gradient
-		}
-
-		// select the best solution
-		bestHyperNode, bestScore, err := alloc.selectBestHyperNodeForSubJob(stmtBackup, subJob)
-		if err != nil {
-			klog.Errorf("Cannot find best hyper node for subJob, subJob=%s, gradient=%d, err=%v", subJob.UID, gradient, err)
-			return nil, 0
-		}
-
-		// recover the stmt and update subJob's allocatedHyperNode field
-		bestStmt := stmtBackup[bestHyperNode]
-		finalStmt := framework.NewStatement(ssn)
-		if err = finalStmt.RecoverOperations(bestStmt); err != nil {
-			klog.Errorf("Failed to recover operations, subJob=%s, hyperNode=%s, err=%v", subJob.UID, bestHyperNode, err)
-			return nil, 0
-		}
-		newAllocatedHyperNode := ssn.HyperNodes.GetLCAHyperNode(subJob.AllocatedHyperNode, bestHyperNode)
-		subJob.AllocatedHyperNode = newAllocatedHyperNode
-		updateJobAllocatedHyperNodeFromSubJob(ssn, job, subJob, newAllocatedHyperNode)
-
-		// inherit the remains worksheet after allocate to the best hyperNode
-		subJobWorksheet.ShallowCopyFrom(subJobWorksheetsBackup[bestHyperNode])
-
-		alloc.recorder.SaveSubJobDecision(subJob.Job, hyperNodeForJob.Name, subJob.UID, newAllocatedHyperNode)
-		klog.V(3).Infof("Allocate subJob to hyperNode success, subJob=%s, hyperNode=%s, score=%v, newAllocatedHyperNode=%s",
-			subJob.UID, bestHyperNode, bestScore, newAllocatedHyperNode)
-
-		return finalStmt, bestScore
 	}
-
-	klog.V(5).Infof("Cannot find any solution for subJob, subJob=%s", subJob.UID)
-	return nil, 0
+	if len(candidates) == 0 {
+		return nil, nil
+	}
+	if err := alloc.scoreSubJobPlacementCandidates(candidates, subJob); err != nil {
+		return nil, err
+	}
+	return candidates, nil
 }
 
-// selectBestHyperNodeForJob return the best hyperNode for the job,
-// it will score and select the best hyperNode among all available hyperNodes.
-func (alloc *Action) selectBestHyperNodeForJob(subJobsAllocationScores map[string]float64, job *api.JobInfo) (string, error) {
-	highestScore := math.Inf(-1)
+func (alloc *Action) scoreSubJobPlacementCandidates(candidates []*subJobPlacementCandidate, subJob *api.SubJobInfo) error {
+	ssn := alloc.session
+	candidateHyperNodeGroups := make(map[string][]*api.NodeInfo, len(candidates))
+	for _, candidate := range candidates {
+		effectiveHyperNode := effectiveHyperNodeForSubJobPlacement(candidate)
+		candidateHyperNodeGroups[effectiveHyperNode] = ssn.RealNodesList[effectiveHyperNode]
+	}
+
+	hyperNodeScores, err := util.PrioritizeHyperNodes(candidateHyperNodeGroups, subJob, ssn.HyperNodeOrderMapFn)
+	if err != nil {
+		return fmt.Errorf("prioritize hyperNodes for subJob %s fail: %w", subJob.UID, err)
+	}
+	scoreByHyperNode := make(map[string]float64, len(candidates))
+	for score, hyperNodes := range hyperNodeScores {
+		for _, hyperNode := range hyperNodes {
+			scoreByHyperNode[hyperNode] = score
+		}
+	}
+	for _, candidate := range candidates {
+		candidate.score = scoreByHyperNode[effectiveHyperNodeForSubJobPlacement(candidate)]
+	}
+
+	slices.SortStableFunc(candidates, func(left, right *subJobPlacementCandidate) int {
+		if left.gradient != right.gradient {
+			return left.gradient - right.gradient
+		}
+		if left.score > right.score {
+			return -1
+		}
+		if left.score < right.score {
+			return 1
+		}
+		if left.hyperNode < right.hyperNode {
+			return -1
+		}
+		if left.hyperNode > right.hyperNode {
+			return 1
+		}
+		return 0
+	})
+	return nil
+}
+
+func effectiveHyperNodeForSubJobPlacement(candidate *subJobPlacementCandidate) string {
+	if candidate == nil {
+		return ""
+	}
+	if candidate.allocatedHyperNode != "" {
+		return candidate.allocatedHyperNode
+	}
+	return candidate.hyperNode
+}
+
+// selectBestHyperNodeForJob returns the best HyperNode for the job by combining
+// subJob scores with the final job-level soft topology placement from dry-run.
+func (alloc *Action) selectBestHyperNodeForJob(solutions map[string]*jobAllocationSolution, job *api.JobInfo) (string, error) {
 	bestHyperNode := ""
-	for hyperNode, score := range subJobsAllocationScores {
-		if score > highestScore {
-			highestScore = score
+	var bestSolution *jobAllocationSolution
+	for hyperNode, solution := range solutions {
+		if solution == nil {
+			continue
+		}
+		if bestHyperNode == "" || alloc.jobAllocationSolutionLess(job, hyperNode, solution, bestHyperNode, bestSolution) {
 			bestHyperNode = hyperNode
+			bestSolution = solution
 		}
 	}
 
@@ -588,29 +996,71 @@ func (alloc *Action) selectBestHyperNodeForJob(subJobsAllocationScores map[strin
 	return bestHyperNode, nil
 }
 
-// selectBestHyperNodeForSubJob return the best hyperNode for the subJob,
-// it will score and select the best hyperNode among all available hyperNodes.
-func (alloc *Action) selectBestHyperNodeForSubJob(stmts map[string]*framework.Statement, subJob *api.SubJobInfo) (string, float64, error) {
-	if len(stmts) <= 0 {
-		return "", 0, fmt.Errorf("no solution found for subJob %s", subJob.UID)
+func (alloc *Action) jobAllocationSolutionLess(
+	job *api.JobInfo,
+	leftHyperNode string,
+	left *jobAllocationSolution,
+	rightHyperNode string,
+	right *jobAllocationSolution,
+) bool {
+	softMode, preferredTier := jobSoftTopologyPreferredTier(job)
+	var leftRank, rightRank jobSoftTopologyRank
+	if softMode {
+		leftRank = alloc.jobSoftTopologyRank(left.allocatedHyperNode, preferredTier)
+		rightRank = alloc.jobSoftTopologyRank(right.allocatedHyperNode, preferredTier)
+		if leftRank.preferred != rightRank.preferred {
+			return leftRank.preferred
+		}
 	}
 
-	ssn := alloc.session
-	candidateHyperNodeGroups := make(map[string][]*api.NodeInfo)
-	for hyperNode := range stmts {
-		candidateHyperNodeGroups[hyperNode] = ssn.RealNodesList[hyperNode]
+	if left.score != right.score {
+		return left.score > right.score
 	}
+	if softMode {
+		// A soft preferred tier is a boundary, not an implicit absolute
+		// compactness priority. Once both solutions are inside (or outside) the
+		// boundary, their merged soft/plugin score decides before compactness.
+		if left.softTopologyAllocatedSubJobs != right.softTopologyAllocatedSubJobs {
+			return left.softTopologyAllocatedSubJobs > right.softTopologyAllocatedSubJobs
+		}
+		if leftRank.tier != rightRank.tier {
+			return leftRank.tier < rightRank.tier
+		}
+	}
+	leftCandidate, leftFound := alloc.session.HyperNodes[leftHyperNode]
+	rightCandidate, rightFound := alloc.session.HyperNodes[rightHyperNode]
+	if leftFound && rightFound && leftCandidate.Tier() != rightCandidate.Tier() {
+		return leftCandidate.Tier() < rightCandidate.Tier()
+	}
+	return leftHyperNode < rightHyperNode
+}
 
-	hyperNodeScores, err := util.PrioritizeHyperNodes(candidateHyperNodeGroups, subJob, ssn.HyperNodeOrderMapFn)
-	if err != nil {
-		return "", 0, fmt.Errorf("prioritize hyperNodes for subJob %s fail: %w", subJob.UID, err)
-	}
+type jobSoftTopologyRank struct {
+	preferred bool
+	tier      int
+}
 
-	bestHyperNode, bestScore := util.SelectBestHyperNodeAndScore(hyperNodeScores)
-	if bestHyperNode == "" {
-		return "", 0, fmt.Errorf("cannot find best hyperNode for subJob %s", subJob.UID)
+func (alloc *Action) jobSoftTopologyRank(allocatedHyperNode string, preferredTier int) jobSoftTopologyRank {
+	rank := jobSoftTopologyRank{tier: int(^uint(0) >> 1)}
+	if allocatedHyperNode == "" {
+		return rank
 	}
-	return bestHyperNode, bestScore, nil
+	hni, found := alloc.session.HyperNodes[allocatedHyperNode]
+	if !found {
+		return rank
+	}
+	rank.tier = hni.Tier()
+	rank.preferred = rank.tier <= preferredTier
+	return rank
+}
+
+func jobSoftTopologyPreferredTier(job *api.JobInfo) (bool, int) {
+	if job == nil || job.PodGroup == nil || job.PodGroup.Spec.NetworkTopology == nil ||
+		job.PodGroup.Spec.NetworkTopology.HighestTierAllowed == nil {
+		return false, 0
+	}
+	return job.PodGroup.Spec.NetworkTopology.Mode == scheduling.SoftNetworkTopologyMode,
+		*job.PodGroup.Spec.NetworkTopology.HighestTierAllowed
 }
 
 func (alloc *Action) allocateResourcesForTasks(subJob *api.SubJobInfo, tasks *util.PriorityQueue, hyperNode string) *framework.Statement {

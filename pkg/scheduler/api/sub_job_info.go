@@ -98,6 +98,16 @@ func (sji *SubJobInfo) IsSoftTopologyMode() bool {
 	return sji.networkTopology.Mode == scheduling.SoftNetworkTopologyMode
 }
 
+// SoftTopologyPreferredTier returns whether the subJob's network topology mode is soft
+// with a configured preferred highest tier.
+func (sji *SubJobInfo) SoftTopologyPreferredTier() (bool, int) {
+	if sji.networkTopology == nil || sji.networkTopology.HighestTierAllowed == nil {
+		return false, 0
+	}
+
+	return sji.networkTopology.Mode == scheduling.SoftNetworkTopologyMode, *sji.networkTopology.HighestTierAllowed
+}
+
 // WithNetworkTopology returns whether the subJob has configured network topologies
 func (sji *SubJobInfo) WithNetworkTopology() bool {
 	return sji.networkTopology != nil
