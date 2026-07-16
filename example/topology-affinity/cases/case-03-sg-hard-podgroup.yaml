@@ -1,0 +1,47 @@
+# Case 3: hard subgroup affinity and anti-affinity.
+# Apply this file before creating deployments.
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: ta-deploy-sg-hard
+  namespace: default
+  labels:
+    ta-case: deploy-sg-hard
+spec:
+  minMember: 4
+  subGroupPolicy:
+  - name: prefill
+    labelSelector:
+      matchLabels:
+        role: prefill
+    matchLabelKeys:
+    - shard
+    subGroupSize: 1
+    minSubGroups: 2
+  - name: decode
+    labelSelector:
+      matchLabels:
+        role: decode
+    matchLabelKeys:
+    - shard
+    subGroupSize: 1
+    minSubGroups: 2
+  topologyAffinity:
+    subGroupAffinity:
+      required:
+      - subGroups:
+        - prefill
+        - decode
+        topologyTierName: tier3
+    subGroupAntiAffinity:
+      required:
+      - subGroups:
+        - prefill
+        topologyTierName: tier1
+      - subGroups:
+        - decode
+        topologyTierName: tier1
+      - subGroups:
+        - prefill
+        - decode
+        topologyTierName: tier1

@@ -1,0 +1,58 @@
+# Case 5: network-topology-aware + group-topology-affinity combined.
+# Apply this file before creating deployments.
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: ta-deploy-topo-combo
+  namespace: default
+  labels:
+    ta-case: deploy-topo-combo
+spec:
+  minMember: 4
+  networkTopology:
+    mode: hard
+    highestTierName: tier3
+  subGroupPolicy:
+  - name: prefill
+    labelSelector:
+      matchLabels:
+        role: prefill
+    matchLabelKeys:
+    - shard
+    subGroupSize: 1
+    minSubGroups: 2
+    networkTopology:
+      mode: hard
+      highestTierName: tier1
+  - name: decode
+    labelSelector:
+      matchLabels:
+        role: decode
+    matchLabelKeys:
+    - shard
+    subGroupSize: 1
+    minSubGroups: 2
+    networkTopology:
+      mode: hard
+      highestTierName: tier1
+  topologyAffinity:
+    subGroupAffinity:
+      required:
+      - subGroups:
+        - prefill
+        - decode
+        topologyTierName: tier2
+    subGroupAntiAffinity:
+      required:
+      - subGroups:
+        - prefill
+        topologyTierName: tier1
+      - subGroups:
+        - decode
+        topologyTierName: tier1
+      preferred:
+      - subGroups:
+        - prefill
+        - decode
+        weight: 50
+        topologyTierName: tier1

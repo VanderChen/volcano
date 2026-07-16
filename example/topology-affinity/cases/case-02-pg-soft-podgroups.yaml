@@ -1,0 +1,35 @@
+# Case 2: soft PodGroup anti-affinity pair.
+# Apply this file before creating deployments. Run in isolation because
+# podGroupSelector: {} selects peer PodGroups in this namespace.
+---
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: ta-deploy-pg-soft-a
+  namespace: default
+  labels:
+    ta-case: deploy-pg-soft-aa
+spec:
+  minMember: 2
+  topologyAffinity:
+    podGroupAntiAffinity:
+      preferred:
+      - weight: 100
+        podGroupSelector: {}
+        topologyTierName: tier2
+---
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: ta-deploy-pg-soft-b
+  namespace: default
+  labels:
+    ta-case: deploy-pg-soft-aa
+spec:
+  minMember: 2
+  topologyAffinity:
+    podGroupAntiAffinity:
+      preferred:
+      - weight: 100
+        podGroupSelector: {}
+        topologyTierName: tier2

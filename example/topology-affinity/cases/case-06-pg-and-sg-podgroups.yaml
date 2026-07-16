@@ -1,0 +1,58 @@
+# Case 6: PodGroup anti-affinity and SubGroup topology rules together.
+# Apply this file first, then create the anchor deployment and wait until it is
+# Running before creating the combo deployments.
+---
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: ta-deploy-pg-sg-anchor
+  namespace: default
+  labels:
+    ta-case: deploy-pg-sg-anchor
+spec:
+  minMember: 2
+---
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: ta-deploy-pg-sg-combo
+  namespace: default
+  labels:
+    ta-case: deploy-pg-sg-combo
+spec:
+  minMember: 2
+  subGroupPolicy:
+  - name: prefill
+    labelSelector:
+      matchLabels:
+        role: prefill
+    matchLabelKeys:
+    - shard
+    subGroupSize: 1
+    minSubGroups: 1
+  - name: decode
+    labelSelector:
+      matchLabels:
+        role: decode
+    matchLabelKeys:
+    - shard
+    subGroupSize: 1
+    minSubGroups: 1
+  topologyAffinity:
+    podGroupAntiAffinity:
+      required:
+      - podGroupSelector: {}
+        topologyTierName: tier2
+    subGroupAffinity:
+      required:
+      - subGroups:
+        - prefill
+        - decode
+        topologyTierName: tier2
+    subGroupAntiAffinity:
+      preferred:
+      - subGroups:
+        - prefill
+        - decode
+        weight: 100
+        topologyTierName: tier1

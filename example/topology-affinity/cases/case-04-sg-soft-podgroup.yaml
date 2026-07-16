@@ -1,0 +1,51 @@
+# Case 4: soft subgroup affinity and anti-affinity.
+# Apply this file before creating deployments.
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: ta-deploy-sg-soft-combo
+  namespace: default
+  labels:
+    ta-case: deploy-sg-soft-combo
+spec:
+  minMember: 4
+  subGroupPolicy:
+  - name: prefill
+    labelSelector:
+      matchLabels:
+        role: prefill
+    matchLabelKeys:
+    - shard
+    subGroupSize: 1
+    minSubGroups: 2
+  - name: decode
+    labelSelector:
+      matchLabels:
+        role: decode
+    matchLabelKeys:
+    - shard
+    subGroupSize: 1
+    minSubGroups: 2
+  topologyAffinity:
+    subGroupAffinity:
+      preferred:
+      - subGroups:
+        - prefill
+        - decode
+        weight: 100
+        topologyTierName: tier2
+    subGroupAntiAffinity:
+      preferred:
+      - subGroups:
+        - prefill
+        weight: 100
+        topologyTierName: tier1
+      - subGroups:
+        - decode
+        weight: 100
+        topologyTierName: tier1
+      - subGroups:
+        - prefill
+        - decode
+        weight: 50
+        topologyTierName: tier1

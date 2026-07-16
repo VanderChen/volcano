@@ -1,0 +1,36 @@
+# Case 1: hard PodGroup anti-affinity pair.
+# Apply this file before creating deployments.
+#
+# Current CRD schema treats podGroupSelector as an atomic object, so
+# podGroupSelector.matchLabels is rejected by strict decoding. Run this case in
+# isolation and use {} to select the peer PodGroup in this namespace.
+---
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: ta-deploy-pg-hard-a
+  namespace: default
+  labels:
+    ta-case: deploy-pg-hard-aa
+spec:
+  minMember: 2
+  topologyAffinity:
+    podGroupAntiAffinity:
+      required:
+      - podGroupSelector: {}
+        topologyTierName: tier2
+---
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: ta-deploy-pg-hard-b
+  namespace: default
+  labels:
+    ta-case: deploy-pg-hard-aa
+spec:
+  minMember: 2
+  topologyAffinity:
+    podGroupAntiAffinity:
+      required:
+      - podGroupSelector: {}
+        topologyTierName: tier2
