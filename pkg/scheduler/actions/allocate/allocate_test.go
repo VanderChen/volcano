@@ -2900,15 +2900,15 @@ func (*jobSoftAffinityAcrossSubJobsTestPluginImpl) Name() string {
 }
 
 func (*jobSoftAffinityAcrossSubJobsTestPluginImpl) OnSessionOpen(ssn *framework.Session) {
-	ssn.AddHyperNodeGradientForJobFn(jobSoftAffinityAcrossSubJobsTestPlugin, func(_ *api.JobInfo, _ *api.HyperNodeInfo, _ api.SearchPurpose) [][]*api.HyperNodeInfo {
-		return [][]*api.HyperNodeInfo{{ssn.HyperNodes[framework.ClusterTopHyperNode]}}
+	ssn.AddHyperNodeGradientForJobFn(jobSoftAffinityAcrossSubJobsTestPlugin, func(_ *api.JobInfo, _ *api.HyperNodeInfo, _ api.SearchPurpose) api.HyperNodeGradientResult {
+		return api.HyperNodeGradientConstrain([][]*api.HyperNodeInfo{{ssn.HyperNodes[framework.ClusterTopHyperNode]}})
 	})
-	ssn.AddHyperNodeGradientForSubJobFn(jobSoftAffinityAcrossSubJobsTestPlugin, func(_ *api.SubJobInfo, _ *api.HyperNodeInfo, _ api.SearchPurpose) [][]*api.HyperNodeInfo {
+	ssn.AddHyperNodeGradientForSubJobFn(jobSoftAffinityAcrossSubJobsTestPlugin, func(_ *api.SubJobInfo, _ *api.HyperNodeInfo, _ api.SearchPurpose) api.HyperNodeGradientResult {
 		candidates := make([]*api.HyperNodeInfo, 0, ssn.HyperNodesSetByTier[1].Len())
 		for hyperNode := range ssn.HyperNodesSetByTier[1] {
 			candidates = append(candidates, ssn.HyperNodes[hyperNode])
 		}
-		return [][]*api.HyperNodeInfo{candidates}
+		return api.HyperNodeGradientConstrain([][]*api.HyperNodeInfo{candidates})
 	})
 	ssn.AddHyperNodeOrderFn(jobSoftAffinityAcrossSubJobsTestPlugin, func(subJob *api.SubJobInfo, hyperNodes map[string][]*api.NodeInfo) (map[string]float64, error) {
 		preferred := "a-t1-0"
@@ -3114,16 +3114,16 @@ func (*jobSoftAffinityAcrossOuterCandidatesTestPluginImpl) Name() string {
 
 func (p *jobSoftAffinityAcrossOuterCandidatesTestPluginImpl) OnSessionOpen(ssn *framework.Session) {
 	outerCandidates := []string{"a-t1-0", "a-t1-1", "b-t1-0", "b-t1-1"}
-	ssn.AddHyperNodeGradientForJobFn(jobSoftAffinityAcrossOuterCandidatesTestPlugin, func(job *api.JobInfo, _ *api.HyperNodeInfo, _ api.SearchPurpose) [][]*api.HyperNodeInfo {
+	ssn.AddHyperNodeGradientForJobFn(jobSoftAffinityAcrossOuterCandidatesTestPlugin, func(job *api.JobInfo, _ *api.HyperNodeInfo, _ api.SearchPurpose) api.HyperNodeGradientResult {
 		p.jobGradientAnchors = append(p.jobGradientAnchors, job.AllocatedHyperNode)
 		candidates := make([]*api.HyperNodeInfo, 0, len(outerCandidates))
 		for _, name := range outerCandidates {
 			candidates = append(candidates, ssn.HyperNodes[name])
 		}
-		return [][]*api.HyperNodeInfo{candidates}
+		return api.HyperNodeGradientConstrain([][]*api.HyperNodeInfo{candidates})
 	})
-	ssn.AddHyperNodeGradientForSubJobFn(jobSoftAffinityAcrossOuterCandidatesTestPlugin, func(_ *api.SubJobInfo, hyperNodeForJob *api.HyperNodeInfo, _ api.SearchPurpose) [][]*api.HyperNodeInfo {
-		return [][]*api.HyperNodeInfo{{hyperNodeForJob}}
+	ssn.AddHyperNodeGradientForSubJobFn(jobSoftAffinityAcrossOuterCandidatesTestPlugin, func(_ *api.SubJobInfo, hyperNodeForJob *api.HyperNodeInfo, _ api.SearchPurpose) api.HyperNodeGradientResult {
+		return api.HyperNodeGradientConstrain([][]*api.HyperNodeInfo{{hyperNodeForJob}})
 	})
 	ssn.AddHyperNodeOrderFn(jobSoftAffinityAcrossOuterCandidatesTestPlugin, func(subJob *api.SubJobInfo, hyperNodes map[string][]*api.NodeInfo) (map[string]float64, error) {
 		scores := make(map[string]float64)

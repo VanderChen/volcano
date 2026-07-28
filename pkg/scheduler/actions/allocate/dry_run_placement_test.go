@@ -455,8 +455,8 @@ func newDryRunPlacementEnv(t *testing.T, opts dryRunEnvOptions) *dryRunPlacement
 				gradientLayers[i] = append(gradientLayers[i], ssn.HyperNodes[name])
 			}
 		}
-		ssn.AddHyperNodeGradientForSubJobFn(dryRunTestPlugin, func(_ *api.SubJobInfo, _ *api.HyperNodeInfo, _ api.SearchPurpose) [][]*api.HyperNodeInfo {
-			return gradientLayers
+		ssn.AddHyperNodeGradientForSubJobFn(dryRunTestPlugin, func(_ *api.SubJobInfo, _ *api.HyperNodeInfo, _ api.SearchPurpose) api.HyperNodeGradientResult {
+			return api.HyperNodeGradientConstrain(gradientLayers)
 		})
 	}
 
@@ -511,6 +511,7 @@ func buildDryRunHyperNodeTree(ssn *framework.Session, nodeCPU map[string]string)
 		"sn-b": newPlacementTestHyperNode("sn-b", 2, "root"),
 	}
 	ssn.HyperNodes["root"].Parent = ""
+	ssn.HyperNodes["root"].Children = sets.New("sn-a", "sn-b")
 	ssn.HyperNodesSetByTier = map[int]sets.Set[string]{
 		2: sets.New("sn-a", "sn-b"),
 		3: sets.New("root"),

@@ -1403,7 +1403,7 @@ func (ji *JobInfo) ContainsHardTopology() bool {
 // HyperNodeOrderFn can score and prefer HyperNodes; without it such jobs fall back to
 // normal node scheduling and the anti-affinity preference is never evaluated.
 func (ji *JobInfo) RequiresHyperNodeAllocate() bool {
-	return ji.ContainsHardTopology() || ji.ContainsSubJobPolicy() ||
+	return ji.ContainsNetworkTopology() || ji.ContainsSubJobPolicy() ||
 		ji.ContainsHardPodGroupAntiAffinity() || ji.HasPreferredPodGroupAntiAffinity() ||
 		ji.ContainsHardSubGroupTopologyAffinity() || ji.HasPreferredSubGroupTopologyAffinity()
 }

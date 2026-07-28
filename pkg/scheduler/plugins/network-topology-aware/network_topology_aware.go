@@ -287,41 +287,12 @@ func (nta *networkTopologyAwarePlugin) OnSessionOpen(ssn *framework.Session) {
 		return nta.batchNodeOrderFn(ssn, task, nodes)
 	})
 
-	ssn.AddHyperNodeGradientForJobFn(nta.Name(), func(job *api.JobInfo, hyperNode *api.HyperNodeInfo, purpose api.SearchPurpose) [][]*api.HyperNodeInfo {
-		highestAllowedTier := maxHyperNodeTier(ssn.HyperNodesSetByTier)
-		if hardMode, tier := job.IsHardTopologyMode(); hardMode {
-			highestAllowedTier = tier
-		}
-		result, err := nta.hyperNodeGradientFn(
-			ssn, hyperNode, highestAllowedTier, job.AllocatedHyperNode, job.GetMinResources(), purpose,
-		)
-		if err != nil {
-			klog.Errorf("build hyperNode gradient fail, job=%s, hyperNode=%s, highestAllowedTier=%d, allocatedHyperNode=%s, err=%v",
-				job.UID, hyperNode.Name, highestAllowedTier, job.AllocatedHyperNode, err)
-			return emptyHyperNodeGradients
-		}
-		if purpose == api.PurposeEvict {
-			return nta.reverseAndCapEvictionGradients(result)
-		}
-		return result
+	ssn.AddHyperNodeGradientForJobFn(nta.Name(), func(job *api.JobInfo, hyperNode *api.HyperNodeInfo, purpose api.SearchPurpose) api.HyperNodeGradientResult {
+		return nta.hyperNodeGradientForJob(ssn, job, hyperNode, purpose)
 	})
 
-	ssn.AddHyperNodeGradientForSubJobFn(nta.Name(), func(subJob *api.SubJobInfo, hyperNode *api.HyperNodeInfo, purpose api.SearchPurpose) [][]*api.HyperNodeInfo {
-		if hardMode, highestAllowedTier := subJob.IsHardTopologyMode(); hardMode {
-			result, err := nta.hyperNodeGradientFn(
-				ssn, hyperNode, highestAllowedTier, subJob.AllocatedHyperNode, subJob.GetMinResources(), purpose,
-			)
-			if err != nil {
-				klog.Errorf("build hyperNode gradient fail, subJob=%s, hyperNode=%s, highestAllowedTier=%d, allocatedHyperNode=%s, err=%v",
-					subJob.UID, hyperNode.Name, highestAllowedTier, subJob.AllocatedHyperNode, err)
-				return emptyHyperNodeGradients
-			}
-			if purpose != api.PurposeEvict {
-				return result
-			}
-			return nta.reverseAndCapEvictionGradients(result)
-		}
-		return [][]*api.HyperNodeInfo{{hyperNode}}
+	ssn.AddHyperNodeGradientForSubJobFn(nta.Name(), func(subJob *api.SubJobInfo, hyperNode *api.HyperNodeInfo, purpose api.SearchPurpose) api.HyperNodeGradientResult {
+		return nta.hyperNodeGradientForSubJob(ssn, subJob, hyperNode, purpose)
 	})
 
 	ssn.AddEventHandler(&framework.EventHandler{
@@ -354,6 +325,54 @@ func (nta *networkTopologyAwarePlugin) OnSessionOpen(ssn *framework.Session) {
 			}
 		},
 	})
+}
+
+func (nta *networkTopologyAwarePlugin) hyperNodeGradientForJob(
+	ssn *framework.Session,
+	job *api.JobInfo,
+	hyperNode *api.HyperNodeInfo,
+	purpose api.SearchPurpose,
+) api.HyperNodeGradientResult {
+	hardMode, highestAllowedTier := job.IsHardTopologyMode()
+	if !hardMode {
+		return api.HyperNodeGradientAbstain()
+	}
+	result, err := nta.hyperNodeGradientFn(
+		ssn, hyperNode, highestAllowedTier, job.AllocatedHyperNode, job.GetMinResources(), purpose,
+	)
+	if err != nil {
+		klog.Errorf("build hyperNode gradient fail, job=%s, hyperNode=%s, highestAllowedTier=%d, allocatedHyperNode=%s, err=%v",
+			job.UID, hyperNode.Name, highestAllowedTier, job.AllocatedHyperNode, err)
+		return api.HyperNodeGradientConstrain(emptyHyperNodeGradients)
+	}
+	if purpose == api.PurposeEvict {
+		result = nta.reverseAndCapEvictionGradients(result)
+	}
+	return api.HyperNodeGradientConstrain(result)
+}
+
+func (nta *networkTopologyAwarePlugin) hyperNodeGradientForSubJob(
+	ssn *framework.Session,
+	subJob *api.SubJobInfo,
+	hyperNode *api.HyperNodeInfo,
+	purpose api.SearchPurpose,
+) api.HyperNodeGradientResult {
+	hardMode, highestAllowedTier := subJob.IsHardTopologyMode()
+	if !hardMode {
+		return api.HyperNodeGradientAbstain()
+	}
+	result, err := nta.hyperNodeGradientFn(
+		ssn, hyperNode, highestAllowedTier, subJob.AllocatedHyperNode, subJob.GetMinResources(), purpose,
+	)
+	if err != nil {
+		klog.Errorf("build hyperNode gradient fail, subJob=%s, hyperNode=%s, highestAllowedTier=%d, allocatedHyperNode=%s, err=%v",
+			subJob.UID, hyperNode.Name, highestAllowedTier, subJob.AllocatedHyperNode, err)
+		return api.HyperNodeGradientConstrain(emptyHyperNodeGradients)
+	}
+	if purpose == api.PurposeEvict {
+		result = nta.reverseAndCapEvictionGradients(result)
+	}
+	return api.HyperNodeGradientConstrain(result)
 }
 
 func (nta *networkTopologyAwarePlugin) HyperNodeOrderFn(ssn *framework.Session, subJob *api.SubJobInfo, hyperNodes map[string][]*api.NodeInfo) (map[string]float64, error) {

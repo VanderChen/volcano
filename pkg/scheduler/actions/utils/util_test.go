@@ -36,8 +36,8 @@ type emptyGradientPlugin struct{}
 func (p *emptyGradientPlugin) Name() string { return emptyGradientPluginName }
 
 func (p *emptyGradientPlugin) OnSessionOpen(ssn *framework.Session) {
-	ssn.AddHyperNodeGradientForJobFn(p.Name(), func(*api.JobInfo, *api.HyperNodeInfo, api.SearchPurpose) [][]*api.HyperNodeInfo {
-		return nil
+	ssn.AddHyperNodeGradientForJobFn(p.Name(), func(*api.JobInfo, *api.HyperNodeInfo, api.SearchPurpose) api.HyperNodeGradientResult {
+		return api.HyperNodeGradientConstrain(nil)
 	})
 }
 
@@ -84,7 +84,7 @@ func TestGetCandidateDomains_EmptyGradient_HardTopologyNoFallback(t *testing.T) 
 	assert.Empty(t, domains)
 }
 
-func TestGetCandidateDomains_EmptyGradient_NonHardTopologyFallbackToRoot(t *testing.T) {
+func TestGetCandidateDomains_ApplicableEmptyGradientDoesNotFallbackToRoot(t *testing.T) {
 	framework.RegisterPluginBuilder(emptyGradientPluginName, func(framework.Arguments) framework.Plugin {
 		return &emptyGradientPlugin{}
 	})
@@ -114,7 +114,7 @@ func TestGetCandidateDomains_EmptyGradient_NonHardTopologyFallbackToRoot(t *test
 	}
 
 	domains := GetCandidateDomains(ssn, &api.JobInfo{}, 8)
-	assert.Equal(t, []string{framework.ClusterTopHyperNode}, domains)
+	assert.Empty(t, domains)
 }
 
 func boolPtr(v bool) *bool { return &v }

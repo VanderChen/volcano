@@ -152,6 +152,39 @@ func TestNew(t *testing.T) {
 	}
 }
 
+func TestSoftNetworkTopologyGradientAbstains(t *testing.T) {
+	highestTierAllowed := 2
+	softTopology := &scheduling.NetworkTopologySpec{
+		Mode:               scheduling.SoftNetworkTopologyMode,
+		HighestTierAllowed: &highestTierAllowed,
+	}
+	plugin := &networkTopologyAwarePlugin{}
+
+	jobResult := plugin.hyperNodeGradientForJob(
+		nil,
+		&api.JobInfo{
+			UID:             "soft-job",
+			NetworkTopology: softTopology.DeepCopy(),
+		},
+		nil,
+		api.PurposeAllocate,
+	)
+	assert.False(t, jobResult.Applied)
+	assert.Nil(t, jobResult.Gradients)
+
+	subJobResult := plugin.hyperNodeGradientForSubJob(
+		nil,
+		&api.SubJobInfo{
+			UID:             "soft-subjob",
+			NetworkTopology: softTopology.DeepCopy(),
+		},
+		nil,
+		api.PurposeAllocate,
+	)
+	assert.False(t, subJobResult.Applied)
+	assert.Nil(t, subJobResult.Gradients)
+}
+
 func TestReverseAndCapEvictionGradients(t *testing.T) {
 	plugin := &networkTopologyAwarePlugin{maxHyperNodesForEviction: 3}
 	hn := func(name string) *api.HyperNodeInfo { return &api.HyperNodeInfo{Name: name} }

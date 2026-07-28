@@ -407,12 +407,27 @@ const (
 	PurposeEvict
 )
 
-// HyperNodeGradientForJobFn group hyperNodes into several gradients,
-// and discard hyperNodes that unmatched the job topology requirements.
-// Registered plugins always return a non-nil slice; an empty slice means no eligible HyperNodes remain.
-type HyperNodeGradientForJobFn func(job *JobInfo, hyperNode *HyperNodeInfo, purpose SearchPurpose) [][]*HyperNodeInfo
+// HyperNodeGradientResult distinguishes an applicable hard constraint from a
+// plugin that has no hard opinion for the current Job or SubJob.
+type HyperNodeGradientResult struct {
+	Applied   bool
+	Gradients [][]*HyperNodeInfo
+}
 
-// HyperNodeGradientForSubJobFn group hyperNodes into several gradients,
-// and discard hyperNodes that unmatched the subJob topology requirements.
-// Registered plugins always return a non-nil slice; an empty slice means no eligible HyperNodes remain.
-type HyperNodeGradientForSubJobFn func(subJob *SubJobInfo, hyperNode *HyperNodeInfo, purpose SearchPurpose) [][]*HyperNodeInfo
+// HyperNodeGradientAbstain returns a neutral result that does not participate
+// in framework candidate intersection.
+func HyperNodeGradientAbstain() HyperNodeGradientResult {
+	return HyperNodeGradientResult{}
+}
+
+// HyperNodeGradientConstrain returns an applicable hard constraint. An empty
+// gradient is an applicable unschedulable result, not an abstention.
+func HyperNodeGradientConstrain(gradients [][]*HyperNodeInfo) HyperNodeGradientResult {
+	return HyperNodeGradientResult{Applied: true, Gradients: gradients}
+}
+
+// HyperNodeGradientForJobFn returns one plugin's hard HyperNode constraint.
+type HyperNodeGradientForJobFn func(job *JobInfo, hyperNode *HyperNodeInfo, purpose SearchPurpose) HyperNodeGradientResult
+
+// HyperNodeGradientForSubJobFn returns one plugin's hard HyperNode constraint.
+type HyperNodeGradientForSubJobFn func(subJob *SubJobInfo, hyperNode *HyperNodeInfo, purpose SearchPurpose) HyperNodeGradientResult
