@@ -24,6 +24,7 @@ package allocate
 import (
 	"fmt"
 	"os"
+	"sort"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -3243,6 +3244,174 @@ func TestAllocatePreferredSubGroupAffinityAndAntiAffinity(t *testing.T) {
 	}
 	if job.AllocatedHyperNode != selectedPair {
 		t.Fatalf("job placement = %q, want selected instance group %q", job.AllocatedHyperNode, selectedPair)
+	}
+}
+
+func TestAllocatePreferredSubGroupAntiAffinityBalancesOversubscribedDomains(t *testing.T) {
+	const gpuResourceName = "example.com/gpu"
+
+	tier1HyperNodes := sets.New[string]()
+	hyperNodes := make(map[string]*api.HyperNodeInfo)
+	realNodes := make(map[string]sets.Set[string])
+	nodes := make([]*v1.Node, 0, 3)
+	rootMembers := make([]api.MemberConfig, 0, 3)
+	allNodes := sets.New[string]()
+	for _, name := range []string{"a", "b", "c"} {
+		nodeName := "node-" + name
+		nodes = append(nodes, util.BuildNode(nodeName,
+			api.BuildResourceList("100", "100Gi", []api.ScalarResource{
+				{Name: gpuResourceName, Value: "8"},
+				{Name: "pods", Value: "30"},
+			}...), nil))
+		hyperNodes[name] = api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName(name, 1, "volcano.sh/hypernode", []api.MemberConfig{{
+			Name: nodeName, Type: topologyv1alpha1.MemberTypeNode, Selector: "exact",
+		}}))
+		realNodes[name] = sets.New(nodeName)
+		tier1HyperNodes.Insert(name)
+		allNodes.Insert(nodeName)
+		rootMembers = append(rootMembers, api.MemberConfig{
+			Name: name, Type: topologyv1alpha1.MemberTypeHyperNode, Selector: "exact",
+		})
+	}
+	hyperNodes["root"] = api.NewHyperNodeInfo(api.BuildHyperNodeWithTierName("root", 2, "cluster", rootMembers))
+	realNodes["root"] = allNodes
+
+	one := int32(1)
+	eight := int32(8)
+	pg := util.BuildPodGroupWithSubGroupPolicy(
+		"bug-pg", "default", "", "q1", 16, nil, schedulingv1.PodGroupInqueue, "", 0,
+		[]schedulingv1.SubGroupPolicySpec{
+			{
+				Name: "prefill", LabelSelector: &metav1.LabelSelector{MatchLabels: map[string]string{"role": "prefill"}},
+				MatchLabelKeys: []string{"shard"}, SubGroupSize: &one, MinSubGroups: &eight,
+			},
+			{
+				Name: "decode", LabelSelector: &metav1.LabelSelector{MatchLabels: map[string]string{"role": "decode"}},
+				MatchLabelKeys: []string{"shard"}, SubGroupSize: &one, MinSubGroups: &eight,
+			},
+		},
+	)
+	pg.Spec.TopologyAffinity = &schedulingv1.TopologyAffinitySpec{
+		SubGroupAntiAffinity: &schedulingv1.SubGroupAntiAffinity{Preferred: []schedulingv1.SubGroupAffinityTerm{
+			{SubGroups: []string{"prefill"}, TopologyTierName: "volcano.sh/hypernode", Weight: 100},
+			{SubGroups: []string{"decode"}, TopologyTierName: "volcano.sh/hypernode", Weight: 100},
+		}},
+	}
+
+	pods := make([]*v1.Pod, 0, 16)
+	for i := 0; i < 8; i++ {
+		shard := fmt.Sprintf("shard-%d", i)
+		pods = append(pods, util.BuildPod(
+			"default", fmt.Sprintf("decode-%d", i), "", v1.PodPending,
+			api.BuildResourceList("1", "1Gi", []api.ScalarResource{{Name: gpuResourceName, Value: "2"}}...),
+			"bug-pg", map[string]string{"role": "decode", "shard": shard}, nil,
+		))
+	}
+	for i := 0; i < 8; i++ {
+		shard := fmt.Sprintf("shard-%d", i)
+		pods = append(pods, util.BuildPod(
+			"default", fmt.Sprintf("prefill-%d", i), "", v1.PodPending,
+			api.BuildResourceList("1", "1Gi", []api.ScalarResource{{Name: gpuResourceName, Value: "1"}}...),
+			"bug-pg", map[string]string{"role": "prefill", "shard": shard}, nil,
+		))
+	}
+
+	trueValue := true
+	tiers := []conf.Tier{{Plugins: []conf.PluginOption{
+		{
+			Name: gang.PluginName, EnabledJobOrder: &trueValue, EnabledJobReady: &trueValue,
+			EnabledJobPipelined: &trueValue, EnabledJobStarving: &trueValue,
+			EnabledSubJobReady: &trueValue, EnabledSubJobOrder: &trueValue,
+		},
+		{Name: predicates.PluginName, EnabledPredicate: &trueValue},
+		{
+			Name:                     networktopologyaware.PluginName,
+			EnabledNodeOrder:         &trueValue,
+			EnabledHyperNodeOrder:    &trueValue,
+			EnabledHyperNodeGradient: &trueValue,
+			Arguments: map[string]interface{}{
+				networktopologyaware.NetworkTopologyWeight:                             10,
+				networktopologyaware.HyperNodeBinPackCPU:                               0,
+				networktopologyaware.HyperNodeBinPackMemory:                            0,
+				networktopologyaware.HyperNodeBinPackResources:                         gpuResourceName,
+				networktopologyaware.HyperNodeBinPackResourcesPrefix + gpuResourceName: 1,
+			},
+		},
+		{
+			Name:                     grouptopologyaffinity.PluginName,
+			EnabledHyperNodeGradient: &trueValue,
+			EnabledHyperNodeOrder:    &trueValue,
+			Arguments: map[string]interface{}{
+				grouptopologyaffinity.PluginWeight: 10,
+			},
+		},
+	}}}
+
+	test := uthelper.TestCommonStruct{
+		Name: "preferred subgroup anti-affinity balances count after all domains are occupied",
+		Plugins: map[string]framework.PluginBuilder{
+			predicates.PluginName:            predicates.New,
+			gang.PluginName:                  gang.New,
+			networktopologyaware.PluginName:  networktopologyaware.New,
+			grouptopologyaffinity.PluginName: grouptopologyaffinity.New,
+		},
+		PodGroups:                 []*schedulingv1.PodGroup{pg},
+		Pods:                      pods,
+		Nodes:                     nodes,
+		HyperNodesSetByTier:       map[int]sets.Set[string]{1: tier1HyperNodes, 2: sets.New("root")},
+		HyperNodesMap:             hyperNodes,
+		HyperNodes:                realNodes,
+		Queues:                    []*schedulingv1.Queue{util.BuildQueue("q1", 1, nil)},
+		ExpectBindsNum:            16,
+		MinimalBindCheck:          true,
+		HyperNodesReadyToSchedule: true,
+	}
+
+	ssn := test.RegisterSession(tiers, nil)
+	defer test.Close()
+	test.Run([]framework.Action{New()})
+	if err := test.CheckAll(0); err != nil {
+		t.Fatal(err)
+	}
+
+	job := ssn.Jobs[api.JobID("default/bug-pg")]
+	if job == nil {
+		t.Fatal("scheduled job default/bug-pg was not found")
+	}
+	decodeByNode := make(map[string]int, 3)
+	prefillByNode := make(map[string]int, 3)
+	for _, task := range job.Tasks {
+		if task.NodeName == "" {
+			t.Fatalf("task %s was not allocated", task.UID)
+		}
+		switch task.Pod.Labels["role"] {
+		case "decode":
+			decodeByNode[task.NodeName]++
+		case "prefill":
+			prefillByNode[task.NodeName]++
+		default:
+			t.Fatalf("task %s has unexpected role %q", task.UID, task.Pod.Labels["role"])
+		}
+	}
+	decodeCounts := make([]int, 0, len(nodes))
+	for _, node := range nodes {
+		decodeCount := decodeByNode[node.Name]
+		prefillCount := prefillByNode[node.Name]
+		decodeCounts = append(decodeCounts, decodeCount)
+		if usedGPUs := 2*decodeCount + prefillCount; usedGPUs != 8 {
+			t.Errorf("node %s GPU use = %d (decode=%d, prefill=%d), want 8", node.Name, usedGPUs, decodeCount, prefillCount)
+		}
+		wantPrefill := 2
+		if decodeCount == 2 {
+			wantPrefill = 4
+		}
+		if prefillCount != wantPrefill {
+			t.Errorf("node %s roles: decode=%d, prefill=%d, want prefill=%d", node.Name, decodeCount, prefillCount, wantPrefill)
+		}
+	}
+	sort.Ints(decodeCounts)
+	if fmt.Sprint(decodeCounts) != "[2 3 3]" {
+		t.Fatalf("decode counts = %v, want [2 3 3]", decodeCounts)
 	}
 }
 

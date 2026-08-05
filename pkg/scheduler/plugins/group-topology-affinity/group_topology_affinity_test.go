@@ -681,6 +681,178 @@ func TestHyperNodeOrderFnForSubGroupPreferredTerms(t *testing.T) {
 	}
 }
 
+func TestHyperNodeOrderFnForSubGroupPreferredAntiAffinityCounts(t *testing.T) {
+	tests := []struct {
+		name           string
+		peerPlacements []string
+		wantScores     map[string]float64
+	}{
+		{
+			name: "no peers leaves all candidates at full score",
+			wantScores: map[string]float64{
+				"sn-a": 100,
+				"sn-b": 100,
+				"sn-c": 100,
+			},
+		},
+		{
+			name:           "one occupied domain keeps binary behavior",
+			peerPlacements: []string{"sn-a"},
+			wantScores: map[string]float64{
+				"sn-a": 0,
+				"sn-b": 100,
+				"sn-c": 100,
+			},
+		},
+		{
+			name:           "equally occupied domains remain tied",
+			peerPlacements: []string{"sn-a", "sn-b", "sn-c"},
+			wantScores: map[string]float64{
+				"sn-a": 0,
+				"sn-b": 0,
+				"sn-c": 0,
+			},
+		},
+		{
+			name:           "more peers receive a larger bounded penalty",
+			peerPlacements: []string{"sn-a", "sn-a", "sn-b", "sn-c"},
+			wantScores: map[string]float64{
+				"sn-a": 0,
+				"sn-b": 50,
+				"sn-c": 50,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			job := jobWithSubGroupTopologyAffinity(
+				nil,
+				nil,
+				nil,
+				[]scheduling.SubGroupAffinityTerm{{
+					SubGroups:        []string{"decode"},
+					TopologyTierName: "supernode",
+					Weight:           100,
+				}},
+			)
+			current := subJobForPolicy(job, "decode", "current", "")
+			job.SubJobs = map[api.SubJobID]*api.SubJobInfo{current.UID: current}
+			for i, hyperNode := range tt.peerPlacements {
+				uid := fmt.Sprintf("peer-%d", i)
+				peer := subJobForPolicy(job, "decode", uid, hyperNode)
+				job.SubJobs[peer.UID] = peer
+			}
+			ssn := &framework.Session{
+				Jobs:                 map[api.JobID]*api.JobInfo{job.UID: job},
+				HyperNodes:           buildThreeSupernodeTree(),
+				HyperNodeTierNameMap: defaultTierNameMap(),
+			}
+			plugin := New(framework.Arguments{}).(*groupTopologyAffinityPlugin)
+
+			scores, err := plugin.hyperNodeOrderFn(ssn, job, current, map[string][]*api.NodeInfo{
+				"sn-a": {},
+				"sn-b": {},
+				"sn-c": {},
+			})
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			for hyperNode, wantScore := range tt.wantScores {
+				if got := scores[hyperNode]; got != wantScore {
+					t.Errorf("score for %s: want %v, got %v", hyperNode, wantScore, got)
+				}
+			}
+		})
+	}
+}
+
+func TestPeerSubJobOccupiedHyperNodeCountsAtTier(t *testing.T) {
+	tests := []struct {
+		name          string
+		selfPolicy    string
+		termSubGroups []string
+		peers         []*api.SubJobInfo
+		wantCounts    map[string]int
+		nodesByDomain map[string]sets.Set[string]
+	}{
+		{
+			name:          "single-policy term counts only same-policy peers",
+			selfPolicy:    "decode",
+			termSubGroups: []string{"decode"},
+			peers: []*api.SubJobInfo{
+				{UID: "decode-a-1", GID: "self/decode", Job: "self", AllocatedHyperNode: "sn-a"},
+				{UID: "decode-a-2", GID: "self/decode", Job: "self", AllocatedHyperNode: "sn-a"},
+				{UID: "prefill-b", GID: "self/prefill", Job: "self", AllocatedHyperNode: "sn-b"},
+			},
+			wantCounts: map[string]int{"sn-a": 2},
+		},
+		{
+			name:          "multi-policy term counts only different-policy peers",
+			selfPolicy:    "decode",
+			termSubGroups: []string{"prefill", "decode"},
+			peers: []*api.SubJobInfo{
+				{UID: "prefill-a-1", GID: "self/prefill", Job: "self", AllocatedHyperNode: "sn-a"},
+				{UID: "prefill-a-2", GID: "self/prefill", Job: "self", AllocatedHyperNode: "sn-a"},
+				{UID: "decode-b", GID: "self/decode", Job: "self", AllocatedHyperNode: "sn-b"},
+			},
+			wantCounts: map[string]int{"sn-a": 2},
+		},
+		{
+			name:          "one peer spanning domains contributes once to each domain",
+			selfPolicy:    "decode",
+			termSubGroups: []string{"prefill", "decode"},
+			peers: []*api.SubJobInfo{
+				{
+					UID: "prefill-spanning", GID: "self/prefill", Job: "self", AllocatedHyperNode: "root",
+					TaskStatusIndex: map[api.TaskStatus]api.TasksMap{
+						api.Allocated: {
+							"task-a": {
+								UID:                "task-a",
+								TransactionContext: api.TransactionContext{Status: api.Allocated, NodeName: "node-a"},
+							},
+							"task-b": {
+								UID:                "task-b",
+								TransactionContext: api.TransactionContext{Status: api.Allocated, NodeName: "node-b"},
+							},
+						},
+					},
+				},
+			},
+			wantCounts:    map[string]int{"sn-a": 1, "sn-b": 1},
+			nodesByDomain: defaultRealNodesSet(),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			job := jobWithSubGroupTopologyAffinity(nil, nil, nil, nil)
+			current := subJobForPolicy(job, tt.selfPolicy, "current", "")
+			job.SubJobs = map[api.SubJobID]*api.SubJobInfo{current.UID: current}
+			for _, peer := range tt.peers {
+				job.SubJobs[peer.UID] = peer
+			}
+			counts := peerSubJobOccupiedHyperNodeCountsAtTier(
+				job,
+				current,
+				scheduling.SubGroupAffinityTerm{SubGroups: tt.termSubGroups},
+				buildThreeSupernodeTree(),
+				2,
+				tt.nodesByDomain,
+				true,
+			)
+			if len(counts) != len(tt.wantCounts) {
+				t.Fatalf("counts length: want %d, got %d (%v)", len(tt.wantCounts), len(counts), counts)
+			}
+			for hyperNode, wantCount := range tt.wantCounts {
+				if got := counts[hyperNode]; got != wantCount {
+					t.Errorf("count for %s: want %d, got %d", hyperNode, wantCount, got)
+				}
+			}
+		})
+	}
+}
+
 func TestGetSearchRootForGradient(t *testing.T) {
 	hn := buildRackUnderSupernodeTree()
 	hn["sn-x"] = newTestHyperNode("sn-x", 2, "supernode", "")

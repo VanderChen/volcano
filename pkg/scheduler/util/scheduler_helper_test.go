@@ -89,6 +89,61 @@ func TestSelectBestNode(t *testing.T) {
 	}
 }
 
+func TestPrioritizeHyperNodesAggregatesPluginScores(t *testing.T) {
+	candidates := map[string][]*api.NodeInfo{
+		"less-peers": {},
+		"more-peers": {},
+		"unscored":   {},
+	}
+	subJob := &api.SubJobInfo{UID: "test-subjob"}
+	tests := []struct {
+		name            string
+		competingScores map[string]float64
+		wantBest        string
+		wantBestScore   float64
+	}{
+		{
+			name:            "higher competing score can override anti-affinity preference",
+			competingScores: map[string]float64{"less-peers": 0, "more-peers": 100},
+			wantBest:        "more-peers",
+			wantBestScore:   100,
+		},
+		{
+			name:            "lower competing score preserves anti-affinity preference",
+			competingScores: map[string]float64{"less-peers": 20, "more-peers": 0},
+			wantBest:        "less-peers",
+			wantBestScore:   70,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			scores, err := PrioritizeHyperNodes(candidates, subJob, func(
+				_ *api.SubJobInfo,
+				_ map[string][]*api.NodeInfo,
+			) (map[string]map[string]float64, error) {
+				return map[string]map[string]float64{
+					"group-topology-affinity": {
+						"less-peers": 50,
+						"more-peers": 0,
+					},
+					"competing-plugin": tt.competingScores,
+				}, nil
+			})
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			best, bestScore := SelectBestHyperNodeAndScore(scores)
+			if best != tt.wantBest || bestScore != tt.wantBestScore {
+				t.Fatalf("best HyperNode = %q score=%v, want %q score=%v", best, bestScore, tt.wantBest, tt.wantBestScore)
+			}
+			if got := scores[0]; !sets.New(got...).Has("unscored") {
+				t.Fatalf("unscored candidate membership changed: scores=%v", scores)
+			}
+		})
+	}
+}
+
 func TestGetMinInt(t *testing.T) {
 	cases := []struct {
 		vals   []int

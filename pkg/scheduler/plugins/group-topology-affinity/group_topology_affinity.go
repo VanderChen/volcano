@@ -835,23 +835,36 @@ func (gta *groupTopologyAffinityPlugin) scorePreferredSubGroupAntiAffinityTerms(
 		if err != nil {
 			return err
 		}
-		peerHyperNodes := peerSubJobOccupiedHyperNodesAtTier(job, subJob, term, ssn.HyperNodes, tier, ssn.RealNodesSet, true)
-		if peerHyperNodes.Len() == 0 {
+		peerHyperNodeCounts := peerSubJobOccupiedHyperNodeCountsAtTier(job, subJob, term, ssn.HyperNodes, tier, ssn.RealNodesSet, true)
+		if len(peerHyperNodeCounts) == 0 {
+			continue
+		}
+		maxPeerCount := 0
+		for hyperNode := range hyperNodes {
+			ancestorHyperNode := ssn.HyperNodes.GetAncestorHyperNode(hyperNode, tier)
+			if peerCount := peerHyperNodeCounts[ancestorHyperNode]; peerCount > maxPeerCount {
+				maxPeerCount = peerCount
+			}
+		}
+		if maxPeerCount == 0 {
 			continue
 		}
 		weightFactor := float64(term.Weight) / 100.0
 		for hyperNode := range hyperNodes {
 			ancestorHyperNode := ssn.HyperNodes.GetAncestorHyperNode(hyperNode, tier)
-			if ancestorHyperNode == "" || !peerHyperNodes.Has(ancestorHyperNode) {
+			peerCount := peerHyperNodeCounts[ancestorHyperNode]
+			if ancestorHyperNode == "" || peerCount == 0 {
 				continue
 			}
 			scoreBefore := scores[hyperNode]
-			scores[hyperNode] -= weightFactor * FullScore
+			penalty := weightFactor * FullScore * float64(peerCount) / float64(maxPeerCount)
+			scores[hyperNode] -= penalty
 			if scores[hyperNode] < ZeroScore {
 				scores[hyperNode] = ZeroScore
 			}
-			klog.V(4).Infof("subGroup anti-affinity: preferred score detail, job=%s, subJob=%s, hyperNode=%s, termIndex=%d, weight=%d, scoreBefore=%.2f, scoreAfter=%.2f",
-				klog.KRef(job.Namespace, job.Name), subJob.UID, hyperNode, termIndex, term.Weight, scoreBefore, scores[hyperNode])
+			klog.V(4).Infof("subGroup anti-affinity: preferred score detail, job=%s, subJob=%s, hyperNode=%s, termIndex=%d, weight=%d, peerCount=%d, maxPeerCount=%d, normalizedPenalty=%.2f, scoreBefore=%.2f, scoreAfter=%.2f",
+				klog.KRef(job.Namespace, job.Name), subJob.UID, hyperNode, termIndex, term.Weight, peerCount, maxPeerCount,
+				penalty, scoreBefore, scores[hyperNode])
 		}
 	}
 	return nil
@@ -867,6 +880,24 @@ func peerSubJobOccupiedHyperNodesAtTier(
 	antiAffinity bool,
 ) sets.Set[string] {
 	occupied := sets.New[string]()
+	for hyperNode := range peerSubJobOccupiedHyperNodeCountsAtTier(
+		job, selfSubJob, term, hyperNodes, tier, nodesByHyperNode, antiAffinity,
+	) {
+		occupied.Insert(hyperNode)
+	}
+	return occupied
+}
+
+func peerSubJobOccupiedHyperNodeCountsAtTier(
+	job *api.JobInfo,
+	selfSubJob *api.SubJobInfo,
+	term scheduling.SubGroupAffinityTerm,
+	hyperNodes api.HyperNodeInfoMap,
+	tier int,
+	nodesByHyperNode map[string]sets.Set[string],
+	antiAffinity bool,
+) map[string]int {
+	occupiedCounts := make(map[string]int)
 	selfPolicy := api.SubJobPolicyName(selfSubJob)
 	for _, peerSubJob := range job.SubJobs {
 		if peerSubJob == nil || selfSubJob == nil || peerSubJob.UID == selfSubJob.UID {
@@ -877,10 +908,10 @@ func peerSubJobOccupiedHyperNodesAtTier(
 			continue
 		}
 		for hyperNode := range api.CollectSubJobOccupiedHyperNodesAtTier(peerSubJob, hyperNodes, tier, nodesByHyperNode) {
-			occupied.Insert(hyperNode)
+			occupiedCounts[hyperNode]++
 		}
 	}
-	return occupied
+	return occupiedCounts
 }
 
 func subGroupPeerMatchesTerm(selfPolicy, peerPolicy string, term scheduling.SubGroupAffinityTerm, antiAffinity bool) bool {
