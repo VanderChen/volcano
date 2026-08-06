@@ -61,6 +61,9 @@ const (
 	// Its Tier value is set to the maximum existing Tier + 1 among real HyperNodes. This is recalculated every time a session opens.
 	// If no real HyperNodes exist in the cluster, this virtual top-tier HyperNode will still exist with Tier = 1 and will encompass all Nodes in the cluster.
 	ClusterTopHyperNode = "<cluster-top-hypernode>"
+	// defaultSoftNetworkTopologyTier is the scheduler-internal representation
+	// for soft network topology when no highest tier is specified.
+	defaultSoftNetworkTopologyTier = 1
 )
 
 // Session information for the current session
@@ -1001,9 +1004,9 @@ func (ssn *Session) IsJobTerminated(jobId api.JobID) bool {
 	return ssn.cache.IsJobTerminated(jobId)
 }
 
-// adjustNetworkTopologySpec translates highestTierName in scheduler-internal
-// network topology copies into highestTierAllowed while preserving the
-// user-configured hard or soft mode.
+// adjustNetworkTopologySpec resolves the highest tier in scheduler-internal
+// network topology copies while preserving the user-configured hard or soft
+// mode. Soft topology without an explicit highest tier is normalized to tier 1.
 func (ssn *Session) adjustNetworkTopologySpec() {
 	klog.V(3).Infof("Start adjusting jobs' network topology spec according to hyperNodeTierNameMap %v", ssn.HyperNodeTierNameMap)
 	defer klog.V(3).Infof("Finish adjusting jobs' network topology spec according to hyperNodeTierNameMap %v", ssn.HyperNodeTierNameMap)
@@ -1013,38 +1016,49 @@ func (ssn *Session) adjustNetworkTopologySpec() {
 			continue
 		}
 
-		translated, err := translateHighestTierNameToAllowed(job.NetworkTopology, ssn.HyperNodeTierNameMap)
+		adjusted, err := adjustNetworkTopologyTier(job.NetworkTopology, ssn.HyperNodeTierNameMap)
 		if err != nil {
-			klog.Warningf("Failed to translate highestTierName for job %s/%s: %v, skip translation", job.Namespace, job.Name, err)
-		} else if translated {
-			klog.V(4).Infof("Translated highestTierName for job %s/%s, new highestTierAllowed is %d",
+			klog.Warningf("Failed to adjust network topology tier for job %s/%s: %v, skip adjustment", job.Namespace, job.Name, err)
+		} else if adjusted {
+			klog.V(4).Infof("Adjusted network topology tier for job %s/%s, new highestTierAllowed is %d",
 				job.Namespace, job.Name, *job.NetworkTopology.HighestTierAllowed)
 		}
 
 		// NetworkTopology of SubJob is derived from the original job or SubGroupPolicy NetworkTopology,
 		// and will be used by plugins like network-topology-aware.
 		for _, subJob := range job.SubJobs {
-			translated, err = translateHighestTierNameToAllowed(subJob.NetworkTopology, ssn.HyperNodeTierNameMap)
+			adjusted, err = adjustNetworkTopologyTier(subJob.NetworkTopology, ssn.HyperNodeTierNameMap)
 			if err != nil {
-				klog.Warningf("Failed to translate highestTierName for subJob %s of job %s/%s: %v, skip translation",
+				klog.Warningf("Failed to adjust network topology tier for subJob %s of job %s/%s: %v, skip adjustment",
 					subJob.UID, job.Namespace, job.Name, err)
-			} else if translated {
-				klog.V(4).Infof("Translated highestTierName for subJob %s of job %s/%s, new highestTierAllowed is %d",
+			} else if adjusted {
+				klog.V(4).Infof("Adjusted network topology tier for subJob %s of job %s/%s, new highestTierAllowed is %d",
 					subJob.UID, job.Namespace, job.Name, *subJob.NetworkTopology.HighestTierAllowed)
 			}
 		}
 	}
 }
 
-func translateHighestTierNameToAllowed(spec *scheduling.NetworkTopologySpec, nameMap api.HyperNodeTierNameMap) (bool, error) {
-	if spec != nil && spec.HighestTierAllowed == nil && spec.HighestTierName != "" {
-		if tier, ok := nameMap[spec.HighestTierName]; ok {
-			spec.HighestTierAllowed = &tier
-			spec.HighestTierName = ""
-			return true, nil
-		} else {
+func adjustNetworkTopologyTier(spec *scheduling.NetworkTopologySpec, nameMap api.HyperNodeTierNameMap) (bool, error) {
+	if spec == nil || spec.HighestTierAllowed != nil {
+		return false, nil
+	}
+
+	if spec.HighestTierName != "" {
+		tier, found := nameMap[spec.HighestTierName]
+		if !found {
 			return false, fmt.Errorf("failed to find hypernode tier name %s", spec.HighestTierName)
 		}
+		spec.HighestTierAllowed = &tier
+		spec.HighestTierName = ""
+		return true, nil
 	}
+
+	if spec.Mode == scheduling.SoftNetworkTopologyMode {
+		tier := defaultSoftNetworkTopologyTier
+		spec.HighestTierAllowed = &tier
+		return true, nil
+	}
+
 	return false, nil
 }

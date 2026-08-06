@@ -85,6 +85,7 @@ func TestPreferJobSoftTopologyCandidates(t *testing.T) {
 	}
 	alloc := &Action{session: &framework.Session{HyperNodes: hyperNodes}}
 	jobTier := 2
+	jobTierOne := 1
 
 	newJob := func(mode scheduling.NetworkTopologyMode, tier *int, withPeer bool, jobAnchor, currentAnchor string) (*api.JobInfo, *api.SubJobInfo) {
 		if jobAnchor == "" {
@@ -149,7 +150,15 @@ func TestPreferJobSoftTopologyCandidates(t *testing.T) {
 			want:     []string{"a-tier1b", "b-tier1"},
 		},
 		{
-			name:     "does not constrain without a job tier",
+			name:     "explicit tier one keeps candidates in the same tier one domain",
+			mode:     scheduling.SoftNetworkTopologyMode,
+			tier:     &jobTierOne,
+			withPeer: true,
+			input:    []string{"a-tier1", "a-tier1b", "b-tier1"},
+			want:     []string{"a-tier1"},
+		},
+		{
+			name:     "leaves unnormalized nil tier unchanged",
 			mode:     scheduling.SoftNetworkTopologyMode,
 			withPeer: true,
 			input:    []string{"a-tier1b", "b-tier1"},
@@ -200,6 +209,7 @@ func TestPreferJobSoftTopologyScoreCandidates(t *testing.T) {
 	}
 	alloc := &Action{session: &framework.Session{HyperNodes: hyperNodes}}
 	jobTier := 2
+	jobTierOne := 1
 
 	newJob := func(mode scheduling.NetworkTopologyMode, tier *int, withPolicy bool, jobAnchor string) *api.JobInfo {
 		policies := []scheduling.SubGroupPolicySpec(nil)
@@ -261,7 +271,16 @@ func TestPreferJobSoftTopologyScoreCandidates(t *testing.T) {
 			want:       map[string]float64{"a-tier1b": 10, "b-tier1": 100},
 		},
 		{
-			name:       "does not constrain without a job tier",
+			name:       "explicit tier one keeps scores in the same tier one domain",
+			mode:       scheduling.SoftNetworkTopologyMode,
+			tier:       &jobTierOne,
+			withPolicy: true,
+			jobAnchor:  "a-tier1",
+			input:      map[string]float64{"a-tier1": 1, "a-tier1b": 10, "b-tier1": 100},
+			want:       map[string]float64{"a-tier1": 1},
+		},
+		{
+			name:       "leaves unnormalized nil tier unchanged",
 			mode:       scheduling.SoftNetworkTopologyMode,
 			withPolicy: true,
 			jobAnchor:  "a-tier1",

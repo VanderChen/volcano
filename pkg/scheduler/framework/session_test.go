@@ -160,12 +160,14 @@ func TestSession_adjustNetworkTopologySpec(t *testing.T) {
 						PodGroup: scheduling.PodGroup{
 							Spec: scheduling.PodGroupSpec{
 								NetworkTopology: &scheduling.NetworkTopologySpec{
+									Mode:               scheduling.SoftNetworkTopologyMode,
 									HighestTierName:    "volcano.sh/hypercluster-test",
 									HighestTierAllowed: nil,
 								},
 								SubGroupPolicy: []scheduling.SubGroupPolicySpec{
 									{
 										NetworkTopology: &scheduling.NetworkTopologySpec{
+											Mode:               scheduling.SoftNetworkTopologyMode,
 											HighestTierName:    "volcano.sh/hypernode-test",
 											HighestTierAllowed: nil,
 										},
@@ -177,8 +179,9 @@ func TestSession_adjustNetworkTopologySpec(t *testing.T) {
 					SubJobs: map[api.SubJobID]*api.SubJobInfo{
 						"test-uid": {
 							NetworkTopology: &scheduling.NetworkTopologySpec{
-								HighestTierName:    "volcano.sh/hypernode",
-								HighestTierAllowed: ptr.To(1),
+								Mode:               scheduling.SoftNetworkTopologyMode,
+								HighestTierName:    "volcano.sh/hypernode-test",
+								HighestTierAllowed: nil,
 							},
 						},
 					},
@@ -194,12 +197,14 @@ func TestSession_adjustNetworkTopologySpec(t *testing.T) {
 						PodGroup: scheduling.PodGroup{
 							Spec: scheduling.PodGroupSpec{
 								NetworkTopology: &scheduling.NetworkTopologySpec{
+									Mode:               scheduling.SoftNetworkTopologyMode,
 									HighestTierName:    "volcano.sh/hypercluster-test",
 									HighestTierAllowed: nil,
 								},
 								SubGroupPolicy: []scheduling.SubGroupPolicySpec{
 									{
 										NetworkTopology: &scheduling.NetworkTopologySpec{
+											Mode:               scheduling.SoftNetworkTopologyMode,
 											HighestTierName:    "volcano.sh/hypernode-test",
 											HighestTierAllowed: nil,
 										},
@@ -211,8 +216,9 @@ func TestSession_adjustNetworkTopologySpec(t *testing.T) {
 					SubJobs: map[api.SubJobID]*api.SubJobInfo{
 						"test-uid": {
 							NetworkTopology: &scheduling.NetworkTopologySpec{
-								HighestTierName:    "volcano.sh/hypernode",
-								HighestTierAllowed: ptr.To(1),
+								Mode:               scheduling.SoftNetworkTopologyMode,
+								HighestTierName:    "volcano.sh/hypernode-test",
+								HighestTierAllowed: nil,
 							},
 						},
 					},
@@ -312,6 +318,80 @@ func TestAdjustNetworkTopologySpec_DoesNotMutatePodGroupSpec(t *testing.T) {
 	assert.Equal(t, ptr.To(1), job.SubJobs["test-job/worker/0"].NetworkTopology.HighestTierAllowed)
 }
 
+func TestAdjustNetworkTopologySpec_DefaultSoftTierDoesNotMutatePodGroupSpec(t *testing.T) {
+	job := api.NewJobInfo("test-job")
+	pg := &api.PodGroup{
+		PodGroup: scheduling.PodGroup{
+			Spec: scheduling.PodGroupSpec{
+				NetworkTopology: &scheduling.NetworkTopologySpec{Mode: scheduling.SoftNetworkTopologyMode},
+				SubGroupPolicy: []scheduling.SubGroupPolicySpec{
+					{
+						Name:            "worker",
+						SubGroupSize:    ptr.To(int32(1)),
+						NetworkTopology: &scheduling.NetworkTopologySpec{Mode: scheduling.SoftNetworkTopologyMode},
+					},
+				},
+			},
+		},
+	}
+	job.SetPodGroup(pg)
+	job.SubJobs["test-job/worker/0"] = api.NewSubJobInfo(
+		"test-job/worker", "test-job/worker/0", job.UID, &pg.Spec.SubGroupPolicy[0], []string{"0"},
+	)
+
+	ssn := &Session{Jobs: map[api.JobID]*api.JobInfo{job.UID: job}}
+	ssn.adjustNetworkTopologySpec()
+
+	assert.Nil(t, pg.Spec.NetworkTopology.HighestTierAllowed)
+	assert.Nil(t, pg.Spec.SubGroupPolicy[0].NetworkTopology.HighestTierAllowed)
+	assert.Equal(t, ptr.To(defaultSoftNetworkTopologyTier), job.NetworkTopology.HighestTierAllowed)
+	assert.Equal(t, ptr.To(defaultSoftNetworkTopologyTier),
+		job.SubJobs["test-job/worker/0"].NetworkTopology.HighestTierAllowed)
+}
+
+func TestAdjustNetworkTopologySpec_DefaultSoftTierEqualsExplicitTierOne(t *testing.T) {
+	newJob := func(highestTierAllowed *int) *api.JobInfo {
+		job := api.NewJobInfo("test-job")
+		pg := &api.PodGroup{
+			PodGroup: scheduling.PodGroup{
+				Spec: scheduling.PodGroupSpec{
+					NetworkTopology: &scheduling.NetworkTopologySpec{
+						Mode:               scheduling.SoftNetworkTopologyMode,
+						HighestTierAllowed: highestTierAllowed,
+					},
+					SubGroupPolicy: []scheduling.SubGroupPolicySpec{
+						{
+							Name:         "worker",
+							SubGroupSize: ptr.To(int32(1)),
+							NetworkTopology: &scheduling.NetworkTopologySpec{
+								Mode:               scheduling.SoftNetworkTopologyMode,
+								HighestTierAllowed: highestTierAllowed,
+							},
+						},
+					},
+				},
+			},
+		}
+		job.SetPodGroup(pg)
+		job.SubJobs["test-job/worker/0"] = api.NewSubJobInfo(
+			"test-job/worker", "test-job/worker/0", job.UID, &pg.Spec.SubGroupPolicy[0], []string{"0"},
+		)
+		return job
+	}
+
+	defaultJob := newJob(nil)
+	explicitJob := newJob(ptr.To(1))
+	defaultSession := &Session{Jobs: map[api.JobID]*api.JobInfo{defaultJob.UID: defaultJob}}
+	explicitSession := &Session{Jobs: map[api.JobID]*api.JobInfo{explicitJob.UID: explicitJob}}
+
+	defaultSession.adjustNetworkTopologySpec()
+	explicitSession.adjustNetworkTopologySpec()
+
+	assert.Equal(t, explicitJob.NetworkTopology, defaultJob.NetworkTopology)
+	assert.Equal(t, explicitJob.SubJobs["test-job/worker/0"].NetworkTopology,
+		defaultJob.SubJobs["test-job/worker/0"].NetworkTopology)
+}
+
 func TestAdjustNetworkTopologySpec_NilPodGroup(t *testing.T) {
 	job := api.NewJobInfo("test-job")
 	ssn := &Session{Jobs: map[api.JobID]*api.JobInfo{job.UID: job}}
@@ -364,7 +444,7 @@ func TestAdjustNetworkTopologySpec_PreservesTopologyMode(t *testing.T) {
 			wantJobTier: ptr.To(2),
 		},
 		{
-			name: "pure soft topology without tierName remains unchanged",
+			name: "pure soft topology without tierName defaults to tier one",
 			jobs: map[api.JobID]*api.JobInfo{
 				"test-uid": {
 					PodGroup: &api.PodGroup{
@@ -384,6 +464,29 @@ func TestAdjustNetworkTopologySpec_PreservesTopologyMode(t *testing.T) {
 				ClusterTopHyperNode: api.NewHyperNodeInfo(topHn),
 			},
 			wantJobMode: scheduling.SoftNetworkTopologyMode,
+			wantJobTier: ptr.To(1),
+		},
+		{
+			name: "hard topology without a highest tier remains unchanged",
+			jobs: map[api.JobID]*api.JobInfo{
+				"test-uid": {
+					PodGroup: &api.PodGroup{
+						PodGroup: scheduling.PodGroup{
+							Spec: scheduling.PodGroupSpec{
+								NetworkTopology: &scheduling.NetworkTopologySpec{
+									Mode: scheduling.HardNetworkTopologyMode,
+								},
+							},
+						},
+					},
+					SubJobs: map[api.SubJobID]*api.SubJobInfo{},
+				},
+			},
+			nameMap: api.HyperNodeTierNameMap{},
+			hyperNodes: api.HyperNodeInfoMap{
+				ClusterTopHyperNode: api.NewHyperNodeInfo(topHn),
+			},
+			wantJobMode: scheduling.HardNetworkTopologyMode,
 			wantJobTier: nil,
 		},
 		{
