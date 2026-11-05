@@ -1,0 +1,99 @@
+apiVersion: v1
+kind: List
+items:
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: bug019-a
+  spec:
+    tier: 1
+    tierName: volcano.sh/hypernode
+    members:
+    - type: Node
+      selector:
+        exactMatch:
+          name: volcano-dev-019-worker
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: bug019-b
+  spec:
+    tier: 1
+    tierName: volcano.sh/hypernode
+    members:
+    - type: Node
+      selector:
+        exactMatch:
+          name: volcano-dev-019-worker2
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: bug019-c
+  spec:
+    tier: 1
+    tierName: volcano.sh/hypernode
+    members:
+    - type: Node
+      selector:
+        exactMatch:
+          name: volcano-dev-019-worker3
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: bug019-d
+  spec:
+    tier: 1
+    tierName: volcano.sh/hypernode
+    members:
+    - type: Node
+      selector:
+        exactMatch:
+          name: volcano-dev-019-worker4
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: bug019-pair-ab
+  spec:
+    tier: 2
+    tierName: volcano.sh/hyperinstance-group
+    members:
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: bug019-a
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: bug019-b
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: bug019-pair-cd
+  spec:
+    tier: 2
+    tierName: volcano.sh/hyperinstance-group
+    members:
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: bug019-c
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: bug019-d
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: bug019-root
+  spec:
+    tier: 3
+    tierName: volcano.sh/hypercluster
+    members:
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: bug019-pair-ab
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: bug019-pair-cd

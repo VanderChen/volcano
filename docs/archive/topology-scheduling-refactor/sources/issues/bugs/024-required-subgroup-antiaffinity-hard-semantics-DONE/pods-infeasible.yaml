@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: List
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    name: req024-infeasible-requested-0
+    namespace: req024
+    annotations: {scheduling.k8s.io/group-name: req024-infeasible-requested}
+    labels: {role: prefill, shard: "0", test: req024-infeasible-requested}
+  spec:
+    schedulerName: volcano
+    containers:
+    - name: pause
+      image: registry.k8s.io/pause:3.10.1
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests: {cpu: 10m, memory: 8Mi}
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    name: req024-infeasible-requested-1
+    namespace: req024
+    annotations: {scheduling.k8s.io/group-name: req024-infeasible-requested}
+    labels: {role: prefill, shard: "1", test: req024-infeasible-requested}
+  spec:
+    schedulerName: volcano
+    containers:
+    - name: pause
+      image: registry.k8s.io/pause:3.10.1
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests: {cpu: 10m, memory: 8Mi}
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    name: req024-infeasible-requested-2
+    namespace: req024
+    annotations: {scheduling.k8s.io/group-name: req024-infeasible-requested}
+    labels: {role: prefill, shard: "2", test: req024-infeasible-requested}
+  spec:
+    schedulerName: volcano
+    containers:
+    - name: pause
+      image: registry.k8s.io/pause:3.10.1
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests: {cpu: 10m, memory: 8Mi}
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    name: req024-infeasible-requested-3
+    namespace: req024
+    annotations: {scheduling.k8s.io/group-name: req024-infeasible-requested}
+    labels: {role: prefill, shard: "3", test: req024-infeasible-requested}
+  spec:
+    schedulerName: volcano
+    containers:
+    - name: pause
+      image: registry.k8s.io/pause:3.10.1
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests: {cpu: 10m, memory: 8Mi}
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    name: req024-infeasible-requested-4
+    namespace: req024
+    annotations: {scheduling.k8s.io/group-name: req024-infeasible-requested}
+    labels: {role: prefill, shard: "4", test: req024-infeasible-requested}
+  spec:
+    schedulerName: volcano
+    containers:
+    - name: pause
+      image: registry.k8s.io/pause:3.10.1
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests: {cpu: 10m, memory: 8Mi}

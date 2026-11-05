@@ -1,0 +1,43 @@
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: pg-myq
+  namespace: default
+spec:
+  minMember: 4
+  queue: default
+  subGroupPolicy:
+  - name: prefill
+    labelSelector:
+      matchLabels:
+        role: prefill
+    matchLabelKeys:
+    - shard
+    subGroupSize: 1
+    minSubGroups: 2
+  - name: decode
+    labelSelector:
+      matchLabels:
+        role: decode
+    matchLabelKeys:
+    - shard
+    subGroupSize: 1
+    minSubGroups: 2
+  topologyAffinity:
+    subGroupAntiAffinity:
+      preferred:
+      - subGroups:
+        - prefill
+        weight: 100
+        topologyTierName: hypernode
+      - subGroups:
+        - decode
+        weight: 100
+        topologyTierName: hypernode
+    subGroupAffinity:
+      preferred:
+      - subGroups:
+        - prefill
+        - decode
+        weight: 100
+        topologyTierName: hyperinstance-group

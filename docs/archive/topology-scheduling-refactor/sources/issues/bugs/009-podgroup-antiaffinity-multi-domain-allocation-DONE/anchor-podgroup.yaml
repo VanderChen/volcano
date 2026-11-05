@@ -1,0 +1,10 @@
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: bug009-anchor
+  namespace: default
+  labels:
+    topology.volcano.sh/group: llama-70b-prod
+spec:
+  minMember: 1
+  queue: default

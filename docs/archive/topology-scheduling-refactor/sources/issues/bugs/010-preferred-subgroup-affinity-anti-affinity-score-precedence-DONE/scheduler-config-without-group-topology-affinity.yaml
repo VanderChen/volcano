@@ -1,0 +1,25 @@
+# Negative control matching the reported snippet: naming group-topology-affinity
+# under nodeorder arguments does not load the group-topology-affinity plugin.
+actions: "enqueue, allocate, backfill"
+tiers:
+- plugins:
+  - name: priority
+  - name: gang
+    enablePreemptable: false
+  - name: conformance
+- plugins:
+  - name: overcommit
+  - name: drf
+    enablePreemptable: false
+  - name: predicates
+  - name: proportion
+  - name: nodeorder
+    arguments:
+      weight: 1000
+      name: group-topology-affinity
+  - name: binpack
+  - name: network-topology-aware
+    enabledHyperNodeGradient: true
+    enabledHyperNodeOrder: true
+    arguments:
+      weight: 100

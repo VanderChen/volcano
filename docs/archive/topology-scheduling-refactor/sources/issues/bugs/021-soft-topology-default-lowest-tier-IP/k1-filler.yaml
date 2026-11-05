@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: k1-filler-hn-c
+  namespace: default
+  labels:
+    scenario: soft-default-k1
+spec:
+  nodeName: volcano-dev-021-worker3
+  containers:
+  - name: nginx
+    image: nginx:1.27-alpine
+    imagePullPolicy: IfNotPresent
+    resources:
+      requests:
+        cpu: 8000m
+        memory: 50Mi
+      limits:
+        cpu: 8000m
+        memory: 50Mi

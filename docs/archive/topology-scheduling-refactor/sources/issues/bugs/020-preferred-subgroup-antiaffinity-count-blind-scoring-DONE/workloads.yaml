@@ -1,0 +1,127 @@
+apiVersion: v1
+kind: List
+items:
+- &decode
+  apiVersion: v1
+  kind: Pod
+  metadata:
+    name: bug020-decode-0
+    namespace: default
+    labels: {issue: "020", case: layout, role: decode, shard: shard-0}
+    annotations: {scheduling.k8s.io/group-name: bug-pg}
+  spec:
+    schedulerName: volcano
+    restartPolicy: Never
+    terminationGracePeriodSeconds: 0
+    containers:
+    - name: sleeper
+      image: busybox:1.36
+      imagePullPolicy: IfNotPresent
+      command: ["/bin/sh", "-c", "sleep 3600"]
+      resources:
+        requests: {cpu: 10m, memory: 16Mi, example.com/gpu: "2"}
+        limits: {example.com/gpu: "2"}
+- <<: *decode
+  metadata:
+    name: bug020-decode-1
+    namespace: default
+    labels: {issue: "020", case: layout, role: decode, shard: shard-1}
+    annotations: {scheduling.k8s.io/group-name: bug-pg}
+- <<: *decode
+  metadata:
+    name: bug020-decode-2
+    namespace: default
+    labels: {issue: "020", case: layout, role: decode, shard: shard-2}
+    annotations: {scheduling.k8s.io/group-name: bug-pg}
+- <<: *decode
+  metadata:
+    name: bug020-decode-3
+    namespace: default
+    labels: {issue: "020", case: layout, role: decode, shard: shard-3}
+    annotations: {scheduling.k8s.io/group-name: bug-pg}
+- <<: *decode
+  metadata:
+    name: bug020-decode-4
+    namespace: default
+    labels: {issue: "020", case: layout, role: decode, shard: shard-4}
+    annotations: {scheduling.k8s.io/group-name: bug-pg}
+- <<: *decode
+  metadata:
+    name: bug020-decode-5
+    namespace: default
+    labels: {issue: "020", case: layout, role: decode, shard: shard-5}
+    annotations: {scheduling.k8s.io/group-name: bug-pg}
+- <<: *decode
+  metadata:
+    name: bug020-decode-6
+    namespace: default
+    labels: {issue: "020", case: layout, role: decode, shard: shard-6}
+    annotations: {scheduling.k8s.io/group-name: bug-pg}
+- <<: *decode
+  metadata:
+    name: bug020-decode-7
+    namespace: default
+    labels: {issue: "020", case: layout, role: decode, shard: shard-7}
+    annotations: {scheduling.k8s.io/group-name: bug-pg}
+- &prefill
+  apiVersion: v1
+  kind: Pod
+  metadata:
+    name: bug020-prefill-0
+    namespace: default
+    labels: {issue: "020", case: layout, role: prefill, shard: shard-0}
+    annotations: {scheduling.k8s.io/group-name: bug-pg}
+  spec:
+    schedulerName: volcano
+    restartPolicy: Never
+    terminationGracePeriodSeconds: 0
+    containers:
+    - name: sleeper
+      image: busybox:1.36
+      imagePullPolicy: IfNotPresent
+      command: ["/bin/sh", "-c", "sleep 3600"]
+      resources:
+        requests: {cpu: 10m, memory: 16Mi, example.com/gpu: "1"}
+        limits: {example.com/gpu: "1"}
+- <<: *prefill
+  metadata:
+    name: bug020-prefill-1
+    namespace: default
+    labels: {issue: "020", case: layout, role: prefill, shard: shard-1}
+    annotations: {scheduling.k8s.io/group-name: bug-pg}
+- <<: *prefill
+  metadata:
+    name: bug020-prefill-2
+    namespace: default
+    labels: {issue: "020", case: layout, role: prefill, shard: shard-2}
+    annotations: {scheduling.k8s.io/group-name: bug-pg}
+- <<: *prefill
+  metadata:
+    name: bug020-prefill-3
+    namespace: default
+    labels: {issue: "020", case: layout, role: prefill, shard: shard-3}
+    annotations: {scheduling.k8s.io/group-name: bug-pg}
+- <<: *prefill
+  metadata:
+    name: bug020-prefill-4
+    namespace: default
+    labels: {issue: "020", case: layout, role: prefill, shard: shard-4}
+    annotations: {scheduling.k8s.io/group-name: bug-pg}
+- <<: *prefill
+  metadata:
+    name: bug020-prefill-5
+    namespace: default
+    labels: {issue: "020", case: layout, role: prefill, shard: shard-5}
+    annotations: {scheduling.k8s.io/group-name: bug-pg}
+- <<: *prefill
+  metadata:
+    name: bug020-prefill-6
+    namespace: default
+    labels: {issue: "020", case: layout, role: prefill, shard: shard-6}
+    annotations: {scheduling.k8s.io/group-name: bug-pg}
+- <<: *prefill
+  metadata:
+    name: bug020-prefill-7
+    namespace: default
+    labels: {issue: "020", case: layout, role: prefill, shard: shard-7}
+    annotations: {scheduling.k8s.io/group-name: bug-pg}

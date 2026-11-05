@@ -1,0 +1,36 @@
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: bug004-k6-mixed
+  namespace: default
+spec:
+  queue: default
+  minMember: 1
+  networkTopology:
+    mode: soft
+    highestTierName: tier2
+  subGroupPolicy:
+  - name: soft
+    labelSelector:
+      matchLabels: {bug004-case: k6, role: soft}
+    matchLabelKeys: [shard]
+    subGroupSize: 1
+    minSubGroups: 0
+    networkTopology:
+      mode: soft
+      highestTierName: tier1
+  - name: hard
+    labelSelector:
+      matchLabels: {bug004-case: k6, role: hard}
+    matchLabelKeys: [shard]
+    subGroupSize: 1
+    minSubGroups: 0
+    networkTopology:
+      mode: hard
+      highestTierName: tier2
+  - name: neutral
+    labelSelector:
+      matchLabels: {bug004-case: k6, role: neutral}
+    matchLabelKeys: [shard]
+    subGroupSize: 1
+    minSubGroups: 0

@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: List
+items:
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: bug022-a-t1
+  spec:
+    tier: 1
+    tierName: volcano.sh/hypernode
+    members:
+    - type: Node
+      selector:
+        exactMatch:
+          name: volcano-dev-022-worker
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: bug022-b-t1
+  spec:
+    tier: 1
+    tierName: volcano.sh/hypernode
+    members:
+    - type: Node
+      selector:
+        exactMatch:
+          name: volcano-dev-022-worker2
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: bug022-c-t1
+  spec:
+    tier: 1
+    tierName: volcano.sh/hypernode
+    members:
+    - type: Node
+      selector:
+        exactMatch:
+          name: volcano-dev-022-worker3
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: bug022-a-t2
+  spec:
+    tier: 2
+    tierName: volcano.sh/hyperinstance-group
+    members:
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: bug022-a-t1
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: bug022-b-t2
+  spec:
+    tier: 2
+    tierName: volcano.sh/hyperinstance-group
+    members:
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: bug022-b-t1
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: bug022-c-t2
+  spec:
+    tier: 2
+    tierName: volcano.sh/hyperinstance-group
+    members:
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: bug022-c-t1
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: bug022-shared-t3
+  spec:
+    tier: 3
+    tierName: volcano.sh/hypercluster
+    members:
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: bug022-a-t2
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: bug022-b-t2
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: bug022-c-t2

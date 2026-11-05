@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bug004-k3-a
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bug004-k3-a
+  template:
+    metadata:
+      labels:
+        app: bug004-k3-a
+        bug004-case: k3
+        role: a
+        shard: "0"
+      annotations:
+        scheduling.k8s.io/group-name: bug004-k3-hard-soft-combo
+    spec:
+      schedulerName: volcano
+      nodeSelector:
+        bug004/k3-a: "true"
+      containers:
+      - name: worker
+        image: busybox:1.36
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "sleep 360000"]
+        resources:
+          requests:
+            cpu: "4"
+            memory: 64Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bug004-k3-b
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bug004-k3-b
+  template:
+    metadata:
+      labels:
+        app: bug004-k3-b
+        bug004-case: k3
+        role: b
+        shard: "0"
+      annotations:
+        scheduling.k8s.io/group-name: bug004-k3-hard-soft-combo
+    spec:
+      schedulerName: volcano
+      nodeSelector:
+        bug004/k3-b: "true"
+      containers:
+      - name: worker
+        image: busybox:1.36
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "sleep 360000"]
+        resources:
+          requests:
+            cpu: "4"
+            memory: 64Mi

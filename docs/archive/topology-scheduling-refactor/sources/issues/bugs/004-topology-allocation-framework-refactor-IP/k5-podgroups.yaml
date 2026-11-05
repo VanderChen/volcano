@@ -1,0 +1,54 @@
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: bug004-k5-hard-zero
+  namespace: default
+spec:
+  queue: default
+  minMember: 0
+  subGroupPolicy:
+  - name: role-a
+    labelSelector:
+      matchLabels: {bug004-case: k5-hard, role: a}
+    matchLabelKeys: [shard]
+    subGroupSize: 1
+    minSubGroups: 0
+  - name: role-b
+    labelSelector:
+      matchLabels: {bug004-case: k5-hard, role: b}
+    matchLabelKeys: [shard]
+    subGroupSize: 1
+    minSubGroups: 0
+  topologyAffinity:
+    subGroupAffinity:
+      required:
+      - subGroups: [role-a, role-b]
+        topologyTierName: tier2
+---
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: bug004-k5-preferred-zero
+  namespace: default
+spec:
+  queue: default
+  minMember: 0
+  subGroupPolicy:
+  - name: role-a
+    labelSelector:
+      matchLabels: {bug004-case: k5-preferred, role: a}
+    matchLabelKeys: [shard]
+    subGroupSize: 1
+    minSubGroups: 0
+  - name: role-b
+    labelSelector:
+      matchLabels: {bug004-case: k5-preferred, role: b}
+    matchLabelKeys: [shard]
+    subGroupSize: 1
+    minSubGroups: 0
+  topologyAffinity:
+    subGroupAffinity:
+      preferred:
+      - subGroups: [role-a, role-b]
+        topologyTierName: tier2
+        weight: 100

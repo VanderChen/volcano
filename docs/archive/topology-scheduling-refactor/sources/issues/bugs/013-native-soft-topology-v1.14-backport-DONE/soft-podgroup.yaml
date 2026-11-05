@@ -1,0 +1,34 @@
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: pg-soft-native
+  namespace: default
+spec:
+  minMember: 4
+  queue: default
+  networkTopology:
+    mode: soft
+    highestTierName: hyperinstance-group
+  subGroupPolicy:
+  - name: role-a
+    labelSelector:
+      matchLabels:
+        role: role-a
+    matchLabelKeys:
+    - shard
+    subGroupSize: 2
+    minSubGroups: 1
+    networkTopology:
+      mode: soft
+      highestTierName: hypernode
+  - name: role-b
+    labelSelector:
+      matchLabels:
+        role: role-b
+    matchLabelKeys:
+    - shard
+    subGroupSize: 2
+    minSubGroups: 1
+    networkTopology:
+      mode: soft
+      highestTierName: hypernode

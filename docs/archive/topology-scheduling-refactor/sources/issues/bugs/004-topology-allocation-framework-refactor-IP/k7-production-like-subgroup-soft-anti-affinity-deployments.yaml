@@ -1,0 +1,66 @@
+# Apply only after k7-production-like-subgroup-soft-anti-affinity.yaml.
+# The two Pods share the role-0 SubGroupPolicy but have different
+# role-0-group labels, creating distinct SubJobs.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bug004-k7-role-0-a
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bug004-k7-role-0-a
+  template:
+    metadata:
+      labels:
+        app: bug004-k7-role-0-a
+        app.modelarts.huaweicloud/role: role-0
+        app.modelarts.huaweicloud/role-0-group: a
+      annotations:
+        scheduling.k8s.io/group-name: bug004-k7-production-like
+    spec:
+      schedulerName: volcano
+      nodeSelector:
+        volcano-user-k7/candidate: "true"
+      containers:
+      - name: worker
+        image: busybox:1.36
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "sleep 360000"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bug004-k7-role-0-b
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bug004-k7-role-0-b
+  template:
+    metadata:
+      labels:
+        app: bug004-k7-role-0-b
+        app.modelarts.huaweicloud/role: role-0
+        app.modelarts.huaweicloud/role-0-group: b
+      annotations:
+        scheduling.k8s.io/group-name: bug004-k7-production-like
+    spec:
+      schedulerName: volcano
+      nodeSelector:
+        volcano-user-k7/candidate: "true"
+      containers:
+      - name: worker
+        image: busybox:1.36
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "sleep 360000"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi

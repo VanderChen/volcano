@@ -1,0 +1,17 @@
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: bug022-insufficient
+  namespace: default
+  labels:
+    topology.volcano.sh/group: candidate-forest-memory
+spec:
+  minMember: 1
+  minResources:
+    cpu: "30"
+  queue: default
+  topologyAffinity:
+    podGroupAntiAffinity:
+      required:
+      - podGroupSelector: {}
+        topologyTierName: volcano.sh/hyperinstance-group

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llama-70b-anchor-0
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llama-70b-anchor-0
+  template:
+    metadata:
+      labels:
+        app: llama-70b-anchor-0
+      annotations:
+        scheduling.k8s.io/group-name: llama-70b-anchor-0
+    spec:
+      schedulerName: volcano
+      nodeSelector:
+        volcano-user-k8/anchor: "true"
+      containers:
+      - name: worker
+        image: busybox:1.36
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "sleep 360000"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi

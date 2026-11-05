@@ -1,0 +1,36 @@
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: bug-pg
+  namespace: default
+spec:
+  minMember: 16
+  queue: default
+  subGroupPolicy:
+  - name: prefill
+    labelSelector:
+      matchLabels:
+        role: prefill
+    matchLabelKeys:
+    - shard
+    subGroupSize: 1
+    minSubGroups: 8
+  - name: decode
+    labelSelector:
+      matchLabels:
+        role: decode
+    matchLabelKeys:
+    - shard
+    subGroupSize: 1
+    minSubGroups: 8
+  topologyAffinity:
+    subGroupAntiAffinity:
+      preferred:
+      - subGroups:
+        - prefill
+        topologyTierName: volcano.sh/hypernode
+        weight: 100
+      - subGroups:
+        - decode
+        topologyTierName: volcano.sh/hypernode
+        weight: 100

@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: List
+items:
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: bug020-a
+  spec:
+    tier: 1
+    tierName: volcano.sh/hypernode
+    members:
+    - type: Node
+      selector:
+        exactMatch:
+          name: volcano-dev-020-worker
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: bug020-b
+  spec:
+    tier: 1
+    tierName: volcano.sh/hypernode
+    members:
+    - type: Node
+      selector:
+        exactMatch:
+          name: volcano-dev-020-worker2
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: bug020-c
+  spec:
+    tier: 1
+    tierName: volcano.sh/hypernode
+    members:
+    - type: Node
+      selector:
+        exactMatch:
+          name: volcano-dev-020-worker3
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: bug020-root
+  spec:
+    tier: 2
+    tierName: volcano.sh/hypercluster
+    members:
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: bug020-a
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: bug020-b
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: bug020-c

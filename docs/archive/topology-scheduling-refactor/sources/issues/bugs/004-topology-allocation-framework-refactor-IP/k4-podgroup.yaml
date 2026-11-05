@@ -1,0 +1,23 @@
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: bug004-k4-partial-progress
+  namespace: default
+spec:
+  queue: default
+  minMember: 1
+  subGroupPolicy:
+  - name: worker
+    labelSelector:
+      matchLabels:
+        bug004-case: k4
+    matchLabelKeys:
+    - shard
+    subGroupSize: 1
+    minSubGroups: 1
+  topologyAffinity:
+    subGroupAntiAffinity:
+      required:
+      - subGroups:
+        - worker
+        topologyTierName: tier1

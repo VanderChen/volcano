@@ -1,0 +1,34 @@
+basic:
+  image_tag_version: dev-022-memory
+  image_pull_policy: IfNotPresent
+custom:
+  leader_elect_enable: false
+  scheduler_config_override: |
+    actions: "enqueue, allocate, backfill"
+    tiers:
+    - plugins:
+      - name: priority
+      - name: gang
+        enableJobStarving: false
+        enablePreemptable: false
+        enableReclaimable: false
+      - name: conformance
+      - name: capacity
+        enableHierarchy: true
+      - name: network-topology-aware
+        enabledHyperNodeGradient: true
+        enabledHyperNodeOrder: true
+        arguments:
+          weight: 10
+      - name: group-topology-affinity
+        enabledHyperNodeGradient: true
+        enabledHyperNodeOrder: true
+        arguments:
+          weight: 10
+    - plugins:
+      - name: drf
+        enablePreemptable: false
+        enableReclaimable: false
+      - name: predicates
+      - name: nodeorder
+

@@ -1,0 +1,24 @@
+actions: "enqueue, allocate, backfill"
+tiers:
+- plugins:
+  - name: priority
+  - name: gang
+    enablePreemptable: false
+  - name: conformance
+- plugins:
+  - name: overcommit
+  - name: drf
+    enablePreemptable: false
+  - name: predicates
+  - name: proportion
+  - name: nodeorder
+  - name: binpack
+  - name: network-topology-aware
+    enableNodeOrder: true
+    enabledHyperNodeOrder: true
+    enabledHyperNodeGradient: true
+    arguments:
+      weight: 100
+  - name: group-topology-affinity
+    enabledHyperNodeOrder: true
+    enabledHyperNodeGradient: true

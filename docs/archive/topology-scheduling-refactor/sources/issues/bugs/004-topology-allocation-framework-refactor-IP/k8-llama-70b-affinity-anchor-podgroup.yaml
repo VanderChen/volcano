@@ -1,0 +1,13 @@
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: llama-70b-anchor-0
+  namespace: default
+  labels:
+    topology.volcano.sh/group: llama-70b-prod
+spec:
+  minMember: 1
+  queue: default
+  networkTopology:
+    mode: hard
+    highestTierName: supernode

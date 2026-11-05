@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bug018-anchor
+  namespace: default
+  labels:
+    bug018.volcano.sh/role: anchor
+  annotations:
+    scheduling.k8s.io/group-name: bug018-anchor
+spec:
+  schedulerName: volcano
+  nodeSelector:
+    kubernetes.io/hostname: volcano-dev-018-worker
+  restartPolicy: Never
+  containers:
+  - name: pause
+    image: registry.k8s.io/pause:3.10
+    resources:
+      requests:
+        cpu: 10m
+        memory: 16Mi

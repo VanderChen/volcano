@@ -1,0 +1,38 @@
+# Same as user-job.yaml, except explicit requests make it non-BestEffort.
+# minPartitions is intentionally still omitted to reproduce the sequential
+# partition scheduling path created by the original manifest.
+apiVersion: batch.volcano.sh/v1alpha1
+kind: Job
+metadata:
+  name: bug2026052338589-vcjob-with-requests
+spec:
+  schedulerName: volcano
+  networkTopology:
+    mode: soft
+    highestTierAllowed: 2
+  tasks:
+    - name: ps
+      replicas: 4
+      partitionPolicy:
+        totalPartitions: 2
+        partitionSize: 2
+        networkTopology:
+          mode: soft
+          highestTierAllowed: 1
+      template:
+        spec:
+          containers:
+            - image: nginx:latest
+              command: ["/bin/sh", "-c", "sleep 1000"]
+              imagePullPolicy: IfNotPresent
+              name: ps
+              resources:
+                requests:
+                  cpu: "5"
+                  memory: 128Mi
+                limits:
+                  cpu: "5"
+                  memory: 128Mi
+          restartPolicy: OnFailure
+          imagePullSecrets:
+            - name: default-secret

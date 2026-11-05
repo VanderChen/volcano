@@ -1,0 +1,25 @@
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: pg-soft-default-k2
+  namespace: default
+spec:
+  minMember: 0
+  queue: default
+  networkTopology:
+    mode: soft
+  subGroupPolicy:
+  - name: role-a
+    labelSelector:
+      matchLabels:
+        role: role-a
+    matchLabelKeys:
+    - shard
+    subGroupSize: 1
+  - name: role-b
+    labelSelector:
+      matchLabels:
+        role: role-b
+    matchLabelKeys:
+    - shard
+    subGroupSize: 1

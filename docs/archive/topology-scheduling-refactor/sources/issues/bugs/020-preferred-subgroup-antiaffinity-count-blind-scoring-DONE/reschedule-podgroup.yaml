@@ -1,0 +1,24 @@
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: bug020-reschedule
+  namespace: default
+spec:
+  minMember: 4
+  queue: default
+  subGroupPolicy:
+  - name: decode
+    labelSelector:
+      matchLabels:
+        role: decode
+    matchLabelKeys:
+    - shard
+    subGroupSize: 1
+    minSubGroups: 4
+  topologyAffinity:
+    subGroupAntiAffinity:
+      preferred:
+      - subGroups:
+        - decode
+        topologyTierName: volcano.sh/hypernode
+        weight: 100

@@ -1,0 +1,82 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: feature-015-task-a
+value: 100
+globalDefault: false
+description: Ensures task-a is the first fit-first decision.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fit-first-task-a
+  namespace: feature-015
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fit-first-task-a
+  template:
+    metadata:
+      labels:
+        app: fit-first-task-a
+        feature-015.volcano.sh/role: fit-worker
+      annotations:
+        scheduling.k8s.io/group-name: fit-first
+    spec:
+      schedulerName: volcano
+      priorityClassName: feature-015-task-a
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: feature-015.volcano.sh/fit-first
+                    operator: In
+                    values:
+                      - primary
+                      - secondary
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: feature-015.volcano.sh/fit-first
+                    operator: In
+                    values:
+                      - primary
+      containers:
+        - name: pause
+          image: registry.k8s.io/pause:3.10
+          resources:
+            requests:
+              cpu: "7"
+              memory: 32Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fit-first-task-b
+  namespace: feature-015
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fit-first-task-b
+  template:
+    metadata:
+      labels:
+        app: fit-first-task-b
+        feature-015.volcano.sh/role: fit-worker
+      annotations:
+        scheduling.k8s.io/group-name: fit-first
+    spec:
+      schedulerName: volcano
+      nodeSelector:
+        kubernetes.io/hostname: volcano-dev-015-nolegacy-worker
+      containers:
+        - name: pause
+          image: registry.k8s.io/pause:3.10
+          resources:
+            requests:
+              cpu: "7"
+              memory: 32Mi

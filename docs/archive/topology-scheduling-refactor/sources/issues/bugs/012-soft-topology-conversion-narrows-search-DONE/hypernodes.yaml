@@ -1,0 +1,102 @@
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: hn-a
+spec:
+  tier: 1
+  tierName: hypernode
+  members:
+  - type: Node
+    selector:
+      exactMatch:
+        name: volcano-dev-012-worker
+---
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: hn-b
+spec:
+  tier: 1
+  tierName: hypernode
+  members:
+  - type: Node
+    selector:
+      exactMatch:
+        name: volcano-dev-012-worker2
+---
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: hn-c
+spec:
+  tier: 1
+  tierName: hypernode
+  members:
+  - type: Node
+    selector:
+      exactMatch:
+        name: volcano-dev-012-worker3
+---
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: hn-d
+spec:
+  tier: 1
+  tierName: hypernode
+  members:
+  - type: Node
+    selector:
+      exactMatch:
+        name: volcano-dev-012-worker4
+---
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: instance-group-ab
+spec:
+  tier: 2
+  tierName: hyperinstance-group
+  members:
+  - type: HyperNode
+    selector:
+      exactMatch:
+        name: hn-a
+  - type: HyperNode
+    selector:
+      exactMatch:
+        name: hn-b
+---
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: instance-group-cd
+spec:
+  tier: 2
+  tierName: hyperinstance-group
+  members:
+  - type: HyperNode
+    selector:
+      exactMatch:
+        name: hn-c
+  - type: HyperNode
+    selector:
+      exactMatch:
+        name: hn-d
+---
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: hypercluster-all
+spec:
+  tier: 3
+  tierName: hypercluster
+  members:
+  - type: HyperNode
+    selector:
+      exactMatch:
+        name: instance-group-ab
+  - type: HyperNode
+    selector:
+      exactMatch:
+        name: instance-group-cd

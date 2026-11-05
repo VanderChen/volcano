@@ -1,0 +1,29 @@
+{
+  "scope": "independent finite mathematical model, not Volcano tests or performance evidence",
+  "seed": 15023911,
+  "random_instances": 500,
+  "exhaustive_optimum_matches": 500,
+  "feasible_prefix_and_upper_bound_checks": 65000,
+  "bounded_search_runs": 2500,
+  "safe_bound_prunes": 4863,
+  "bounded_joint_repair_checks": 1876,
+  "joint_repair_counterexample_score": 199,
+  "fit_first_solution": [
+    1,
+    0
+  ],
+  "greedy_joint_score": 100,
+  "optimal_joint_score": 199,
+  "peer_collision_marginals": [
+    -2,
+    -1,
+    -1
+  ],
+  "potential_order_permutations": 24,
+  "stale_failure_cache_counterexample": "confirmed in model",
+  "raw_nodeaffinity_winner": "A",
+  "normalized_nodeaffinity_winner": "B",
+  "candidate_cohort_relative_rank_flip": "confirmed",
+  "aggregate_capacity_not_sufficient": "confirmed",
+  "status": "PASS"
+}

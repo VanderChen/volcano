@@ -1,0 +1,25 @@
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: kind-tier3-branch-a
+spec:
+  tier: 3
+  tierName: tier3
+  members:
+  - type: HyperNode
+    selector:
+      exactMatch:
+        name: kind-tier2-pair-a
+---
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: kind-tier3-branch-b
+spec:
+  tier: 3
+  tierName: tier3
+  members:
+  - type: HyperNode
+    selector:
+      exactMatch:
+        name: kind-tier2-pair-b

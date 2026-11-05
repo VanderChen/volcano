@@ -1,0 +1,27 @@
+[
+  {
+    "op": "add",
+    "path": "/spec/versions/0/schema/openAPIV3Schema/properties/spec/properties/subGroupPolicy/items/properties/labelSelector/x-kubernetes-preserve-unknown-fields",
+    "value": true
+  },
+  {
+    "op": "add",
+    "path": "/spec/versions/0/schema/openAPIV3Schema/properties/spec/properties/topologyAffinity/properties/podGroupAntiAffinity/properties/required/items/properties/podGroupSelector/x-kubernetes-preserve-unknown-fields",
+    "value": true
+  },
+  {
+    "op": "add",
+    "path": "/spec/versions/0/schema/openAPIV3Schema/properties/spec/properties/topologyAffinity/properties/podGroupAntiAffinity/properties/required/items/properties/namespaceSelector/x-kubernetes-preserve-unknown-fields",
+    "value": true
+  },
+  {
+    "op": "add",
+    "path": "/spec/versions/0/schema/openAPIV3Schema/properties/spec/properties/topologyAffinity/properties/podGroupAntiAffinity/properties/preferred/items/properties/podGroupSelector/x-kubernetes-preserve-unknown-fields",
+    "value": true
+  },
+  {
+    "op": "add",
+    "path": "/spec/versions/0/schema/openAPIV3Schema/properties/spec/properties/topologyAffinity/properties/podGroupAntiAffinity/properties/preferred/items/properties/namespaceSelector/x-kubernetes-preserve-unknown-fields",
+    "value": true
+  }
+]

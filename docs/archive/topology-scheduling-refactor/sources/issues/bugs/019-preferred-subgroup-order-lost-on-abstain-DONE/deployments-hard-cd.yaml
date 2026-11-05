@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: List
+items:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: bug019-hard-cd-prefill-0
+    namespace: default
+  spec:
+    replicas: 1
+    selector:
+      matchLabels: {app: bug019-hard-cd-prefill-0}
+    template:
+      metadata:
+        labels: {app: bug019-hard-cd-prefill-0, role: prefill, shard: "0"}
+        annotations: {scheduling.k8s.io/group-name: bug019-hard-cd}
+      spec:
+        schedulerName: volcano
+        containers:
+        - name: sleeper
+          image: volcanosh/vc-scheduler:dev-019-k0
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c", "sleep 3600"]
+          resources: {requests: {cpu: 10m, memory: 16Mi}}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: bug019-hard-cd-prefill-1
+    namespace: default
+  spec:
+    replicas: 1
+    selector:
+      matchLabels: {app: bug019-hard-cd-prefill-1}
+    template:
+      metadata:
+        labels: {app: bug019-hard-cd-prefill-1, role: prefill, shard: "1"}
+        annotations: {scheduling.k8s.io/group-name: bug019-hard-cd}
+      spec:
+        schedulerName: volcano
+        containers:
+        - name: sleeper
+          image: volcanosh/vc-scheduler:dev-019-k0
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c", "sleep 3600"]
+          resources: {requests: {cpu: 10m, memory: 16Mi}}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: bug019-hard-cd-decode-0
+    namespace: default
+  spec:
+    replicas: 1
+    selector:
+      matchLabels: {app: bug019-hard-cd-decode-0}
+    template:
+      metadata:
+        labels: {app: bug019-hard-cd-decode-0, role: decode, shard: "0"}
+        annotations: {scheduling.k8s.io/group-name: bug019-hard-cd}
+      spec:
+        schedulerName: volcano
+        containers:
+        - name: sleeper
+          image: volcanosh/vc-scheduler:dev-019-k0
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c", "sleep 3600"]
+          resources: {requests: {cpu: 10m, memory: 16Mi}}
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: bug019-hard-cd-decode-1
+    namespace: default
+  spec:
+    replicas: 1
+    selector:
+      matchLabels: {app: bug019-hard-cd-decode-1}
+    template:
+      metadata:
+        labels: {app: bug019-hard-cd-decode-1, role: decode, shard: "1"}
+        annotations: {scheduling.k8s.io/group-name: bug019-hard-cd}
+      spec:
+        schedulerName: volcano
+        containers:
+        - name: sleeper
+          image: volcanosh/vc-scheduler:dev-019-k0
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c", "sleep 3600"]
+          resources: {requests: {cpu: 10m, memory: 16Mi}}

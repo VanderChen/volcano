@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: soft-role-a
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: soft-role-a
+  template:
+    metadata:
+      labels:
+        app: soft-role-a
+        role: role-a
+        shard: a0
+      annotations:
+        scheduling.k8s.io/group-name: pg-soft-fallback
+    spec:
+      schedulerName: volcano
+      containers:
+      - name: nginx
+        image: nginx:1.27-alpine
+        resources:
+          requests:
+            cpu: 500m
+            memory: 200Mi
+          limits:
+            cpu: 500m
+            memory: 200Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: soft-role-b
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: soft-role-b
+  template:
+    metadata:
+      labels:
+        app: soft-role-b
+        role: role-b
+        shard: b0
+      annotations:
+        scheduling.k8s.io/group-name: pg-soft-fallback
+    spec:
+      schedulerName: volcano
+      containers:
+      - name: nginx
+        image: nginx:1.27-alpine
+        resources:
+          requests:
+            cpu: 500m
+            memory: 200Mi
+          limits:
+            cpu: 500m
+            memory: 200Mi

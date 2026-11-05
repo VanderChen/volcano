@@ -1,0 +1,103 @@
+# Restores the pre-test names of the existing standard Kind HyperNode tree.
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: kind-tier1-control-plane
+spec:
+  tier: 1
+  tierName: tier1
+  members:
+  - type: Node
+    selector:
+      exactMatch:
+        name: kind-control-plane
+---
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: kind-tier1-worker
+spec:
+  tier: 1
+  tierName: tier1
+  members:
+  - type: Node
+    selector:
+      exactMatch:
+        name: kind-worker
+---
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: kind-tier1-worker2
+spec:
+  tier: 1
+  tierName: tier1
+  members:
+  - type: Node
+    selector:
+      exactMatch:
+        name: kind-worker2
+---
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: kind-tier1-worker3
+spec:
+  tier: 1
+  tierName: tier1
+  members:
+  - type: Node
+    selector:
+      exactMatch:
+        name: kind-worker3
+---
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: kind-tier2-pair-a
+spec:
+  tier: 2
+  tierName: tier2
+  members:
+  - type: HyperNode
+    selector:
+      exactMatch:
+        name: kind-tier1-control-plane
+  - type: HyperNode
+    selector:
+      exactMatch:
+        name: kind-tier1-worker
+---
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: kind-tier2-pair-b
+spec:
+  tier: 2
+  tierName: tier2
+  members:
+  - type: HyperNode
+    selector:
+      exactMatch:
+        name: kind-tier1-worker2
+  - type: HyperNode
+    selector:
+      exactMatch:
+        name: kind-tier1-worker3
+---
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: kind-tier3-all
+spec:
+  tier: 3
+  tierName: tier3
+  members:
+  - type: HyperNode
+    selector:
+      exactMatch:
+        name: kind-tier2-pair-a
+  - type: HyperNode
+    selector:
+      exactMatch:
+        name: kind-tier2-pair-b

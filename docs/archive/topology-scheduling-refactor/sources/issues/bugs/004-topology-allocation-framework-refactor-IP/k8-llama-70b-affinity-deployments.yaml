@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llama-70b-instance-0-prefill-p0
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llama-70b-instance-0-prefill-p0
+  template:
+    metadata:
+      labels:
+        app: llama-70b-instance-0-prefill-p0
+        volcano.sh/role: prefill
+        volcano.sh/shard-id: p0
+      annotations:
+        scheduling.k8s.io/group-name: llama-70b-instance-0
+    spec:
+      schedulerName: volcano
+      containers:
+      - name: worker
+        image: busybox:1.36
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "sleep 360000"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llama-70b-instance-0-prefill-p1
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llama-70b-instance-0-prefill-p1
+  template:
+    metadata:
+      labels:
+        app: llama-70b-instance-0-prefill-p1
+        volcano.sh/role: prefill
+        volcano.sh/shard-id: p1
+      annotations:
+        scheduling.k8s.io/group-name: llama-70b-instance-0
+    spec:
+      schedulerName: volcano
+      containers:
+      - name: worker
+        image: busybox:1.36
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "sleep 360000"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llama-70b-instance-0-decode-d0
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llama-70b-instance-0-decode-d0
+  template:
+    metadata:
+      labels:
+        app: llama-70b-instance-0-decode-d0
+        volcano.sh/role: decode
+        volcano.sh/shard-id: d0
+      annotations:
+        scheduling.k8s.io/group-name: llama-70b-instance-0
+    spec:
+      schedulerName: volcano
+      containers:
+      - name: worker
+        image: busybox:1.36
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "sleep 360000"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llama-70b-instance-0-decode-d1
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llama-70b-instance-0-decode-d1
+  template:
+    metadata:
+      labels:
+        app: llama-70b-instance-0-decode-d1
+        volcano.sh/role: decode
+        volcano.sh/shard-id: d1
+      annotations:
+        scheduling.k8s.io/group-name: llama-70b-instance-0
+    spec:
+      schedulerName: volcano
+      containers:
+      - name: worker
+        image: busybox:1.36
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "sleep 360000"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi

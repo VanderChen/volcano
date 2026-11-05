@@ -1,0 +1,100 @@
+apiVersion: v1
+kind: List
+items:
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: req024-a
+  spec:
+    tier: 1
+    tierName: volcano.sh/hypernode
+    members:
+    - type: Node
+      selector:
+        exactMatch:
+          name: volcano-dev-024-worker
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: req024-b
+  spec:
+    tier: 1
+    tierName: volcano.sh/hypernode
+    members:
+    - type: Node
+      selector:
+        exactMatch:
+          name: volcano-dev-024-worker2
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: req024-c
+  spec:
+    tier: 1
+    tierName: volcano.sh/hypernode
+    members:
+    - type: Node
+      selector:
+        exactMatch:
+          name: volcano-dev-024-worker3
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: req024-d
+  spec:
+    tier: 1
+    tierName: volcano.sh/hypernode
+    members:
+    - type: Node
+      selector:
+        exactMatch:
+          name: volcano-dev-024-worker4
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: req024-pair-ab
+  spec:
+    tier: 2
+    tierName: volcano.sh/hyperinstance-group
+    members:
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: req024-a
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: req024-b
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: req024-pair-cd
+  spec:
+    tier: 2
+    tierName: volcano.sh/hyperinstance-group
+    members:
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: req024-c
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: req024-d
+- apiVersion: topology.volcano.sh/v1alpha1
+  kind: HyperNode
+  metadata:
+    name: req024-root
+  spec:
+    tier: 3
+    tierName: volcano.sh/hypercluster
+    members:
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: req024-pair-ab
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: req024-pair-cd
+

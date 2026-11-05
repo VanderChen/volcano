@@ -1,0 +1,290 @@
+{
+  "scope": "independent GPU/count model; not Volcano tests, not timing benchmarks",
+  "aggregate_feasible_layouts": 15,
+  "optimal_layouts": [
+    [
+      [
+        2,
+        3,
+        3
+      ],
+      [
+        4,
+        2,
+        2
+      ]
+    ],
+    [
+      [
+        3,
+        2,
+        3
+      ],
+      [
+        2,
+        4,
+        2
+      ]
+    ],
+    [
+      [
+        3,
+        3,
+        2
+      ],
+      [
+        2,
+        2,
+        4
+      ]
+    ]
+  ],
+  "layout_categories": [
+    {
+      "decode": [
+        3,
+        3,
+        2
+      ],
+      "prefill": [
+        4,
+        2,
+        2
+      ],
+      "collision_cost": 15
+    },
+    {
+      "decode": [
+        4,
+        2,
+        2
+      ],
+      "prefill": [
+        4,
+        4,
+        0
+      ],
+      "collision_cost": 20
+    },
+    {
+      "decode": [
+        4,
+        3,
+        1
+      ],
+      "prefill": [
+        6,
+        2,
+        0
+      ],
+      "collision_cost": 25
+    },
+    {
+      "decode": [
+        4,
+        4,
+        0
+      ],
+      "prefill": [
+        8,
+        0,
+        0
+      ],
+      "collision_cost": 40
+    }
+  ],
+  "bad_layout_neighborhoods": {
+    "one_task": {
+      "best_cost": 20,
+      "best_counts": [
+        [
+          4,
+          2,
+          2
+        ],
+        [
+          0,
+          4,
+          4
+        ]
+      ],
+      "trials": 32,
+      "feasible": 0
+    },
+    "two_tasks": {
+      "best_cost": 20,
+      "best_counts": [
+        [
+          4,
+          2,
+          2
+        ],
+        [
+          0,
+          4,
+          4
+        ]
+      ],
+      "trials": 512,
+      "feasible": 36
+    },
+    "three_tasks": {
+      "best_cost": 15,
+      "best_counts": [
+        [
+          3,
+          3,
+          2
+        ],
+        [
+          2,
+          2,
+          4
+        ]
+      ],
+      "trials": 4992,
+      "feasible": 140
+    }
+  },
+  "historical_layout_three_task_repair": {
+    "best_cost": 15,
+    "best_counts": [
+      [
+        3,
+        3,
+        2
+      ],
+      [
+        2,
+        2,
+        4
+      ]
+    ],
+    "trials": 4992,
+    "feasible": 165
+  },
+  "prefill_first_even_layout_remaining_decode_slots": 7,
+  "binpack_path_1_then_2": "1/2",
+  "binpack_path_2_then_1": "5/8",
+  "binpack_terminal_same_final_layout": "3/8",
+  "gta_terminal_bad": 64.28571428571429,
+  "gta_terminal_ideal": 73.21428571428571,
+  "nodeaffinity_weight_override": "weight 1 favors bad; GTA weight 3 favors ideal",
+  "ordered_search_cases": {
+    "D-first": {
+      "found": true,
+      "decode": [
+        3,
+        3,
+        2
+      ],
+      "prefill": [
+        2,
+        2,
+        4
+      ],
+      "checks": 20,
+      "capacity_prunes": 0,
+      "backtracks": 0,
+      "budget_exhausted": false,
+      "resource_used": [
+        8,
+        8,
+        8
+      ]
+    },
+    "P-first": {
+      "found": true,
+      "decode": [
+        2,
+        3,
+        3
+      ],
+      "prefill": [
+        4,
+        2,
+        2
+      ],
+      "checks": 22,
+      "capacity_prunes": 2,
+      "backtracks": 2,
+      "budget_exhausted": false,
+      "resource_used": [
+        8,
+        8,
+        8
+      ]
+    },
+    "interleaved": {
+      "found": true,
+      "decode": [
+        3,
+        2,
+        3
+      ],
+      "prefill": [
+        2,
+        4,
+        2
+      ],
+      "checks": 20,
+      "capacity_prunes": 0,
+      "backtracks": 0,
+      "budget_exhausted": false,
+      "resource_used": [
+        8,
+        8,
+        8
+      ]
+    }
+  },
+  "budget_exhaustion": {
+    "found": false,
+    "decode": [
+      0,
+      0,
+      0
+    ],
+    "prefill": [
+      0,
+      0,
+      0
+    ],
+    "checks": 3,
+    "capacity_prunes": 0,
+    "backtracks": 3,
+    "budget_exhausted": true,
+    "resource_used": [
+      0,
+      0,
+      0
+    ]
+  },
+  "search_tree_counts": [
+    {
+      "depth": 2,
+      "full_edges": 12,
+      "leaves": 9,
+      "budget_64_edges": 12
+    },
+    {
+      "depth": 4,
+      "full_edges": 120,
+      "leaves": 81,
+      "budget_64_edges": 64
+    },
+    {
+      "depth": 6,
+      "full_edges": 1092,
+      "leaves": 729,
+      "budget_64_edges": 64
+    },
+    {
+      "depth": 8,
+      "full_edges": 9840,
+      "leaves": 6561,
+      "budget_64_edges": 64
+    }
+  ],
+  "status": "PASS"
+}

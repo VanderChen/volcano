@@ -1,0 +1,123 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prefill-0
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prefill-0
+  template:
+    metadata:
+      labels:
+        app: prefill-0
+        role: prefill
+        shard: p0
+      annotations:
+        scheduling.k8s.io/group-name: pg-myq
+    spec:
+      schedulerName: volcano
+      containers:
+      - name: nginx
+        image: nginx:1.27-alpine
+        resources:
+          requests:
+            cpu: 500m
+            memory: 200Mi
+          limits:
+            cpu: 500m
+            memory: 200Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prefill-1
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prefill-1
+  template:
+    metadata:
+      labels:
+        app: prefill-1
+        role: prefill
+        shard: p1
+      annotations:
+        scheduling.k8s.io/group-name: pg-myq
+    spec:
+      schedulerName: volcano
+      containers:
+      - name: nginx
+        image: nginx:1.27-alpine
+        resources:
+          requests:
+            cpu: 500m
+            memory: 200Mi
+          limits:
+            cpu: 500m
+            memory: 200Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: decode-0
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: decode-0
+  template:
+    metadata:
+      labels:
+        app: decode-0
+        role: decode
+        shard: d0
+      annotations:
+        scheduling.k8s.io/group-name: pg-myq
+    spec:
+      schedulerName: volcano
+      containers:
+      - name: nginx
+        image: nginx:1.27-alpine
+        resources:
+          requests:
+            cpu: 500m
+            memory: 200Mi
+          limits:
+            cpu: 500m
+            memory: 200Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: decode-1
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: decode-1
+  template:
+    metadata:
+      labels:
+        app: decode-1
+        role: decode
+        shard: d1
+      annotations:
+        scheduling.k8s.io/group-name: pg-myq
+    spec:
+      schedulerName: volcano
+      containers:
+      - name: nginx
+        image: nginx:1.27-alpine
+        resources:
+          requests:
+            cpu: 500m
+            memory: 200Mi
+          limits:
+            cpu: 500m
+            memory: 200Mi

@@ -1,0 +1,115 @@
+{
+  "status": "PASS",
+  "kind": "independent operation-count model; NO timings or Volcano execution",
+  "source_baseline": "7947e875600ff450318b412bb0c8c39f7020238a",
+  "assumptions": [
+    "one successful gradient, no previous failed attempts",
+    "every candidate completes the same fixed working set",
+    "no elastic SubGroup re-entry; Allocate-only path",
+    "new first branch succeeds and hands off its active statement"
+  ],
+  "document_scenarios": [
+    {
+      "M": 10,
+      "outer_candidates": 1,
+      "W": 10,
+      "old": {
+        "decide": 10,
+        "allocate": 30,
+        "undo": 20,
+        "task_clone": 20
+      },
+      "new_first": {
+        "decide": 10,
+        "allocate": 10,
+        "undo": 0,
+        "task_clone": 0
+      },
+      "inner_candidates_each": 1
+    },
+    {
+      "M": 10,
+      "outer_candidates": 1,
+      "W": 40,
+      "old": {
+        "decide": 40,
+        "allocate": 60,
+        "undo": 50,
+        "task_clone": 50
+      },
+      "new_first": {
+        "decide": 10,
+        "allocate": 10,
+        "undo": 0,
+        "task_clone": 0
+      },
+      "inner_candidates_each": 4
+    },
+    {
+      "M": 10,
+      "outer_candidates": 4,
+      "W": 40,
+      "old": {
+        "decide": 40,
+        "allocate": 90,
+        "undo": 80,
+        "task_clone": 80
+      },
+      "new_first": {
+        "decide": 10,
+        "allocate": 10,
+        "undo": 0,
+        "task_clone": 0
+      },
+      "inner_candidates_each": 1
+    },
+    {
+      "M": 10,
+      "outer_candidates": 4,
+      "W": 160,
+      "old": {
+        "decide": 160,
+        "allocate": 210,
+        "undo": 200,
+        "task_clone": 200
+      },
+      "new_first": {
+        "decide": 10,
+        "allocate": 10,
+        "undo": 0,
+        "task_clone": 0
+      },
+      "inner_candidates_each": 4
+    }
+  ],
+  "random_operation_ledger_cases": 400,
+  "exact_cost_identity_cases": 400,
+  "lazy_order_equivalence_cases": 500,
+  "abstract_ownership_cases": 608,
+  "conditional_quality_examples_NOT_measurements": [
+    {
+      "assumed_first_ratio": 0.8,
+      "assumed_quality_fraction": 0.1,
+      "conditional_total_ratio_upper": 0.88,
+      "conditional_change_percent_upper": -12.0
+    },
+    {
+      "assumed_first_ratio": 1.0,
+      "assumed_quality_fraction": 0.1,
+      "conditional_total_ratio_upper": 1.1,
+      "conditional_change_percent_upper": 10.0
+    },
+    {
+      "assumed_first_ratio": 1.05,
+      "assumed_quality_fraction": 0.1,
+      "conditional_total_ratio_upper": 1.155,
+      "conditional_change_percent_upper": 15.5
+    },
+    {
+      "assumed_first_ratio": 1.2,
+      "assumed_quality_fraction": 0.1,
+      "conditional_total_ratio_upper": 1.32,
+      "conditional_change_percent_upper": 32.0
+    }
+  ]
+}

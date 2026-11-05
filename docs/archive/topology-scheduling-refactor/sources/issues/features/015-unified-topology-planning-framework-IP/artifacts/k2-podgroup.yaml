@@ -1,0 +1,33 @@
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: subgroup-affinity
+  namespace: feature-015
+spec:
+  minMember: 2
+  queue: default
+  networkTopology:
+    mode: soft
+    highestTierAllowed: 3
+  subGroupPolicy:
+    - name: prefill
+      labelSelector:
+        matchLabels:
+          feature-015.volcano.sh/role: prefill
+      matchLabelKeys:
+        - feature-015.volcano.sh/role
+      subGroupSize: 1
+    - name: decode
+      labelSelector:
+        matchLabels:
+          feature-015.volcano.sh/role: decode
+      matchLabelKeys:
+        - feature-015.volcano.sh/role
+      subGroupSize: 1
+  topologyAffinity:
+    subGroupAffinity:
+      required:
+        - subGroups:
+            - prefill
+            - decode
+          topologyTier: 2

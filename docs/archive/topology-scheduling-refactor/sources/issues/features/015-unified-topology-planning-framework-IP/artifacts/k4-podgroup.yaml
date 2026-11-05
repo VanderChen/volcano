@@ -1,0 +1,8 @@
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: ordinary
+  namespace: feature-015
+spec:
+  minMember: 2
+  queue: default

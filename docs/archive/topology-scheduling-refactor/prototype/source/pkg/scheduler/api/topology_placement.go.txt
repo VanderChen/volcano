@@ -1,0 +1,80 @@
+/*
+Copyright 2026 The Volcano Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+package api
+
+import (
+	"sort"
+
+	"k8s.io/apimachinery/pkg/util/sets"
+)
+
+// TopologyNodeScope is the exact set of physical Nodes allowed by a composed
+// topology constraint. HyperNode roots and LCAs are deliberately not part of
+// the representation: they are indexes and explanations, not substitutes for
+// exact membership.
+type TopologyNodeScope struct {
+	Nodes sets.Set[string]
+}
+
+func NewTopologyNodeScope(nodeNames ...string) *TopologyNodeScope {
+	return &TopologyNodeScope{Nodes: sets.New(nodeNames...)}
+}
+
+func (s *TopologyNodeScope) Clone() *TopologyNodeScope {
+	if s == nil || s.Nodes == nil {
+		return NewTopologyNodeScope()
+	}
+	return &TopologyNodeScope{Nodes: s.Nodes.Clone()}
+}
+
+func (s *TopologyNodeScope) Has(nodeName string) bool {
+	return s != nil && s.Nodes.Has(nodeName)
+}
+
+func (s *TopologyNodeScope) Len() int {
+	if s == nil {
+		return 0
+	}
+	return s.Nodes.Len()
+}
+
+func (s *TopologyNodeScope) Intersect(other *TopologyNodeScope) *TopologyNodeScope {
+	if s == nil || other == nil {
+		return NewTopologyNodeScope()
+	}
+	return &TopologyNodeScope{Nodes: s.Nodes.Intersection(other.Nodes)}
+}
+
+func (s *TopologyNodeScope) Union(other *TopologyNodeScope) *TopologyNodeScope {
+	switch {
+	case s == nil:
+		return other.Clone()
+	case other == nil:
+		return s.Clone()
+	default:
+		return &TopologyNodeScope{Nodes: s.Nodes.Union(other.Nodes)}
+	}
+}
+
+func (s *TopologyNodeScope) SortedNodeNames() []string {
+	if s == nil {
+		return nil
+	}
+	result := s.Nodes.UnsortedList()
+	sort.Strings(result)
+	return result
+}

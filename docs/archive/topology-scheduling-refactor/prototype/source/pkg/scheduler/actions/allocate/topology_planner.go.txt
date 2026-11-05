@@ -1,0 +1,943 @@
+/*
+Copyright 2026 The Volcano Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+package allocate
+
+import (
+	"fmt"
+	"sort"
+	"strings"
+
+	"k8s.io/klog/v2"
+
+	"volcano.sh/volcano/cmd/scheduler/app/options"
+	"volcano.sh/volcano/pkg/scheduler/api"
+	"volcano.sh/volcano/pkg/scheduler/framework"
+	"volcano.sh/volcano/pkg/scheduler/util"
+	commonutil "volcano.sh/volcano/pkg/util"
+)
+
+const topologyPlanningUnified = "unified"
+
+type topologyPlacementResultKind string
+
+const (
+	topologyPlacementFound          topologyPlacementResultKind = "Found"
+	topologyPlacementNoCandidate    topologyPlacementResultKind = "NoCandidate"
+	topologyPlacementBudgetExceeded topologyPlacementResultKind = "BudgetExceeded"
+	topologyPlacementError          topologyPlacementResultKind = "Error"
+)
+
+type topologyPlacementDisposition string
+
+const (
+	topologyPlacementNone      topologyPlacementDisposition = ""
+	topologyPlacementReady     topologyPlacementDisposition = "Ready"
+	topologyPlacementPipelined topologyPlacementDisposition = "Pipelined"
+)
+
+type topologyPlacementResult struct {
+	kind        topologyPlacementResultKind
+	disposition topologyPlacementDisposition
+	statement   *framework.Statement
+	err         error
+	attempts    int
+	extra       int
+	backtracks  int
+}
+
+func (r topologyPlacementResult) found() bool {
+	return r.kind == topologyPlacementFound && r.statement != nil
+}
+
+type topologyPlanner struct {
+	alloc         *Action
+	ssn           *framework.Session
+	job           *api.JobInfo
+	worksheet     *JobWorksheet
+	statement     *framework.Statement
+	predicate     util.PredicateHelper
+	subJobOrder   []*api.SubJobInfo
+	tasks         map[api.SubJobID][]*api.TaskInfo
+	touched       map[api.SubJobID]int
+	planned       map[api.TaskID]struct{}
+	scopeCache    map[string]topologyScopeCacheEntry
+	initialScopes map[api.SubJobID]*api.TopologyNodeScope
+	// placementRevision changes whenever speculative physical placement
+	// changes, including rollback. Different branches can have the same
+	// Job/SubJob LCA while occupying different physical domains, so LCA alone
+	// is not a safe exact-scope cache key.
+	placementRevision            uint64
+	scopeDependsOnExactPlacement bool
+
+	maxExtraAttempts int
+	extraAttempts    int
+	attempts         int
+	backtracks       int
+	backtracking     bool
+
+	lastFitErrors     map[api.TaskID]*api.FitErrors
+	lastValidationErr error
+}
+
+type topologyScopeCacheEntry struct {
+	scope       *api.TopologyNodeScope
+	jobStats    *api.HyperNodeGradientStats
+	subJobStats *api.HyperNodeGradientStats
+}
+
+type topologyPlacementMark struct {
+	statementMark  framework.StatementMark
+	jobHyperNode   string
+	subJobID       api.SubJobID
+	subJobHN       string
+	task           *api.TaskInfo
+	taskJobHN      string
+	taskWasPlanned bool
+	subJobTouches  int
+}
+
+func (alloc *Action) allocateForTopologyJob(
+	job *api.JobInfo,
+	worksheet *JobWorksheet,
+) topologyPlacementResult {
+	if worksheet == nil || worksheet.Empty() {
+		return topologyPlacementResult{kind: topologyPlacementNoCandidate}
+	}
+
+	job.ResetFitErr()
+	job.JobFitErrors = ""
+	planner := newTopologyPlanner(alloc, job, worksheet)
+	rootPlacement := captureUnifiedJobPlacement(job)
+	result := planner.search()
+	if result.found() {
+		if err := planner.validateFinalTopology(); err != nil {
+			result = topologyPlacementResult{kind: topologyPlacementError, err: err}
+		} else {
+			planner.pruneWorksheet()
+			planner.savePlacementDecision()
+		}
+	}
+
+	if !result.found() {
+		if err := planner.statement.RollbackTo(0); err != nil {
+			result = topologyPlacementResult{
+				kind: topologyPlacementError,
+				err:  fmt.Errorf("rollback topology plan: %w", err),
+			}
+		}
+		restoreUnifiedJobPlacement(job, rootPlacement)
+		for taskID, fitErrors := range planner.lastFitErrors {
+			job.NodesFitErrors[taskID] = fitErrors
+		}
+	}
+
+	klog.V(3).Infof(
+		"Topology placement result, job=%s, result=%s, disposition=%s, attempts=%d, extraAttempts=%d, backtracks=%d, err=%v",
+		job.UID, result.kind, result.disposition, planner.attempts, planner.extraAttempts, planner.backtracks, result.err,
+	)
+	result.attempts = planner.attempts
+	result.extra = planner.extraAttempts
+	result.backtracks = planner.backtracks
+	return result
+}
+
+func newTopologyPlanner(
+	alloc *Action,
+	job *api.JobInfo,
+	worksheet *JobWorksheet,
+) *topologyPlanner {
+	planner := &topologyPlanner{
+		alloc:            alloc,
+		ssn:              alloc.session,
+		job:              job,
+		worksheet:        worksheet,
+		statement:        framework.NewStatement(alloc.session),
+		predicate:        util.NewPredicateHelper(),
+		tasks:            make(map[api.SubJobID][]*api.TaskInfo),
+		touched:          make(map[api.SubJobID]int),
+		planned:          make(map[api.TaskID]struct{}),
+		scopeCache:       make(map[string]topologyScopeCacheEntry),
+		initialScopes:    make(map[api.SubJobID]*api.TopologyNodeScope),
+		maxExtraAttempts: alloc.maxExtraPlacementAttempts,
+		lastFitErrors:    make(map[api.TaskID]*api.FitErrors),
+		// Required intra-Job SubGroup relations inspect the exact occupied
+		// domains of peer SubJobs. Other hard scopes are stable for a given
+		// Job/SubJob LCA and can retain the cheaper LCA-keyed cache.
+		scopeDependsOnExactPlacement: job.ContainsHardSubGroupTopologyAffinity(),
+	}
+
+	subJobs := worksheet.subJobs.Clone()
+	seenSubJobs := make(map[api.SubJobID]struct{})
+	for !subJobs.Empty() {
+		subJob := subJobs.Pop().(*api.SubJobInfo)
+		if _, found := seenSubJobs[subJob.UID]; found {
+			continue
+		}
+		seenSubJobs[subJob.UID] = struct{}{}
+		planner.subJobOrder = append(planner.subJobOrder, subJob)
+		initialScope, _, _ := planner.ssn.ExactTopologyNodeScope(job, subJob)
+		planner.initialScopes[subJob.UID] = initialScope.Clone()
+
+		subJobWorksheet := worksheet.subJobWorksheets[subJob.UID]
+		if subJobWorksheet == nil || subJobWorksheet.tasks == nil {
+			continue
+		}
+		tasks := subJobWorksheet.tasks.Clone()
+		for !tasks.Empty() {
+			planner.tasks[subJob.UID] = append(
+				planner.tasks[subJob.UID], tasks.Pop().(*api.TaskInfo),
+			)
+		}
+	}
+	return planner
+}
+
+func (p *topologyPlanner) search() topologyPlacementResult {
+	if disposition := p.readiness(); disposition != topologyPlacementNone {
+		if err := p.validateFinalTopology(); err == nil {
+			return topologyPlacementResult{
+				kind:        topologyPlacementFound,
+				disposition: disposition,
+				statement:   p.statement,
+			}
+		} else {
+			p.lastValidationErr = err
+		}
+	}
+
+	taskAlternatives := p.orderedPendingTasks()
+	if len(taskAlternatives) == 0 {
+		return topologyPlacementResult{
+			kind: topologyPlacementNoCandidate,
+			err:  p.lastValidationErr,
+		}
+	}
+
+	for _, candidate := range taskAlternatives {
+		task := candidate.task
+		subJob := candidate.subJob
+		queue := p.ssn.Queues[p.job.Queue]
+		if queue == nil || !p.ssn.Allocatable(queue, task) {
+			continue
+		}
+
+		nodes, fitErrors, err := p.orderedNodes(subJob, task)
+		if err != nil {
+			return topologyPlacementResult{kind: topologyPlacementError, err: err}
+		}
+		if fitErrors != nil {
+			p.lastFitErrors[task.UID] = fitErrors
+		}
+		if len(nodes) == 0 {
+			continue
+		}
+
+		for nodeIndex, node := range nodes {
+			isAlternative := p.backtracking || nodeIndex > 0
+			if isAlternative && !p.consumeExtraAttempt() {
+				klog.V(3).Infof(
+					"Unified topology budget exhausted, job=%s, subJob=%s, task=%s, node=%s, attempts=%d, extraAttempts=%d, backtracks=%d",
+					p.job.UID, subJob.UID, task.UID, node.Name, p.attempts, p.extraAttempts, p.backtracks,
+				)
+				return topologyPlacementResult{kind: topologyPlacementBudgetExceeded}
+			}
+
+			mark := p.mark(subJob, task)
+			p.attempts++
+			klog.V(4).Infof(
+				"Unified topology try placement, job=%s, subJob=%s, task=%s, node=%s, choiceDepth=%d, nodeAlternative=%d, extraAttempts=%d",
+				p.job.UID, subJob.UID, task.UID, node.Name, len(p.statement.Operations()), nodeIndex, p.extraAttempts,
+			)
+			if err := p.apply(subJob, task, node); err != nil {
+				p.restorePlacement(mark)
+				return topologyPlacementResult{
+					kind: topologyPlacementError,
+					err:  fmt.Errorf("apply task %s to node %s: %w", task.UID, node.Name, err),
+				}
+			}
+
+			result := p.search()
+			if result.found() {
+				return result
+			}
+
+			if err := p.rollback(mark); err != nil {
+				return topologyPlacementResult{
+					kind: topologyPlacementError,
+					err:  fmt.Errorf("rollback task %s from node %s: %w", task.UID, node.Name, err),
+				}
+			}
+			if result.kind == topologyPlacementError || result.kind == topologyPlacementBudgetExceeded {
+				return result
+			}
+
+			p.backtracks++
+			p.backtracking = true
+			klog.V(4).Infof(
+				"Unified topology backtrack, job=%s, subJob=%s, task=%s, node=%s, restoredDepth=%d, backtracks=%d",
+				p.job.UID, subJob.UID, task.UID, node.Name, len(p.statement.Operations()), p.backtracks,
+			)
+		}
+
+		// TaskOrder and the unsatisfied-SubJob frontier define one canonical
+		// next Task. Backtracking explores Node choices for that Task, not
+		// permutations of equally pending Tasks.
+		return topologyPlacementResult{
+			kind: topologyPlacementNoCandidate,
+			err:  p.lastValidationErr,
+		}
+	}
+
+	return topologyPlacementResult{
+		kind: topologyPlacementNoCandidate,
+		err:  p.lastValidationErr,
+	}
+}
+
+type topologyTaskAlternative struct {
+	subJob *api.SubJobInfo
+	task   *api.TaskInfo
+}
+
+func (p *topologyPlanner) orderedPendingTasks() []topologyTaskAlternative {
+	unsatisfied := make([]topologyTaskAlternative, 0)
+	satisfied := make([]topologyTaskAlternative, 0)
+	for _, subJob := range p.subJobOrder {
+		isSatisfied := p.ssn.SubJobReady(p.job, subJob) || p.ssn.SubJobPipelined(p.job, subJob)
+		for _, task := range p.tasks[subJob.UID] {
+			if task.Status != api.Pending {
+				continue
+			}
+			candidate := topologyTaskAlternative{subJob: subJob, task: task}
+			if isSatisfied {
+				satisfied = append(satisfied, candidate)
+			} else {
+				unsatisfied = append(unsatisfied, candidate)
+			}
+		}
+	}
+	return append(unsatisfied, satisfied...)
+}
+
+func (p *topologyPlanner) orderedNodes(
+	subJob *api.SubJobInfo,
+	task *api.TaskInfo,
+) ([]*api.NodeInfo, *api.FitErrors, error) {
+	scope, jobStats, subJobStats := p.exactScope(subJob)
+	klog.V(4).Infof(
+		"Unified topology exact scope, job=%s, subJob=%s, task=%s, jobPlacement=%s, subJobPlacement=%s, nodeCount=%d, nodes=%v",
+		p.job.UID, subJob.UID, task.UID, p.job.AllocatedHyperNode, subJob.AllocatedHyperNode,
+		scope.Len(), scope.SortedNodeNames(),
+	)
+	if scope.Len() == 0 {
+		p.job.JobFitErrors = ""
+		p.job.SetHyperNodeFitErrors(
+			jobStats, nil, nil, p.ssn.HyperNodesSetByTier, p.ssn.HyperNodeTierNameMap, p.ssn.HyperNodes,
+		)
+		p.job.MergeSubJobHyperNodeFitErrors(
+			p.job.JobFitErrors, subJob.UID, subJobStats, nil, nil,
+			p.ssn.HyperNodesSetByTier, p.ssn.HyperNodeTierNameMap, p.ssn.HyperNodes,
+		)
+		return nil, api.NewFitErrors(), nil
+	}
+
+	nodes := make([]*api.NodeInfo, 0, scope.Len())
+	for _, nodeName := range scope.SortedNodeNames() {
+		if node, found := p.ssn.Nodes[nodeName]; found {
+			nodes = append(nodes, node)
+		}
+	}
+	if len(nodes) == 0 {
+		return nil, api.NewFitErrors(), nil
+	}
+
+	if err := p.ssn.PrePredicateFn(task); err != nil {
+		fitErrors := api.NewFitErrors()
+		for _, node := range nodes {
+			fitErrors.SetNodeError(node.Name, err)
+		}
+		return nil, fitErrors, nil
+	}
+
+	oldTaskHyperNode := task.JobAllocatedHyperNode
+	if subJob.AllocatedHyperNode != "" {
+		task.JobAllocatedHyperNode = subJob.AllocatedHyperNode
+	} else {
+		task.JobAllocatedHyperNode = p.job.AllocatedHyperNode
+	}
+	defer func() {
+		task.JobAllocatedHyperNode = oldTaskHyperNode
+	}()
+
+	var nominated *api.NodeInfo
+	var nominatedFitErrors *api.FitErrors
+	nominatedName := task.Pod.Status.NominatedNodeName
+	if nominatedName != "" && scope.Has(nominatedName) {
+		if node, found := p.ssn.Nodes[nominatedName]; found &&
+			task.InitResreq.LessEqual(node.FutureIdle(), api.Zero) {
+			predicateNodes, fitErrors := p.predicate.PredicateNodes(
+				task, []*api.NodeInfo{node}, p.alloc.predicate,
+				p.alloc.enablePredicateErrorCache, p.ssn.NodesInShard,
+			)
+			nominatedFitErrors = fitErrors
+			if len(predicateNodes) > 0 {
+				nominated = predicateNodes[0]
+			}
+		}
+	}
+
+	regularNodes := make([]*api.NodeInfo, 0, len(nodes))
+	for _, node := range nodes {
+		if nominated != nil && node.Name == nominated.Name {
+			continue
+		}
+		regularNodes = append(regularNodes, node)
+	}
+	predicateNodes, fitErrors := p.predicate.PredicateNodes(
+		task, regularNodes, p.alloc.predicate,
+		p.alloc.enablePredicateErrorCache, p.ssn.NodesInShard,
+	)
+	if len(predicateNodes) == 0 && nominated != nil {
+		return []*api.NodeInfo{nominated}, nominatedFitErrors, nil
+	}
+	if len(predicateNodes) == 0 {
+		return nil, fitErrors, nil
+	}
+
+	ordered, err := p.rankPredicateNodes(subJob, task, predicateNodes)
+	if err != nil {
+		return nil, fitErrors, err
+	}
+	if nominated != nil {
+		ordered = append([]*api.NodeInfo{nominated}, ordered...)
+	}
+	return ordered, fitErrors, nil
+}
+
+func (p *topologyPlanner) exactScope(
+	subJob *api.SubJobInfo,
+) (*api.TopologyNodeScope, *api.HyperNodeGradientStats, *api.HyperNodeGradientStats) {
+	key := p.topologyPlacementSignature(subJob.UID)
+	if cached, found := p.scopeCache[key]; found {
+		return cached.scope, cached.jobStats, cached.subJobStats
+	}
+	if scope, useIndexedPlacement := p.indexedHardPlacementScope(subJob); useIndexedPlacement {
+		p.scopeCache[key] = topologyScopeCacheEntry{scope: scope}
+		return scope, nil, nil
+	}
+	scope, jobStats, subJobStats := p.ssn.ExactTopologyNodeScope(p.job, subJob)
+	p.scopeCache[key] = topologyScopeCacheEntry{
+		scope:       scope,
+		jobStats:    jobStats,
+		subJobStats: subJobStats,
+	}
+	return scope, jobStats, subJobStats
+}
+
+func (p *topologyPlanner) indexedHardPlacementScope(
+	subJob *api.SubJobInfo,
+) (*api.TopologyNodeScope, bool) {
+	type hardPlacement struct {
+		name        string
+		highestTier int
+	}
+	placements := make([]hardPlacement, 0, 2)
+	if hard, highestTier := p.job.IsHardTopologyMode(); hard && p.job.AllocatedHyperNode != "" {
+		placements = append(placements, hardPlacement{
+			name:        p.job.AllocatedHyperNode,
+			highestTier: highestTier,
+		})
+	}
+	if hard, highestTier := subJob.IsHardTopologyMode(); hard && subJob.AllocatedHyperNode != "" {
+		placements = append(placements, hardPlacement{
+			name:        subJob.AllocatedHyperNode,
+			highestTier: highestTier,
+		})
+	}
+
+	useIndexedPlacement := false
+	for _, placement := range placements {
+		if _, materialized := p.ssn.HyperNodes[placement.name]; !materialized {
+			useIndexedPlacement = true
+			break
+		}
+	}
+	if !useIndexedPlacement {
+		return nil, false
+	}
+
+	scope := p.initialScopes[subJob.UID].Clone()
+	for _, placement := range placements {
+		scope = scope.Intersect(
+			p.indexedHardPlacementDomain(placement.name, placement.highestTier),
+		)
+	}
+	return scope, true
+}
+
+func (p *topologyPlanner) indexedHardPlacementDomain(
+	placement string,
+	highestTier int,
+) *api.TopologyNodeScope {
+	placementNodes, found := p.ssn.RealNodesSet[placement]
+	if !found {
+		return api.NewTopologyNodeScope()
+	}
+
+	bestNodes := placementNodes
+	bestTier, _ := p.placedHyperNodeTier(placement)
+	for tier, names := range p.ssn.HyperNodesSetByTier {
+		if tier < bestTier || tier > highestTier {
+			continue
+		}
+		for name := range names {
+			nodes, found := p.ssn.RealNodesSet[name]
+			if !found || placementNodes.Difference(nodes).Len() != 0 {
+				continue
+			}
+			if tier > bestTier || (tier == bestTier && nodes.Len() < bestNodes.Len()) {
+				bestTier = tier
+				bestNodes = nodes
+			}
+		}
+	}
+	return api.NewTopologyNodeScope(bestNodes.UnsortedList()...)
+}
+
+func (p *topologyPlanner) topologyPlacementSignature(current api.SubJobID) string {
+	subJobIDs := make([]string, 0, len(p.job.SubJobs))
+	for subJobID := range p.job.SubJobs {
+		subJobIDs = append(subJobIDs, string(subJobID))
+	}
+	sort.Strings(subJobIDs)
+
+	var signature strings.Builder
+	signature.WriteString(string(current))
+	signature.WriteByte(0)
+	if p.scopeDependsOnExactPlacement {
+		signature.WriteString(fmt.Sprintf("%d", p.placementRevision))
+		signature.WriteByte(0)
+	}
+	signature.WriteString(p.job.AllocatedHyperNode)
+	for _, subJobID := range subJobIDs {
+		signature.WriteByte(0)
+		signature.WriteString(subJobID)
+		signature.WriteByte('=')
+		signature.WriteString(p.job.SubJobs[api.SubJobID(subJobID)].AllocatedHyperNode)
+	}
+	return signature.String()
+}
+
+func (p *topologyPlanner) rankPredicateNodes(
+	subJob *api.SubJobInfo,
+	task *api.TaskInfo,
+	predicateNodes []*api.NodeInfo,
+) ([]*api.NodeInfo, error) {
+	classes := p.classifyCandidateNodes(task, predicateNodes)
+	result := make([]*api.NodeInfo, 0, len(predicateNodes))
+	for _, nodes := range classes {
+		if len(nodes) == 0 {
+			continue
+		}
+
+		nodeScores := util.PrioritizeNodes(
+			task, nodes, p.ssn.BatchNodeOrderFn, p.ssn.NodeOrderMapFn, p.ssn.NodeOrderReduceFn,
+		)
+		topologyScores, err := p.ssn.TopologyNodeScoreMap(subJob, nodes)
+		if err != nil {
+			return nil, fmt.Errorf("topology score task %s: %w", task.UID, err)
+		}
+
+		scoreByNode := make(map[string]float64, len(nodes))
+		for score, scoredNodes := range nodeScores {
+			for _, node := range scoredNodes {
+				finalScore := score + topologyScores[node.Name]
+				scoreByNode[node.Name] = finalScore
+			}
+		}
+		// PrioritizeNodes always returns every input Node, but retain a stable
+		// zero-score fallback if a third-party reduce implementation does not.
+		for _, node := range nodes {
+			if _, found := scoreByNode[node.Name]; found {
+				continue
+			}
+			score := topologyScores[node.Name]
+			scoreByNode[node.Name] = score
+		}
+
+		// Preserve the current Job/SubJob soft-anchor preference as a
+		// lexicographic ordering dimension. Lower-rank groups remain in the
+		// candidate list, so the preference never becomes a hard filter.
+		nodesByDomainRank := make(map[int][]*api.NodeInfo)
+		domainRanks := make([]int, 0, 3)
+		for _, node := range nodes {
+			rank := p.establishedSoftDomainRank(subJob, node)
+			if _, found := nodesByDomainRank[rank]; !found {
+				domainRanks = append(domainRanks, rank)
+			}
+			nodesByDomainRank[rank] = append(nodesByDomainRank[rank], node)
+		}
+		sort.Sort(sort.Reverse(sort.IntSlice(domainRanks)))
+		for _, domainRank := range domainRanks {
+			group := nodesByDomainRank[domainRank]
+			if len(group) == 0 {
+				continue
+			}
+			groupScores := make(map[float64][]*api.NodeInfo)
+			for _, node := range group {
+				groupScores[scoreByNode[node.Name]] = append(groupScores[scoreByNode[node.Name]], node)
+			}
+			bestNode := p.ssn.BestNodeFn(task, groupScores)
+			sort.SliceStable(group, func(i, j int) bool {
+				left, right := scoreByNode[group[i].Name], scoreByNode[group[j].Name]
+				if left != right {
+					return left > right
+				}
+				return group[i].Name < group[j].Name
+			})
+			if bestNode != nil {
+				for index, node := range group {
+					if node.Name != bestNode.Name {
+						continue
+					}
+					result = append(result, node)
+					group = append(group[:index], group[index+1:]...)
+					break
+				}
+			}
+			result = append(result, group...)
+		}
+	}
+	return result, nil
+}
+
+func (p *topologyPlanner) establishedSoftDomainRank(
+	subJob *api.SubJobInfo,
+	node *api.NodeInfo,
+) int {
+	leaf := util.FindHyperNodeForNode(
+		node.Name, p.ssn.RealNodesList, p.ssn.HyperNodesTiers, p.ssn.HyperNodesSetByTier,
+	)
+	if leaf == "" {
+		return 0
+	}
+
+	rank := 0
+	if subJob.IsSoftTopologyMode() && subJob.NetworkTopology.HighestTierAllowed != nil &&
+		subJob.AllocatedHyperNode != "" &&
+		p.withinPreferredTopologyTier(leaf, subJob.AllocatedHyperNode, *subJob.NetworkTopology.HighestTierAllowed) {
+		rank++
+	}
+	if p.job.IsSoftTopologyMode() && p.job.NetworkTopology.HighestTierAllowed != nil &&
+		p.job.AllocatedHyperNode != "" &&
+		p.withinPreferredTopologyTier(leaf, p.job.AllocatedHyperNode, *p.job.NetworkTopology.HighestTierAllowed) {
+		rank++
+	}
+	return rank
+}
+
+func (p *topologyPlanner) withinPreferredTopologyTier(
+	left string,
+	right string,
+	highestTier int,
+) bool {
+	lca := p.ssn.HyperNodes.GetLCAHyperNode(left, right)
+	hyperNode, found := p.ssn.HyperNodes[lca]
+	return found && hyperNode.Tier() <= highestTier
+}
+
+func (p *topologyPlanner) classifyCandidateNodes(
+	task *api.TaskInfo,
+	nodes []*api.NodeInfo,
+) [][]*api.NodeInfo {
+	classes := make([][]*api.NodeInfo, 4)
+	for _, node := range nodes {
+		inShard := p.ssn.NodesInShard.Has(node.Name)
+		switch {
+		case task.InitResreq.LessEqual(node.Idle, api.Zero) &&
+			(options.ServerOpts.ShardingMode != commonutil.SoftShardingMode || inShard):
+			classes[0] = append(classes[0], node)
+		case task.InitResreq.LessEqual(node.Idle, api.Zero):
+			classes[1] = append(classes[1], node)
+		case task.InitResreq.LessEqual(node.FutureIdle(), api.Zero) &&
+			(options.ServerOpts.ShardingMode != commonutil.SoftShardingMode || inShard):
+			classes[2] = append(classes[2], node)
+		case task.InitResreq.LessEqual(node.FutureIdle(), api.Zero):
+			classes[3] = append(classes[3], node)
+		}
+	}
+	return classes
+}
+
+func (p *topologyPlanner) apply(
+	subJob *api.SubJobInfo,
+	task *api.TaskInfo,
+	node *api.NodeInfo,
+) error {
+	if subJob.AllocatedHyperNode != "" {
+		task.JobAllocatedHyperNode = subJob.AllocatedHyperNode
+	} else {
+		task.JobAllocatedHyperNode = p.job.AllocatedHyperNode
+	}
+
+	var err error
+	if task.InitResreq.LessEqual(node.Idle, api.Zero) {
+		err = p.statement.Allocate(task, node)
+	} else {
+		err = p.statement.Pipeline(task, node.Name, false)
+	}
+	if err != nil {
+		return err
+	}
+	p.touched[subJob.UID]++
+	p.planned[task.UID] = struct{}{}
+
+	leaf := util.FindHyperNodeForNode(
+		node.Name, p.ssn.RealNodesList, p.ssn.HyperNodesTiers, p.ssn.HyperNodesSetByTier,
+	)
+	if leaf == "" {
+		leaf = framework.ClusterTopHyperNode
+	}
+	subJob.AllocatedHyperNode = p.mergePlacement(subJob.AllocatedHyperNode, leaf)
+	p.job.AllocatedHyperNode = p.mergePlacement(p.job.AllocatedHyperNode, leaf)
+	p.placementRevision++
+	return nil
+}
+
+func (p *topologyPlanner) mergePlacement(current string, leaf string) string {
+	if current == "" {
+		return leaf
+	}
+	if leaf == "" || current == leaf {
+		return current
+	}
+	if lca := p.ssn.HyperNodes.GetLCAHyperNode(current, leaf); lca != "" {
+		return lca
+	}
+
+	currentNodes, currentFound := p.ssn.RealNodesSet[current]
+	leafNodes, leafFound := p.ssn.RealNodesSet[leaf]
+	if !currentFound || !leafFound {
+		return ""
+	}
+	required := currentNodes.Union(leafNodes)
+	best := ""
+	bestTier := int(^uint(0) >> 1)
+	bestSize := int(^uint(0) >> 1)
+	for tier, names := range p.ssn.HyperNodesSetByTier {
+		for name := range names {
+			nodes, found := p.ssn.RealNodesSet[name]
+			if !found || required.Difference(nodes).Len() != 0 {
+				continue
+			}
+			if tier < bestTier || (tier == bestTier && nodes.Len() < bestSize) {
+				best = name
+				bestTier = tier
+				bestSize = nodes.Len()
+			}
+		}
+	}
+	return best
+}
+
+func (p *topologyPlanner) mark(
+	subJob *api.SubJobInfo,
+	task *api.TaskInfo,
+) topologyPlacementMark {
+	_, taskWasPlanned := p.planned[task.UID]
+	return topologyPlacementMark{
+		statementMark:  p.statement.Mark(),
+		jobHyperNode:   p.job.AllocatedHyperNode,
+		subJobID:       subJob.UID,
+		subJobHN:       subJob.AllocatedHyperNode,
+		task:           task,
+		taskJobHN:      task.JobAllocatedHyperNode,
+		taskWasPlanned: taskWasPlanned,
+		subJobTouches:  p.touched[subJob.UID],
+	}
+}
+
+func (p *topologyPlanner) rollback(mark topologyPlacementMark) error {
+	err := p.statement.RollbackTo(mark.statementMark)
+	p.restorePlacement(mark)
+	return err
+}
+
+func (p *topologyPlanner) restorePlacement(mark topologyPlacementMark) {
+	p.placementRevision++
+	p.job.AllocatedHyperNode = mark.jobHyperNode
+	if subJob, found := p.job.SubJobs[mark.subJobID]; found {
+		subJob.AllocatedHyperNode = mark.subJobHN
+	}
+	if mark.subJobTouches == 0 {
+		delete(p.touched, mark.subJobID)
+	} else {
+		p.touched[mark.subJobID] = mark.subJobTouches
+	}
+	if mark.task != nil {
+		mark.task.JobAllocatedHyperNode = mark.taskJobHN
+		if !mark.taskWasPlanned {
+			delete(p.planned, mark.task.UID)
+		}
+	}
+}
+
+func (p *topologyPlanner) consumeExtraAttempt() bool {
+	if p.extraAttempts >= p.maxExtraAttempts {
+		return false
+	}
+	p.extraAttempts++
+	return true
+}
+
+func (p *topologyPlanner) readiness() topologyPlacementDisposition {
+	// A Job may already satisfy minAvailable while still having pending elastic
+	// work. Match the current allocate behavior by completing at least one
+	// selected SubJob frontier before treating JobReady as a terminal state.
+	if len(p.touched) == 0 {
+		return topologyPlacementNone
+	}
+	for subJobID := range p.touched {
+		subJob, found := p.job.SubJobs[subJobID]
+		if !found {
+			return topologyPlacementNone
+		}
+		if !p.ssn.SubJobReady(p.job, subJob) && !p.ssn.SubJobPipelined(p.job, subJob) {
+			return topologyPlacementNone
+		}
+	}
+	if p.ssn.JobReady(p.job) {
+		return topologyPlacementReady
+	}
+	if p.ssn.JobPipelined(p.job) {
+		return topologyPlacementPipelined
+	}
+	return topologyPlacementNone
+}
+
+func (p *topologyPlanner) validateFinalTopology() error {
+	if hard, highestTier := p.job.IsHardTopologyMode(); hard {
+		tier, found := p.placedHyperNodeTier(p.job.AllocatedHyperNode)
+		if !found || tier > highestTier {
+			return fmt.Errorf("job hard topology LCA %q exceeds tier %d", p.job.AllocatedHyperNode, highestTier)
+		}
+	}
+
+	for _, subJob := range p.job.SubJobs {
+		if hard, highestTier := subJob.IsHardTopologyMode(); hard {
+			_, touched := p.touched[subJob.UID]
+			if touched || subJob.AllocatedHyperNode != "" {
+				tier, found := p.placedHyperNodeTier(subJob.AllocatedHyperNode)
+				if !found || tier > highestTier {
+					return fmt.Errorf("subJob %s hard topology LCA %q exceeds tier %d",
+						subJob.UID, subJob.AllocatedHyperNode, highestTier)
+				}
+			}
+		}
+
+		scope, _, _ := p.exactScope(subJob)
+		for _, task := range subJob.Tasks {
+			if _, planned := p.planned[task.UID]; !planned {
+				continue
+			}
+			if !api.AllocatedStatus(task.Status) || task.NodeName == "" {
+				continue
+			}
+			if !scope.Has(task.NodeName) {
+				return fmt.Errorf("task %s on node %s is outside final exact topology scope",
+					task.UID, task.NodeName)
+			}
+		}
+	}
+	return nil
+}
+
+func (p *topologyPlanner) placedHyperNodeTier(name string) (int, bool) {
+	if hyperNode, found := p.ssn.HyperNodes[name]; found {
+		return hyperNode.Tier(), true
+	}
+	for tier, names := range p.ssn.HyperNodesSetByTier {
+		if names.Has(name) {
+			return tier, true
+		}
+	}
+	return 0, false
+}
+
+func (p *topologyPlanner) pruneWorksheet() {
+	for _, subJob := range p.subJobOrder {
+		subJobWorksheet := p.worksheet.subJobWorksheets[subJob.UID]
+		if subJobWorksheet == nil {
+			continue
+		}
+		remaining := util.NewPriorityQueue(p.ssn.TaskOrderFn)
+		for _, task := range p.tasks[subJob.UID] {
+			if task.Status == api.Pending {
+				remaining.Push(task)
+			}
+		}
+		subJobWorksheet.tasks = remaining
+	}
+
+	remainingSubJobs := util.NewPriorityQueue(p.ssn.SubJobOrderFn)
+	for _, subJob := range p.subJobOrder {
+		if subJobWorksheet := p.worksheet.subJobWorksheets[subJob.UID]; subJobWorksheet != nil && !subJobWorksheet.Empty() {
+			remainingSubJobs.Push(subJob)
+		}
+	}
+	p.worksheet.subJobs = remainingSubJobs
+}
+
+func (p *topologyPlanner) savePlacementDecision() {
+	if p.job.AllocatedHyperNode == "" {
+		return
+	}
+	p.alloc.recorder.SaveJobDecision(p.job.UID, p.job.AllocatedHyperNode)
+	for subJobID, subJob := range p.job.SubJobs {
+		if subJob.AllocatedHyperNode == "" {
+			continue
+		}
+		p.alloc.recorder.SaveSubJobDecision(
+			p.job.UID, p.job.AllocatedHyperNode, subJobID, subJob.AllocatedHyperNode,
+		)
+	}
+}
+
+type unifiedJobPlacement struct {
+	jobHyperNode     string
+	subJobHyperNodes map[api.SubJobID]string
+}
+
+func captureUnifiedJobPlacement(job *api.JobInfo) unifiedJobPlacement {
+	placement := unifiedJobPlacement{
+		jobHyperNode:     job.AllocatedHyperNode,
+		subJobHyperNodes: make(map[api.SubJobID]string, len(job.SubJobs)),
+	}
+	for subJobID, subJob := range job.SubJobs {
+		placement.subJobHyperNodes[subJobID] = subJob.AllocatedHyperNode
+	}
+	return placement
+}
+
+func restoreUnifiedJobPlacement(job *api.JobInfo, placement unifiedJobPlacement) {
+	job.AllocatedHyperNode = placement.jobHyperNode
+	for subJobID, hyperNode := range placement.subJobHyperNodes {
+		if subJob, found := job.SubJobs[subJobID]; found {
+			subJob.AllocatedHyperNode = hyperNode
+		}
+	}
+}

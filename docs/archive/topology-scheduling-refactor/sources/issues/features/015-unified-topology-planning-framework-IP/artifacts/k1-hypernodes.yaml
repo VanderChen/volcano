@@ -1,0 +1,115 @@
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: hn-cp
+spec:
+  tier: 1
+  tierName: host
+  members:
+    - type: Node
+      selector:
+        exactMatch:
+          name: volcano-dev-015-nolegacy-control-plane
+---
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: hn-w1
+spec:
+  tier: 1
+  tierName: host
+  members:
+    - type: Node
+      selector:
+        exactMatch:
+          name: volcano-dev-015-nolegacy-worker
+---
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: hn-w2
+spec:
+  tier: 1
+  tierName: host
+  members:
+    - type: Node
+      selector:
+        exactMatch:
+          name: volcano-dev-015-nolegacy-worker2
+---
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: hn-w3
+spec:
+  tier: 1
+  tierName: host
+  members:
+    - type: Node
+      selector:
+        exactMatch:
+          name: volcano-dev-015-nolegacy-worker3
+---
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: domain-a
+spec:
+  tier: 2
+  tierName: rack
+  members:
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: hn-cp
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: hn-w1
+---
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: domain-b
+spec:
+  tier: 2
+  tierName: rack
+  members:
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: hn-w2
+---
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: domain-c
+spec:
+  tier: 2
+  tierName: rack
+  members:
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: hn-w3
+---
+apiVersion: topology.volcano.sh/v1alpha1
+kind: HyperNode
+metadata:
+  name: fabric-root
+spec:
+  tier: 3
+  tierName: fabric
+  members:
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: domain-a
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: domain-b
+    - type: HyperNode
+      selector:
+        exactMatch:
+          name: domain-c

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k2-role-a
+  namespace: default
+  labels:
+    scenario: soft-default-k2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k2-role-a
+  template:
+    metadata:
+      labels:
+        app: k2-role-a
+        scenario: soft-default-k2
+        role: role-a
+        shard: a0
+      annotations:
+        scheduling.k8s.io/group-name: pg-soft-default-k2
+    spec:
+      schedulerName: volcano
+      nodeSelector:
+        kubernetes.io/hostname: volcano-dev-021-worker
+      containers:
+      - name: nginx
+        image: nginx:1.27-alpine
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: 10500m
+            memory: 100Mi
+          limits:
+            cpu: 10500m
+            memory: 100Mi

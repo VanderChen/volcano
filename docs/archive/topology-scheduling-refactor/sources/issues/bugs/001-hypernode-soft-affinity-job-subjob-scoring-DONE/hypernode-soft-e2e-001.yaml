@@ -1,0 +1,39 @@
+apiVersion: batch.volcano.sh/v1alpha1
+kind: Job
+metadata:
+  name: hypernode-soft-e2e-001
+  namespace: default
+spec:
+  schedulerName: volcano
+  queue: default
+  networkTopology:
+    mode: soft
+    highestTierAllowed: 2
+  tasks:
+  - name: ps
+    replicas: 4
+    partitionPolicy:
+      totalPartitions: 2
+      partitionSize: 2
+      networkTopology:
+        mode: soft
+        highestTierAllowed: 1
+    template:
+      metadata:
+        labels:
+          app: hypernode-soft-e2e-001
+      spec:
+        schedulerName: volcano
+        restartPolicy: Never
+        containers:
+        - name: worker
+          image: alpine:latest
+          imagePullPolicy: IfNotPresent
+          command:
+          - sh
+          - -c
+          - sleep 3600
+          resources:
+            requests:
+              cpu: 5500m
+              memory: 16Mi

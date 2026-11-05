@@ -1,0 +1,55 @@
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: bug022-target
+  namespace: default
+  labels:
+    topology.volcano.sh/group: candidate-forest-memory
+spec:
+  minMember: 4
+  queue: default
+  subGroupPolicy:
+  - name: prefill
+    labelSelector:
+      matchLabels:
+        volcano.sh/role: prefill
+    matchLabelKeys:
+    - volcano.sh/shard-id
+    minSubGroups: 2
+    subGroupSize: 1
+    networkTopology:
+      highestTierName: volcano.sh/hypernode
+      mode: hard
+  - name: decode
+    labelSelector:
+      matchLabels:
+        volcano.sh/role: decode
+    matchLabelKeys:
+    - volcano.sh/shard-id
+    minSubGroups: 2
+    subGroupSize: 1
+    networkTopology:
+      highestTierName: volcano.sh/hypernode
+      mode: hard
+  topologyAffinity:
+    podGroupAntiAffinity:
+      required:
+      - podGroupSelector: {}
+        topologyTierName: volcano.sh/hyperinstance-group
+    subGroupAffinity:
+      preferred:
+      - subGroups:
+        - prefill
+        - decode
+        topologyTierName: volcano.sh/hyperinstance-group
+        weight: 30
+    subGroupAntiAffinity:
+      preferred:
+      - subGroups:
+        - prefill
+        topologyTierName: volcano.sh/hypernode
+        weight: 100
+      - subGroups:
+        - decode
+        topologyTierName: volcano.sh/hypernode
+        weight: 100

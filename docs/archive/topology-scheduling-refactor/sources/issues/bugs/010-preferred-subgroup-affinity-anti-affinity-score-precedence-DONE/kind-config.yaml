@@ -1,0 +1,9 @@
+# Five visible nodes: one control-plane plus four A5-equivalent workers A/B/C/D.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+- role: worker # A
+- role: worker # B
+- role: worker # C
+- role: worker # D

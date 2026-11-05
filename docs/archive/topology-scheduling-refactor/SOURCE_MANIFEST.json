@@ -1,0 +1,1817 @@
+{
+  "archivedAt": "2026-11-05",
+  "timezone": "Asia/Shanghai",
+  "scope": "Local topology issues 001-025; excludes unrelated issue 026; text documentation, fixtures, model scripts and recorded results only",
+  "files": [
+    {
+      "source": "issues/bugs/001-hypernode-soft-affinity-job-subjob-scoring-DONE/DESCRIPTION.md",
+      "archive": "sources/issues/bugs/001-hypernode-soft-affinity-job-subjob-scoring-DONE/DESCRIPTION.md",
+      "sourceSha256": "f1f0fd7fbaad9c75135fcd060c53666d27c2f267095ec02a5d254371198045e7",
+      "archiveSha256": "f422913cca9206df9357b1a5e1ad108195b80edbb2e8d18a4e3139b0eed73850",
+      "bytes": 2150
+    },
+    {
+      "source": "issues/bugs/001-hypernode-soft-affinity-job-subjob-scoring-DONE/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/bugs/001-hypernode-soft-affinity-job-subjob-scoring-DONE/PROPOSAL_COMMIT.md",
+      "sourceSha256": "fbc4615c56a824d5d362e5b6efb4284d2dce5f77ff232f0c8fa4e1510f253a77",
+      "archiveSha256": "1f33bb698a0a3de07942b31f37acad0d526ed03d22811069cc505eac15cd9304",
+      "bytes": 30934
+    },
+    {
+      "source": "issues/bugs/001-hypernode-soft-affinity-job-subjob-scoring-DONE/hypernode-soft-e2e-001.yaml",
+      "archive": "sources/issues/bugs/001-hypernode-soft-affinity-job-subjob-scoring-DONE/hypernode-soft-e2e-001.yaml",
+      "sourceSha256": "312ae0c4e2fcab3c66e1810103a1fb1e0417e76e507d4303212853f03e9c1441",
+      "archiveSha256": "312ae0c4e2fcab3c66e1810103a1fb1e0417e76e507d4303212853f03e9c1441",
+      "bytes": 834
+    },
+    {
+      "source": "issues/bugs/001-hypernode-soft-affinity-job-subjob-scoring-DONE/hypernodes-two-tier3-branches.yaml",
+      "archive": "sources/issues/bugs/001-hypernode-soft-affinity-job-subjob-scoring-DONE/hypernodes-two-tier3-branches.yaml",
+      "sourceSha256": "3a80df8209f1d82431e0e85e09ef9fb800bbf5f40e4db1f718d6fa3b7f214166",
+      "archiveSha256": "3a80df8209f1d82431e0e85e09ef9fb800bbf5f40e4db1f718d6fa3b7f214166",
+      "bytes": 452
+    },
+    {
+      "source": "issues/bugs/002-topology-affinity-subjob-global-search-DONE/DESCRIPTION.md",
+      "archive": "sources/issues/bugs/002-topology-affinity-subjob-global-search-DONE/DESCRIPTION.md",
+      "sourceSha256": "9a6cfb3f5370a6375dc1932aa4548442998824df5d5281e8fc1f4257ed0b361f",
+      "archiveSha256": "e10c118eb3945b4b97ade38b35972f8821cd3c63e408e47b8a5ad24177c20c3f",
+      "bytes": 1676
+    },
+    {
+      "source": "issues/bugs/002-topology-affinity-subjob-global-search-DONE/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/bugs/002-topology-affinity-subjob-global-search-DONE/PROPOSAL_COMMIT.md",
+      "sourceSha256": "23e7b9446a27f748e479eeb5bbbc5f5d6a3792f3e99925ba6efb16402dbf53c8",
+      "archiveSha256": "d5c51a118e94b2f349fd72280807475a40712fd7e320078bf5212ef7d22f1d90",
+      "bytes": 6692
+    },
+    {
+      "source": "issues/bugs/002-topology-affinity-subjob-global-search-DONE/kind-topo-affinity-validation.yaml",
+      "archive": "sources/issues/bugs/002-topology-affinity-subjob-global-search-DONE/kind-topo-affinity-validation.yaml",
+      "sourceSha256": "68ca6697d8f55f46613d03913cb5fa4baff6b93bf0689dc8abb14d7ef3f29b70",
+      "archiveSha256": "68ca6697d8f55f46613d03913cb5fa4baff6b93bf0689dc8abb14d7ef3f29b70",
+      "bytes": 3625
+    },
+    {
+      "source": "issues/bugs/003-network-topology-neutral-subjob-gradient-DONE/DESCRIPTION.md",
+      "archive": "sources/issues/bugs/003-network-topology-neutral-subjob-gradient-DONE/DESCRIPTION.md",
+      "sourceSha256": "af0e2c8af4c444aa6dcf036ce0787285df52d8964d04fa095a782746b497782d",
+      "archiveSha256": "6e464e04315391c05940e90c645fc55f87f30ac8fcdd74126da2480826ccd07f",
+      "bytes": 3124
+    },
+    {
+      "source": "issues/bugs/003-network-topology-neutral-subjob-gradient-DONE/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/bugs/003-network-topology-neutral-subjob-gradient-DONE/PROPOSAL_COMMIT.md",
+      "sourceSha256": "0b141c6689cb81fe54377084bdc1268a05d32cb88e2cc788b66ecac656e8a0ce",
+      "archiveSha256": "3025e54a84d6fffd3b606d999b12f5ea3766e7036b324d273827c29d9f18b196",
+      "bytes": 12558
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/DESCRIPTION.md",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/DESCRIPTION.md",
+      "sourceSha256": "2dba7c8b701a6ca6a1e42036a7ce594efde94b54e3850da486f4b6153c8861cc",
+      "archiveSha256": "77106129c155314a27842df76973e15b735931877fdf3583e4c561395adc00e4",
+      "bytes": 7684
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/PROPOSAL_COMMIT.md",
+      "sourceSha256": "8c61441a74082c33a3446565d9d3599ede8335f9a90b9399d15bdbc6035c7e18",
+      "archiveSha256": "a6c64775fc7680ce67fb4bb4d592642366fa9f6670e57350a7babd1d5e8f0450",
+      "bytes": 108235
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/PR_MATERIAL.md",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/PR_MATERIAL.md",
+      "sourceSha256": "7fda70f07d78b8e6b1c0e84b4a4f483551ed18592510cba4779c7e5213759a52",
+      "archiveSha256": "4391bb1f7284a385246a9f4cd24055cc72b4a01511738f638047379e171dc38d",
+      "bytes": 6692
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/PR_MATERIAL_CN.md",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/PR_MATERIAL_CN.md",
+      "sourceSha256": "492cf32d319cf9aa299ead9674004e36bba2b76a5fcb1dfbf798516bcd19ec7d",
+      "archiveSha256": "ff1d9e96c4c4e71194c02a932805b9ab4db25f9c11a09c50c4a1a196b7aceaad",
+      "bytes": 10867
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k2-phase-a.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k2-phase-a.yaml",
+      "sourceSha256": "44825ce2b153969f153040ef41a329cd28d9c0f045ebab1b5d24b5f7926a810d",
+      "archiveSha256": "44825ce2b153969f153040ef41a329cd28d9c0f045ebab1b5d24b5f7926a810d",
+      "bytes": 693
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k2-phase-b.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k2-phase-b.yaml",
+      "sourceSha256": "07fac3d62ff85d8c805d287004a50ff54621be11efd9f37ecc3ac044c7294bd1",
+      "archiveSha256": "07fac3d62ff85d8c805d287004a50ff54621be11efd9f37ecc3ac044c7294bd1",
+      "bytes": 626
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k2-podgroup.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k2-podgroup.yaml",
+      "sourceSha256": "613a64bdd316c16d9aa662c6d594693dcebaa06cdbbe872ef7e80aec8662c8fd",
+      "archiveSha256": "613a64bdd316c16d9aa662c6d594693dcebaa06cdbbe872ef7e80aec8662c8fd",
+      "bytes": 605
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k3-deployments.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k3-deployments.yaml",
+      "sourceSha256": "0b77ee1ad89729e4563348d693c2327450a6151985e16eba7c444b9ac88a345c",
+      "archiveSha256": "0b77ee1ad89729e4563348d693c2327450a6151985e16eba7c444b9ac88a345c",
+      "bytes": 1384
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k3-podgroup.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k3-podgroup.yaml",
+      "sourceSha256": "7ec8184969eb9908efdd7fd468f97643db7334e08814b7ed93b01060d966ae51",
+      "archiveSha256": "7ec8184969eb9908efdd7fd468f97643db7334e08814b7ed93b01060d966ae51",
+      "bytes": 1099
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k3-pressure.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k3-pressure.yaml",
+      "sourceSha256": "88ae6bd2db0d36b90512a8a028d18573bb2d2a41843cd8fcd372cb2b6acfccc7",
+      "archiveSha256": "88ae6bd2db0d36b90512a8a028d18573bb2d2a41843cd8fcd372cb2b6acfccc7",
+      "bytes": 549
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k4-deployments.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k4-deployments.yaml",
+      "sourceSha256": "7392c0a1a74b6748547688e0c167b7ca15f262dadceec104ef775de745162f9d",
+      "archiveSha256": "7392c0a1a74b6748547688e0c167b7ca15f262dadceec104ef775de745162f9d",
+      "bytes": 2624
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k4-podgroup.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k4-podgroup.yaml",
+      "sourceSha256": "8b3539e403bb0800c8ba2a83d6fb65452f5e581106760e4ab55a68d770083ca6",
+      "archiveSha256": "8b3539e403bb0800c8ba2a83d6fb65452f5e581106760e4ab55a68d770083ca6",
+      "bytes": 460
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k5-deployments.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k5-deployments.yaml",
+      "sourceSha256": "9086925ab8df4ec04d7b0224305eec9239a4e395e1a1478908b13765f79df9c6",
+      "archiveSha256": "9086925ab8df4ec04d7b0224305eec9239a4e395e1a1478908b13765f79df9c6",
+      "bytes": 2622
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k5-podgroups.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k5-podgroups.yaml",
+      "sourceSha256": "3853754a2fdb4063aeed91a1071829fbd58a61d27eeab18ab6ed2a07f4c86155",
+      "archiveSha256": "3853754a2fdb4063aeed91a1071829fbd58a61d27eeab18ab6ed2a07f4c86155",
+      "bytes": 1256
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k6-phase-soft.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k6-phase-soft.yaml",
+      "sourceSha256": "49ac9df6ba7035e651e7e2fe3ae522fe0ca2a0ce6b7be9ab37abaf97139e4bc5",
+      "archiveSha256": "49ac9df6ba7035e651e7e2fe3ae522fe0ca2a0ce6b7be9ab37abaf97139e4bc5",
+      "bytes": 647
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k6-podgroup.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k6-podgroup.yaml",
+      "sourceSha256": "cd069f4c289d792eda7993925aad2eb04509b92a670fb5220c205ae00f0c4df2",
+      "archiveSha256": "cd069f4c289d792eda7993925aad2eb04509b92a670fb5220c205ae00f0c4df2",
+      "bytes": 822
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k6-pressure.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k6-pressure.yaml",
+      "sourceSha256": "09002de7ae4deeb13d672005c4e60211e95d3615e8aac6e6a2edb82c7c422973",
+      "archiveSha256": "09002de7ae4deeb13d672005c4e60211e95d3615e8aac6e6a2edb82c7c422973",
+      "bytes": 1120
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k6-rest.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k6-rest.yaml",
+      "sourceSha256": "9ca1a8b7e54f711526f55f075dd6b4ed41aba74b4e2fcc816a813de7ac46c38a",
+      "archiveSha256": "9ca1a8b7e54f711526f55f075dd6b4ed41aba74b4e2fcc816a813de7ac46c38a",
+      "bytes": 1186
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k7-production-like-subgroup-required-anti-affinity-deployments.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k7-production-like-subgroup-required-anti-affinity-deployments.yaml",
+      "sourceSha256": "c10320648f75c428b997242e88329bab618396efb62c7b516f4bc1c8ac581a13",
+      "archiveSha256": "c10320648f75c428b997242e88329bab618396efb62c7b516f4bc1c8ac581a13",
+      "bytes": 1572
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k7-production-like-subgroup-required-anti-affinity.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k7-production-like-subgroup-required-anti-affinity.yaml",
+      "sourceSha256": "75fc02883cf7ca0bb7d2e35a3618f4248dba7cd3cfff23e73514f98d532a4f28",
+      "archiveSha256": "75fc02883cf7ca0bb7d2e35a3618f4248dba7cd3cfff23e73514f98d532a4f28",
+      "bytes": 861
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k7-production-like-subgroup-soft-anti-affinity-deployments.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k7-production-like-subgroup-soft-anti-affinity-deployments.yaml",
+      "sourceSha256": "850a20a1ab2946c44fef490c2332322c062f6e3ee7ee4a3b55eb02d6a396bb17",
+      "archiveSha256": "850a20a1ab2946c44fef490c2332322c062f6e3ee7ee4a3b55eb02d6a396bb17",
+      "bytes": 1720
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k7-production-like-subgroup-soft-anti-affinity-weight-100-deployments.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k7-production-like-subgroup-soft-anti-affinity-weight-100-deployments.yaml",
+      "sourceSha256": "ef0c57464105b642e997b459032ae2ff4ae859284440c183fc8559e697145a5d",
+      "archiveSha256": "ef0c57464105b642e997b459032ae2ff4ae859284440c183fc8559e697145a5d",
+      "bytes": 1586
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k7-production-like-subgroup-soft-anti-affinity-weight-100.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k7-production-like-subgroup-soft-anti-affinity-weight-100.yaml",
+      "sourceSha256": "be683b03c38122a41176cfa646d6bda1639e814d8248b6813ca12dfafb10b441",
+      "archiveSha256": "be683b03c38122a41176cfa646d6bda1639e814d8248b6813ca12dfafb10b441",
+      "bytes": 814
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k7-production-like-subgroup-soft-anti-affinity.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k7-production-like-subgroup-soft-anti-affinity.yaml",
+      "sourceSha256": "444d8357c087bba8a814340b80627f7d2fe0e1e48a2751f479bce9ab5136d02e",
+      "archiveSha256": "444d8357c087bba8a814340b80627f7d2fe0e1e48a2751f479bce9ab5136d02e",
+      "bytes": 1171
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k8-llama-70b-affinity-anchor-deployment.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k8-llama-70b-affinity-anchor-deployment.yaml",
+      "sourceSha256": "f18aa7d98f2ab5853d721bddc83f4516479d574cde0570a655d6a5e605930343",
+      "archiveSha256": "f18aa7d98f2ab5853d721bddc83f4516479d574cde0570a655d6a5e605930343",
+      "bytes": 657
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k8-llama-70b-affinity-anchor-podgroup.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k8-llama-70b-affinity-anchor-podgroup.yaml",
+      "sourceSha256": "e06eaff2a13eea1647fa29246d200d4106ac684aad487ceeee0ae3e8a2abd5d4",
+      "archiveSha256": "e06eaff2a13eea1647fa29246d200d4106ac684aad487ceeee0ae3e8a2abd5d4",
+      "bytes": 274
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k8-llama-70b-affinity-deployments.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k8-llama-70b-affinity-deployments.yaml",
+      "sourceSha256": "3ec358917cefb837723980514aca2b1d0863113b3b9dc627c26a98e887fb0f08",
+      "archiveSha256": "3ec358917cefb837723980514aca2b1d0863113b3b9dc627c26a98e887fb0f08",
+      "bytes": 2820
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k8-llama-70b-affinity-named-standard-topology.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k8-llama-70b-affinity-named-standard-topology.yaml",
+      "sourceSha256": "fc4ae184758f8bb32a629c183a37e7f9b76177a659b5b17ba1608e0e0a18128b",
+      "archiveSha256": "fc4ae184758f8bb32a629c183a37e7f9b76177a659b5b17ba1608e0e0a18128b",
+      "bytes": 1969
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k8-llama-70b-affinity-podgroup-current-crd.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k8-llama-70b-affinity-podgroup-current-crd.yaml",
+      "sourceSha256": "0ba210456af24514bc2722d66aa496d89fa92816f7897c402a112c0db9465426",
+      "archiveSha256": "0ba210456af24514bc2722d66aa496d89fa92816f7897c402a112c0db9465426",
+      "bytes": 1407
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k8-llama-70b-affinity-podgroup.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k8-llama-70b-affinity-podgroup.yaml",
+      "sourceSha256": "5c7131a7e63c34e75dfafa54a62422e8a2e20a53da066bf27696527ad66d704d",
+      "archiveSha256": "5c7131a7e63c34e75dfafa54a62422e8a2e20a53da066bf27696527ad66d704d",
+      "bytes": 1442
+    },
+    {
+      "source": "issues/bugs/004-topology-allocation-framework-refactor-IP/k8-llama-70b-affinity-restore-standard-topology.yaml",
+      "archive": "sources/issues/bugs/004-topology-allocation-framework-refactor-IP/k8-llama-70b-affinity-restore-standard-topology.yaml",
+      "sourceSha256": "f39eb02d48b931f8cb6359572b3ed03ebeefe91068f3ba2dd80863e68b22f8c0",
+      "archiveSha256": "f39eb02d48b931f8cb6359572b3ed03ebeefe91068f3ba2dd80863e68b22f8c0",
+      "bytes": 1886
+    },
+    {
+      "source": "issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/DESCRIPTION.md",
+      "archive": "sources/issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/DESCRIPTION.md",
+      "sourceSha256": "3640f80472511baf0017b51e6b52b735bf257aa971cfd801769a0208bbdb3985",
+      "archiveSha256": "5c3af8939856467f10d605a617c62893a6357fe1d6ec9b970c0f627b18931425",
+      "bytes": 4839
+    },
+    {
+      "source": "issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/Dockerfile.local-binary",
+      "archive": "sources/issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/Dockerfile.local-binary",
+      "sourceSha256": "eb4dbe396101babc1f93d771cf8061c60fa1a59530df94039429c7af8a838873",
+      "archiveSha256": "eb4dbe396101babc1f93d771cf8061c60fa1a59530df94039429c7af8a838873",
+      "bytes": 83
+    },
+    {
+      "source": "issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/PROPOSAL_COMMIT.md",
+      "sourceSha256": "672f890e95c6303ac1c4442f73eef8abee8f28295623d3c41adfeef305eb87ea",
+      "archiveSha256": "1b98cc80df95bd8e20ad27ae71d81a973c29c82c35dcfd4cacfc7c6501042528",
+      "bytes": 62823
+    },
+    {
+      "source": "issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/hypernodes.yaml",
+      "archive": "sources/issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/hypernodes.yaml",
+      "sourceSha256": "37359cfda2ff64e425e052ca2fb77662afdaa3ccdc78a21b1b972e123f4d55f2",
+      "archiveSha256": "37359cfda2ff64e425e052ca2fb77662afdaa3ccdc78a21b1b972e123f4d55f2",
+      "bytes": 1799
+    },
+    {
+      "source": "issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/job.yaml",
+      "archive": "sources/issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/job.yaml",
+      "sourceSha256": "09753f37fd07e540c9f67c20b5552ac2d92abd0b24fa7d4fd38ca41d1b53475d",
+      "archiveSha256": "09753f37fd07e540c9f67c20b5552ac2d92abd0b24fa7d4fd38ca41d1b53475d",
+      "bytes": 1001
+    },
+    {
+      "source": "issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/kind-config.yaml",
+      "archive": "sources/issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/kind-config.yaml",
+      "sourceSha256": "7b09dd97929f9b9f7d5ec50ab0e9dcc4e369d438be0218f2993d29bab274c744",
+      "archiveSha256": "7b09dd97929f9b9f7d5ec50ab0e9dcc4e369d438be0218f2993d29bab274c744",
+      "bytes": 138
+    },
+    {
+      "source": "issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/original-deployments.yaml",
+      "archive": "sources/issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/original-deployments.yaml",
+      "sourceSha256": "c5160cdbde4e7b59e64ea158725aaa1054e45a0aa4a9ca102c3cdbde73c5597f",
+      "archiveSha256": "c5160cdbde4e7b59e64ea158725aaa1054e45a0aa4a9ca102c3cdbde73c5597f",
+      "bytes": 2348
+    },
+    {
+      "source": "issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/original-podgroup.yaml",
+      "archive": "sources/issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/original-podgroup.yaml",
+      "sourceSha256": "1d6e4a342cff7fc7e9f5ec78c6e66be712250412e4d15e9140dc24d52a9f36f3",
+      "archiveSha256": "1d6e4a342cff7fc7e9f5ec78c6e66be712250412e4d15e9140dc24d52a9f36f3",
+      "bytes": 864
+    },
+    {
+      "source": "issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/scheduler-config.yaml",
+      "archive": "sources/issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/scheduler-config.yaml",
+      "sourceSha256": "afd8c34f2b9dcff21e8a98c4bcd298a07ee5ae45662f3456b1dcb44594a9c740",
+      "archiveSha256": "afd8c34f2b9dcff21e8a98c4bcd298a07ee5ae45662f3456b1dcb44594a9c740",
+      "bytes": 591
+    },
+    {
+      "source": "issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/soft-fallback-deployments.yaml",
+      "archive": "sources/issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/soft-fallback-deployments.yaml",
+      "sourceSha256": "a4df50a1818f4ee067f9aaf374c384bdbbf466a3ed532a356ad9235b7b237bab",
+      "archiveSha256": "a4df50a1818f4ee067f9aaf374c384bdbbf466a3ed532a356ad9235b7b237bab",
+      "bytes": 1206
+    },
+    {
+      "source": "issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/soft-fallback-podgroup.yaml",
+      "archive": "sources/issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/soft-fallback-podgroup.yaml",
+      "sourceSha256": "3286117047e7219bfbca4164805abc281a50f1abe76cb13480b81ec421ba7fbb",
+      "archiveSha256": "3286117047e7219bfbca4164805abc281a50f1abe76cb13480b81ec421ba7fbb",
+      "bytes": 682
+    },
+    {
+      "source": "issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/user-job-with-requests.yaml",
+      "archive": "sources/issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/user-job-with-requests.yaml",
+      "sourceSha256": "3069ea111ad60ae6d684a0c751f0f782f12b14a5d45971a80a21742e7389740a",
+      "archiveSha256": "3069ea111ad60ae6d684a0c751f0f782f12b14a5d45971a80a21742e7389740a",
+      "bytes": 1099
+    },
+    {
+      "source": "issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/user-job.yaml",
+      "archive": "sources/issues/bugs/008-hypernode-job-soft-affinity-across-subjobs-DONE/user-job.yaml",
+      "sourceSha256": "bf5f2506353c3e8704e132f1091a8a0b19a87b6d80ecd00e524aaf1d0ce91db4",
+      "archiveSha256": "bf5f2506353c3e8704e132f1091a8a0b19a87b6d80ecd00e524aaf1d0ce91db4",
+      "bytes": 681
+    },
+    {
+      "source": "issues/bugs/009-podgroup-antiaffinity-multi-domain-allocation-DONE/DESCRIPTION.md",
+      "archive": "sources/issues/bugs/009-podgroup-antiaffinity-multi-domain-allocation-DONE/DESCRIPTION.md",
+      "sourceSha256": "79b3c03fe703ce779165fb3c72aee7268e2d5985450bf858d219de49879716ff",
+      "archiveSha256": "50ed140ea335cdf08c5a9a91cf51567fa0a8af36745d3c50b5380c62597e349f",
+      "bytes": 4949
+    },
+    {
+      "source": "issues/bugs/009-podgroup-antiaffinity-multi-domain-allocation-DONE/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/bugs/009-podgroup-antiaffinity-multi-domain-allocation-DONE/PROPOSAL_COMMIT.md",
+      "sourceSha256": "bfa56f61e4399a766c92b9bffddf36a69a24e0af585314760e806ee623f1af4c",
+      "archiveSha256": "a6bc5f0e37cc953cd32c41a46fe9113b92256d2e3c6af256dbc3d826f932362e",
+      "bytes": 26142
+    },
+    {
+      "source": "issues/bugs/009-podgroup-antiaffinity-multi-domain-allocation-DONE/anchor-podgroup.yaml",
+      "archive": "sources/issues/bugs/009-podgroup-antiaffinity-multi-domain-allocation-DONE/anchor-podgroup.yaml",
+      "sourceSha256": "a60d615a687515546695c18a00a9977e0be102e15fd7e6cf29e1470140f6c118",
+      "archiveSha256": "a60d615a687515546695c18a00a9977e0be102e15fd7e6cf29e1470140f6c118",
+      "bytes": 204
+    },
+    {
+      "source": "issues/bugs/009-podgroup-antiaffinity-multi-domain-allocation-DONE/anchor-workload.yaml",
+      "archive": "sources/issues/bugs/009-podgroup-antiaffinity-multi-domain-allocation-DONE/anchor-workload.yaml",
+      "sourceSha256": "6166c033bf66e1b8cbb52b4adabddb775c92fc14a88d29b4abcddf794f23b77b",
+      "archiveSha256": "6166c033bf66e1b8cbb52b4adabddb775c92fc14a88d29b4abcddf794f23b77b",
+      "bytes": 444
+    },
+    {
+      "source": "issues/bugs/009-podgroup-antiaffinity-multi-domain-allocation-DONE/hypernodes.yaml",
+      "archive": "sources/issues/bugs/009-podgroup-antiaffinity-multi-domain-allocation-DONE/hypernodes.yaml",
+      "sourceSha256": "c250f4ab05f6860376efcc88d95337cb4feeda68e60d7946a2a5d54ee9c66dcc",
+      "archiveSha256": "c250f4ab05f6860376efcc88d95337cb4feeda68e60d7946a2a5d54ee9c66dcc",
+      "bytes": 3056
+    },
+    {
+      "source": "issues/bugs/009-podgroup-antiaffinity-multi-domain-allocation-DONE/kind-config.yaml",
+      "archive": "sources/issues/bugs/009-podgroup-antiaffinity-multi-domain-allocation-DONE/kind-config.yaml",
+      "sourceSha256": "92644a81cb7efaaf280a8d3aa5c7c58a9a67925ba968cf6802eaee300af12243",
+      "archiveSha256": "92644a81cb7efaaf280a8d3aa5c7c58a9a67925ba968cf6802eaee300af12243",
+      "bytes": 168
+    },
+    {
+      "source": "issues/bugs/009-podgroup-antiaffinity-multi-domain-allocation-DONE/target-podgroup.yaml",
+      "archive": "sources/issues/bugs/009-podgroup-antiaffinity-multi-domain-allocation-DONE/target-podgroup.yaml",
+      "sourceSha256": "4cdf5c911b32e2beb288e850681624472e2716be16423bf9aade1673252a27ad",
+      "archiveSha256": "4cdf5c911b32e2beb288e850681624472e2716be16423bf9aade1673252a27ad",
+      "bytes": 1301
+    },
+    {
+      "source": "issues/bugs/009-podgroup-antiaffinity-multi-domain-allocation-DONE/target-workload.yaml",
+      "archive": "sources/issues/bugs/009-podgroup-antiaffinity-multi-domain-allocation-DONE/target-workload.yaml",
+      "sourceSha256": "59a8c42daa5b2741b0337ac8cfd9d1efde23dfcd21aec70bbda0780444b3937e",
+      "archiveSha256": "59a8c42daa5b2741b0337ac8cfd9d1efde23dfcd21aec70bbda0780444b3937e",
+      "bytes": 2885
+    },
+    {
+      "source": "issues/bugs/010-preferred-subgroup-affinity-anti-affinity-score-precedence-DONE/DESCRIPTION.md",
+      "archive": "sources/issues/bugs/010-preferred-subgroup-affinity-anti-affinity-score-precedence-DONE/DESCRIPTION.md",
+      "sourceSha256": "cf8cf62835a2ba4fa67a6fd7ccdfa79f9dc541c27b934861c89e8a8a558f2280",
+      "archiveSha256": "439501c6b843754168363188c87f8658ec530c531179c93501280c1815fad91c",
+      "bytes": 3445
+    },
+    {
+      "source": "issues/bugs/010-preferred-subgroup-affinity-anti-affinity-score-precedence-DONE/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/bugs/010-preferred-subgroup-affinity-anti-affinity-score-precedence-DONE/PROPOSAL_COMMIT.md",
+      "sourceSha256": "8459b277031728bbce1f90ea497f6966280503be3146a9c4124615bedf072ae4",
+      "archiveSha256": "c84bcae3fb551b3caa115171acd98f7309dd76542870751f64bb8dd9f54b929a",
+      "bytes": 7614
+    },
+    {
+      "source": "issues/bugs/010-preferred-subgroup-affinity-anti-affinity-score-precedence-DONE/deployments.yaml",
+      "archive": "sources/issues/bugs/010-preferred-subgroup-affinity-anti-affinity-score-precedence-DONE/deployments.yaml",
+      "sourceSha256": "ebceb94faace394552366a50a331d4d870a6f67632fc504eb73f075129077463",
+      "archiveSha256": "ebceb94faace394552366a50a331d4d870a6f67632fc504eb73f075129077463",
+      "bytes": 2388
+    },
+    {
+      "source": "issues/bugs/010-preferred-subgroup-affinity-anti-affinity-score-precedence-DONE/hypernodes.yaml",
+      "archive": "sources/issues/bugs/010-preferred-subgroup-affinity-anti-affinity-score-precedence-DONE/hypernodes.yaml",
+      "sourceSha256": "df283a78a70c6bb9f1143caa27f43ff04a620920935a408d863e829dd1c1acf1",
+      "archiveSha256": "df283a78a70c6bb9f1143caa27f43ff04a620920935a408d863e829dd1c1acf1",
+      "bytes": 2971
+    },
+    {
+      "source": "issues/bugs/010-preferred-subgroup-affinity-anti-affinity-score-precedence-DONE/kind-config.yaml",
+      "archive": "sources/issues/bugs/010-preferred-subgroup-affinity-anti-affinity-score-precedence-DONE/kind-config.yaml",
+      "sourceSha256": "680a15a061d9dee3e86cb9125d5b87375638eba219e4b7da341311b84b72812e",
+      "archiveSha256": "680a15a061d9dee3e86cb9125d5b87375638eba219e4b7da341311b84b72812e",
+      "bytes": 235
+    },
+    {
+      "source": "issues/bugs/010-preferred-subgroup-affinity-anti-affinity-score-precedence-DONE/podgroup-reported-rules-only.yaml",
+      "archive": "sources/issues/bugs/010-preferred-subgroup-affinity-anti-affinity-score-precedence-DONE/podgroup-reported-rules-only.yaml",
+      "sourceSha256": "a5b7984c26b6e9a62541de5b3116b2e1ded80f61a7cb722040ce6fa051eb7021",
+      "archiveSha256": "a5b7984c26b6e9a62541de5b3116b2e1ded80f61a7cb722040ce6fa051eb7021",
+      "bytes": 1059
+    },
+    {
+      "source": "issues/bugs/010-preferred-subgroup-affinity-anti-affinity-score-precedence-DONE/podgroup.yaml",
+      "archive": "sources/issues/bugs/010-preferred-subgroup-affinity-anti-affinity-score-precedence-DONE/podgroup.yaml",
+      "sourceSha256": "9685f8d945eff89fd9d99c7acd140f5f630402130fd23155a13eb089a30e65ad",
+      "archiveSha256": "9685f8d945eff89fd9d99c7acd140f5f630402130fd23155a13eb089a30e65ad",
+      "bytes": 1324
+    },
+    {
+      "source": "issues/bugs/010-preferred-subgroup-affinity-anti-affinity-score-precedence-DONE/scheduler-config-without-group-topology-affinity.yaml",
+      "archive": "sources/issues/bugs/010-preferred-subgroup-affinity-anti-affinity-score-precedence-DONE/scheduler-config-without-group-topology-affinity.yaml",
+      "sourceSha256": "6164b58fb4cce64b25cc16fbb19150aef6551aa700e0040cff51d04b72cfc7bc",
+      "archiveSha256": "6164b58fb4cce64b25cc16fbb19150aef6551aa700e0040cff51d04b72cfc7bc",
+      "bytes": 659
+    },
+    {
+      "source": "issues/bugs/010-preferred-subgroup-affinity-anti-affinity-score-precedence-DONE/scheduler-config.yaml",
+      "archive": "sources/issues/bugs/010-preferred-subgroup-affinity-anti-affinity-score-precedence-DONE/scheduler-config.yaml",
+      "sourceSha256": "61caca8e77c2171975935cc5afda5a3c58b863ad55b2698d99ed368e5a618924",
+      "archiveSha256": "61caca8e77c2171975935cc5afda5a3c58b863ad55b2698d99ed368e5a618924",
+      "bytes": 565
+    },
+    {
+      "source": "issues/bugs/011-topology-two-phase-allocation-IP/DESCRIPTION.md",
+      "archive": "sources/issues/bugs/011-topology-two-phase-allocation-IP/DESCRIPTION.md",
+      "sourceSha256": "e9c081c9f5b8449888c56b12ecafbac32ed4f56e2008818c441feb39827a0107",
+      "archiveSha256": "73ee4d22adb6d9c1d9d48bd14cec1ba54ae210decfc0e697ee5e3941b22bc784",
+      "bytes": 3236
+    },
+    {
+      "source": "issues/bugs/011-topology-two-phase-allocation-IP/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/bugs/011-topology-two-phase-allocation-IP/PROPOSAL_COMMIT.md",
+      "sourceSha256": "a385b2f1bc7ea921d7b14026b90117ecf8e99f47100ce1ed7b7991c8b409ad72",
+      "archiveSha256": "44001ffa85d386fed5d439af330efda79ba3494f5aa602b85cbb605a9eb34e9f",
+      "bytes": 81001
+    },
+    {
+      "source": "issues/bugs/012-soft-topology-conversion-narrows-search-DONE/DESCRIPTION.md",
+      "archive": "sources/issues/bugs/012-soft-topology-conversion-narrows-search-DONE/DESCRIPTION.md",
+      "sourceSha256": "725910b96f28c884221666bb8dec5ea56c14728c50fdb379ea4b5c2401cc664a",
+      "archiveSha256": "7e218aeb1e5a6be900e1f6d58f0735513e3d8d46cc933259c13ac476f1f287cd",
+      "bytes": 3020
+    },
+    {
+      "source": "issues/bugs/012-soft-topology-conversion-narrows-search-DONE/Dockerfile.local-binary",
+      "archive": "sources/issues/bugs/012-soft-topology-conversion-narrows-search-DONE/Dockerfile.local-binary",
+      "sourceSha256": "eb4dbe396101babc1f93d771cf8061c60fa1a59530df94039429c7af8a838873",
+      "archiveSha256": "eb4dbe396101babc1f93d771cf8061c60fa1a59530df94039429c7af8a838873",
+      "bytes": 83
+    },
+    {
+      "source": "issues/bugs/012-soft-topology-conversion-narrows-search-DONE/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/bugs/012-soft-topology-conversion-narrows-search-DONE/PROPOSAL_COMMIT.md",
+      "sourceSha256": "f65a20ec61fd545a2c3744ea492cc94dc9ade23441bd25615e63179c4d6083f8",
+      "archiveSha256": "f22100c872e44615b43a4f803635315e4be295d82c2fcd51fae6ed384d22694e",
+      "bytes": 25245
+    },
+    {
+      "source": "issues/bugs/012-soft-topology-conversion-narrows-search-DONE/fallback-fillers.yaml",
+      "archive": "sources/issues/bugs/012-soft-topology-conversion-narrows-search-DONE/fallback-fillers.yaml",
+      "sourceSha256": "20d2ff8c3519373533700b94f0c4f133d3846eb5a80b6927c7b3a6807be8d42b",
+      "archiveSha256": "20d2ff8c3519373533700b94f0c4f133d3846eb5a80b6927c7b3a6807be8d42b",
+      "bytes": 759
+    },
+    {
+      "source": "issues/bugs/012-soft-topology-conversion-narrows-search-DONE/hypernodes.yaml",
+      "archive": "sources/issues/bugs/012-soft-topology-conversion-narrows-search-DONE/hypernodes.yaml",
+      "sourceSha256": "627428a2b0f4885b39071b89012317cd2aa65fc264b6c1fed0f5a65cdf9880e1",
+      "archiveSha256": "627428a2b0f4885b39071b89012317cd2aa65fc264b6c1fed0f5a65cdf9880e1",
+      "bytes": 1779
+    },
+    {
+      "source": "issues/bugs/012-soft-topology-conversion-narrows-search-DONE/kind-config.yaml",
+      "archive": "sources/issues/bugs/012-soft-topology-conversion-narrows-search-DONE/kind-config.yaml",
+      "sourceSha256": "7b09dd97929f9b9f7d5ec50ab0e9dcc4e369d438be0218f2993d29bab274c744",
+      "archiveSha256": "7b09dd97929f9b9f7d5ec50ab0e9dcc4e369d438be0218f2993d29bab274c744",
+      "bytes": 138
+    },
+    {
+      "source": "issues/bugs/012-soft-topology-conversion-narrows-search-DONE/scheduler-config.yaml",
+      "archive": "sources/issues/bugs/012-soft-topology-conversion-narrows-search-DONE/scheduler-config.yaml",
+      "sourceSha256": "afd8c34f2b9dcff21e8a98c4bcd298a07ee5ae45662f3456b1dcb44594a9c740",
+      "archiveSha256": "afd8c34f2b9dcff21e8a98c4bcd298a07ee5ae45662f3456b1dcb44594a9c740",
+      "bytes": 591
+    },
+    {
+      "source": "issues/bugs/012-soft-topology-conversion-narrows-search-DONE/soft-deployments.yaml",
+      "archive": "sources/issues/bugs/012-soft-topology-conversion-narrows-search-DONE/soft-deployments.yaml",
+      "sourceSha256": "dd107d128b4ddac8044cea55c4289e54cac4829139de79cd2409c28158380eaa",
+      "archiveSha256": "dd107d128b4ddac8044cea55c4289e54cac4829139de79cd2409c28158380eaa",
+      "bytes": 1278
+    },
+    {
+      "source": "issues/bugs/012-soft-topology-conversion-narrows-search-DONE/soft-podgroup.yaml",
+      "archive": "sources/issues/bugs/012-soft-topology-conversion-narrows-search-DONE/soft-podgroup.yaml",
+      "sourceSha256": "1a09706041b717b2221432ce6bbf3e579f8a4609bcc41037898fce0a94955621",
+      "archiveSha256": "1a09706041b717b2221432ce6bbf3e579f8a4609bcc41037898fce0a94955621",
+      "bytes": 680
+    },
+    {
+      "source": "issues/bugs/013-native-soft-topology-v1.14-backport-DONE/DESCRIPTION.md",
+      "archive": "sources/issues/bugs/013-native-soft-topology-v1.14-backport-DONE/DESCRIPTION.md",
+      "sourceSha256": "983fc13c1b9f81b4f0d2d41e363a3b73664bc06a5df990f555983d46e4ee593a",
+      "archiveSha256": "b00ab4b51c1229efa7177a0ea3080b3467c98d64e1eed783b7473050e1327a11",
+      "bytes": 4247
+    },
+    {
+      "source": "issues/bugs/013-native-soft-topology-v1.14-backport-DONE/Dockerfile.local-binary",
+      "archive": "sources/issues/bugs/013-native-soft-topology-v1.14-backport-DONE/Dockerfile.local-binary",
+      "sourceSha256": "eb4dbe396101babc1f93d771cf8061c60fa1a59530df94039429c7af8a838873",
+      "archiveSha256": "eb4dbe396101babc1f93d771cf8061c60fa1a59530df94039429c7af8a838873",
+      "bytes": 83
+    },
+    {
+      "source": "issues/bugs/013-native-soft-topology-v1.14-backport-DONE/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/bugs/013-native-soft-topology-v1.14-backport-DONE/PROPOSAL_COMMIT.md",
+      "sourceSha256": "33ec173c0ba9f9bb6936b72cc460422e06517a876e3ec21cb40782bf47885192",
+      "archiveSha256": "a1c38f17682c2cfaf239717bf4e5ba17b87a3f22ab250764854f6da82dfa7a93",
+      "bytes": 19311
+    },
+    {
+      "source": "issues/bugs/013-native-soft-topology-v1.14-backport-DONE/fallback-fillers.yaml",
+      "archive": "sources/issues/bugs/013-native-soft-topology-v1.14-backport-DONE/fallback-fillers.yaml",
+      "sourceSha256": "d116590adf34fa8021424e3170560ab1c8efff4398f4231c8ace257e1c061403",
+      "archiveSha256": "d116590adf34fa8021424e3170560ab1c8efff4398f4231c8ace257e1c061403",
+      "bytes": 759
+    },
+    {
+      "source": "issues/bugs/013-native-soft-topology-v1.14-backport-DONE/hypernodes.yaml",
+      "archive": "sources/issues/bugs/013-native-soft-topology-v1.14-backport-DONE/hypernodes.yaml",
+      "sourceSha256": "983eb62876cb8b75597ce0f2a73bde2bd812dc76b26db32530d67c1c6910a2db",
+      "archiveSha256": "983eb62876cb8b75597ce0f2a73bde2bd812dc76b26db32530d67c1c6910a2db",
+      "bytes": 1779
+    },
+    {
+      "source": "issues/bugs/013-native-soft-topology-v1.14-backport-DONE/kind-config.yaml",
+      "archive": "sources/issues/bugs/013-native-soft-topology-v1.14-backport-DONE/kind-config.yaml",
+      "sourceSha256": "7b09dd97929f9b9f7d5ec50ab0e9dcc4e369d438be0218f2993d29bab274c744",
+      "archiveSha256": "7b09dd97929f9b9f7d5ec50ab0e9dcc4e369d438be0218f2993d29bab274c744",
+      "bytes": 138
+    },
+    {
+      "source": "issues/bugs/013-native-soft-topology-v1.14-backport-DONE/scheduler-config.yaml",
+      "archive": "sources/issues/bugs/013-native-soft-topology-v1.14-backport-DONE/scheduler-config.yaml",
+      "sourceSha256": "afd8c34f2b9dcff21e8a98c4bcd298a07ee5ae45662f3456b1dcb44594a9c740",
+      "archiveSha256": "afd8c34f2b9dcff21e8a98c4bcd298a07ee5ae45662f3456b1dcb44594a9c740",
+      "bytes": 591
+    },
+    {
+      "source": "issues/bugs/013-native-soft-topology-v1.14-backport-DONE/soft-deployments.yaml",
+      "archive": "sources/issues/bugs/013-native-soft-topology-v1.14-backport-DONE/soft-deployments.yaml",
+      "sourceSha256": "dd107d128b4ddac8044cea55c4289e54cac4829139de79cd2409c28158380eaa",
+      "archiveSha256": "dd107d128b4ddac8044cea55c4289e54cac4829139de79cd2409c28158380eaa",
+      "bytes": 1278
+    },
+    {
+      "source": "issues/bugs/013-native-soft-topology-v1.14-backport-DONE/soft-podgroup.yaml",
+      "archive": "sources/issues/bugs/013-native-soft-topology-v1.14-backport-DONE/soft-podgroup.yaml",
+      "sourceSha256": "1a09706041b717b2221432ce6bbf3e579f8a4609bcc41037898fce0a94955621",
+      "archiveSha256": "1a09706041b717b2221432ce6bbf3e579f8a4609bcc41037898fce0a94955621",
+      "bytes": 680
+    },
+    {
+      "source": "issues/bugs/014-podgroup-antiaffinity-multi-domain-v114-backport-DONE/DESCRIPTION.md",
+      "archive": "sources/issues/bugs/014-podgroup-antiaffinity-multi-domain-v114-backport-DONE/DESCRIPTION.md",
+      "sourceSha256": "8b39fc9b5aaeb2138ea3dab75d0cdf2ba413e2843d11110e925138d93ef0dd24",
+      "archiveSha256": "66c12475098b0bdcbd5e4ff0b7eed16131f87cc67c8f632ff598a581347f5fc0",
+      "bytes": 4454
+    },
+    {
+      "source": "issues/bugs/014-podgroup-antiaffinity-multi-domain-v114-backport-DONE/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/bugs/014-podgroup-antiaffinity-multi-domain-v114-backport-DONE/PROPOSAL_COMMIT.md",
+      "sourceSha256": "ea4cd877c0b0882204fcbff9a98aa9f6e0ab4718048eef85cbd42ec240fb4532",
+      "archiveSha256": "92f1e5bb60c5fa0f2ee453f9031b6c2ba52d54423c83b4dc27af9fc523cffb24",
+      "bytes": 22779
+    },
+    {
+      "source": "issues/bugs/014-podgroup-antiaffinity-multi-domain-v114-backport-DONE/anchor-podgroup.yaml",
+      "archive": "sources/issues/bugs/014-podgroup-antiaffinity-multi-domain-v114-backport-DONE/anchor-podgroup.yaml",
+      "sourceSha256": "df5792a8b67ea172dc8c2ffcea2df2cf71300a82de23ce6f1b7ef78f50941a2b",
+      "archiveSha256": "df5792a8b67ea172dc8c2ffcea2df2cf71300a82de23ce6f1b7ef78f50941a2b",
+      "bytes": 204
+    },
+    {
+      "source": "issues/bugs/014-podgroup-antiaffinity-multi-domain-v114-backport-DONE/anchor-workload.yaml",
+      "archive": "sources/issues/bugs/014-podgroup-antiaffinity-multi-domain-v114-backport-DONE/anchor-workload.yaml",
+      "sourceSha256": "3f001debf7bda665de1d0702f187963a8f4a9285cfca95467f60bf5ed328794b",
+      "archiveSha256": "3f001debf7bda665de1d0702f187963a8f4a9285cfca95467f60bf5ed328794b",
+      "bytes": 444
+    },
+    {
+      "source": "issues/bugs/014-podgroup-antiaffinity-multi-domain-v114-backport-DONE/hypernodes.yaml",
+      "archive": "sources/issues/bugs/014-podgroup-antiaffinity-multi-domain-v114-backport-DONE/hypernodes.yaml",
+      "sourceSha256": "3b97188dc8c78e453bc1f9e5ec90cf3669a6e0a930185879db371bee6694e9df",
+      "archiveSha256": "3b97188dc8c78e453bc1f9e5ec90cf3669a6e0a930185879db371bee6694e9df",
+      "bytes": 3056
+    },
+    {
+      "source": "issues/bugs/014-podgroup-antiaffinity-multi-domain-v114-backport-DONE/kind-config.yaml",
+      "archive": "sources/issues/bugs/014-podgroup-antiaffinity-multi-domain-v114-backport-DONE/kind-config.yaml",
+      "sourceSha256": "92644a81cb7efaaf280a8d3aa5c7c58a9a67925ba968cf6802eaee300af12243",
+      "archiveSha256": "92644a81cb7efaaf280a8d3aa5c7c58a9a67925ba968cf6802eaee300af12243",
+      "bytes": 168
+    },
+    {
+      "source": "issues/bugs/014-podgroup-antiaffinity-multi-domain-v114-backport-DONE/target-podgroup.yaml",
+      "archive": "sources/issues/bugs/014-podgroup-antiaffinity-multi-domain-v114-backport-DONE/target-podgroup.yaml",
+      "sourceSha256": "fcd719219c5d18ade9401b08804252bdd8f05b16f6d86c4d29f20a6c5d89209f",
+      "archiveSha256": "fcd719219c5d18ade9401b08804252bdd8f05b16f6d86c4d29f20a6c5d89209f",
+      "bytes": 1301
+    },
+    {
+      "source": "issues/bugs/014-podgroup-antiaffinity-multi-domain-v114-backport-DONE/target-workload.yaml",
+      "archive": "sources/issues/bugs/014-podgroup-antiaffinity-multi-domain-v114-backport-DONE/target-workload.yaml",
+      "sourceSha256": "5fab280fcb4022347953eb60010e084c398b28433c6a725f82e77d5c11446919",
+      "archiveSha256": "5fab280fcb4022347953eb60010e084c398b28433c6a725f82e77d5c11446919",
+      "bytes": 2885
+    },
+    {
+      "source": "issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/DESCRIPTION.md",
+      "archive": "sources/issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/DESCRIPTION.md",
+      "sourceSha256": "3dd8c609b162515a645538518201e92d8d2663c905c420b39069b8dd45ed88a7",
+      "archiveSha256": "f40508676bb61060b0e215065456d66272e10a71c369138e3849408cc43b723e",
+      "bytes": 3748
+    },
+    {
+      "source": "issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/PROPOSAL_COMMIT.md",
+      "sourceSha256": "6006cf85feeef7ab14781646d80cb758c747485a5971d167cbaea91cb1f278d1",
+      "archiveSha256": "babb9a1bc081fdf3bdfc658cfb92c83c46a9c713347e9bbaf802a75883038a58",
+      "bytes": 14854
+    },
+    {
+      "source": "issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/SUPERSEDED_8A71CA_VALIDATION.md",
+      "archive": "sources/issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/SUPERSEDED_8A71CA_VALIDATION.md",
+      "sourceSha256": "e8b879d7774559d296353e4e3f36eff5cd0fa5416c937a4b08eb28b3d59f27a4",
+      "archiveSha256": "3ccac97c7b43ab30fef5577829d9bbfa7f5ee54f51d8593bda24ac7192cbb3e4",
+      "bytes": 1569
+    },
+    {
+      "source": "issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/SUPERSEDED_B8AF4D_VALIDATION.md",
+      "archive": "sources/issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/SUPERSEDED_B8AF4D_VALIDATION.md",
+      "sourceSha256": "7e1beea4016dd2cacef3a2181b7f974e5523c82c3d87b0352128b7b1d396b717",
+      "archiveSha256": "fb5cf07538deb5887eade6b7119b709769f81d3f0962e6eb6028b63d33f8b40a",
+      "bytes": 18324
+    },
+    {
+      "source": "issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/anchor-podgroup.yaml",
+      "archive": "sources/issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/anchor-podgroup.yaml",
+      "sourceSha256": "9eb18ad4f3ae5de65a98ab81e5d786cb01be8a2f6aabeaf2f63778931503151b",
+      "archiveSha256": "9eb18ad4f3ae5de65a98ab81e5d786cb01be8a2f6aabeaf2f63778931503151b",
+      "bytes": 204
+    },
+    {
+      "source": "issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/anchor-workload.yaml",
+      "archive": "sources/issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/anchor-workload.yaml",
+      "sourceSha256": "2a6316cb98a9604665020ce09d0850c76baa61cc9255c0055559aa29b3d80538",
+      "archiveSha256": "2a6316cb98a9604665020ce09d0850c76baa61cc9255c0055559aa29b3d80538",
+      "bytes": 444
+    },
+    {
+      "source": "issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/hypernodes-bounded.yaml",
+      "archive": "sources/issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/hypernodes-bounded.yaml",
+      "sourceSha256": "c945a1ee97c66c2aad63bce364308e64384f6cc256732a000409c823405e1d95",
+      "archiveSha256": "c945a1ee97c66c2aad63bce364308e64384f6cc256732a000409c823405e1d95",
+      "bytes": 2006
+    },
+    {
+      "source": "issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/hypernodes.yaml",
+      "archive": "sources/issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/hypernodes.yaml",
+      "sourceSha256": "ba124c8f50932633186e33a330c9790db61c5987ae1808294115f03fb356401b",
+      "archiveSha256": "ba124c8f50932633186e33a330c9790db61c5987ae1808294115f03fb356401b",
+      "bytes": 3056
+    },
+    {
+      "source": "issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/kind-config-bounded.yaml",
+      "archive": "sources/issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/kind-config-bounded.yaml",
+      "sourceSha256": "08bbcdfea1e5ab688492710e2c5a9c439c0d276ab3eb43f23e146051314225f0",
+      "archiveSha256": "08bbcdfea1e5ab688492710e2c5a9c439c0d276ab3eb43f23e146051314225f0",
+      "bytes": 123
+    },
+    {
+      "source": "issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/kind-config.yaml",
+      "archive": "sources/issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/kind-config.yaml",
+      "sourceSha256": "92644a81cb7efaaf280a8d3aa5c7c58a9a67925ba968cf6802eaee300af12243",
+      "archiveSha256": "92644a81cb7efaaf280a8d3aa5c7c58a9a67925ba968cf6802eaee300af12243",
+      "bytes": 168
+    },
+    {
+      "source": "issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/target-podgroup-soft-subgroups.yaml",
+      "archive": "sources/issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/target-podgroup-soft-subgroups.yaml",
+      "sourceSha256": "90f274f3da4b4845c46a1b17a1028bd3837be8b51dc9133c6f698725125943af",
+      "archiveSha256": "90f274f3da4b4845c46a1b17a1028bd3837be8b51dc9133c6f698725125943af",
+      "bytes": 1301
+    },
+    {
+      "source": "issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/target-podgroup.yaml",
+      "archive": "sources/issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/target-podgroup.yaml",
+      "sourceSha256": "06db622b5439bb0cc77f04e197ce7763d72ac2eedad47c0782ef4a505c47d9f4",
+      "archiveSha256": "06db622b5439bb0cc77f04e197ce7763d72ac2eedad47c0782ef4a505c47d9f4",
+      "bytes": 1301
+    },
+    {
+      "source": "issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/target-workload-bounded.yaml",
+      "archive": "sources/issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/target-workload-bounded.yaml",
+      "sourceSha256": "a723a2b73377334166fea519167374d2bc8092fdc8a997aafb55b15f10fbe5e2",
+      "archiveSha256": "a723a2b73377334166fea519167374d2bc8092fdc8a997aafb55b15f10fbe5e2",
+      "bytes": 1957
+    },
+    {
+      "source": "issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/target-workload.yaml",
+      "archive": "sources/issues/bugs/018-podgroup-antiaffinity-bc-production-containment-DONE/target-workload.yaml",
+      "sourceSha256": "1ab7c51655f8f6b77129424fad1ecb0626da367fb3b3cadbc9b605f8bbc032ee",
+      "archiveSha256": "1ab7c51655f8f6b77129424fad1ecb0626da367fb3b3cadbc9b605f8bbc032ee",
+      "bytes": 2885
+    },
+    {
+      "source": "issues/bugs/019-preferred-subgroup-order-lost-on-abstain-DONE/DESCRIPTION.md",
+      "archive": "sources/issues/bugs/019-preferred-subgroup-order-lost-on-abstain-DONE/DESCRIPTION.md",
+      "sourceSha256": "f83a6c7530322b4bb03bd2edf4b218e31ea16024920e81b4f2731573f55d7d2d",
+      "archiveSha256": "a35784b0f8b96b3d0afc454be3b32fa9427fbbb6773f0b415b28d041d72865c8",
+      "bytes": 4780
+    },
+    {
+      "source": "issues/bugs/019-preferred-subgroup-order-lost-on-abstain-DONE/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/bugs/019-preferred-subgroup-order-lost-on-abstain-DONE/PROPOSAL_COMMIT.md",
+      "sourceSha256": "9b7cf2937c9fb8ae7221b3dea43f8309b17b33c844043bde8a7a41e3e797355e",
+      "archiveSha256": "c486c417c315391d28e9d43f0914bea65064c6a7dd5336dc0d38eed042287550",
+      "bytes": 21125
+    },
+    {
+      "source": "issues/bugs/019-preferred-subgroup-order-lost-on-abstain-DONE/anchor-hard-cd.yaml",
+      "archive": "sources/issues/bugs/019-preferred-subgroup-order-lost-on-abstain-DONE/anchor-hard-cd.yaml",
+      "sourceSha256": "da41fd1b4070d7e9ba3dc2a622e197f3611ce9b660cb51d06f05afd5cb599239",
+      "archiveSha256": "da41fd1b4070d7e9ba3dc2a622e197f3611ce9b660cb51d06f05afd5cb599239",
+      "bytes": 475
+    },
+    {
+      "source": "issues/bugs/019-preferred-subgroup-order-lost-on-abstain-DONE/deployments-hard-cd.yaml",
+      "archive": "sources/issues/bugs/019-preferred-subgroup-order-lost-on-abstain-DONE/deployments-hard-cd.yaml",
+      "sourceSha256": "476ca94b23a96f86c2cc5086c6795fa389e1cf7e830eefe138bd9730a213eeec",
+      "archiveSha256": "476ca94b23a96f86c2cc5086c6795fa389e1cf7e830eefe138bd9730a213eeec",
+      "bytes": 2665
+    },
+    {
+      "source": "issues/bugs/019-preferred-subgroup-order-lost-on-abstain-DONE/deployments.yaml",
+      "archive": "sources/issues/bugs/019-preferred-subgroup-order-lost-on-abstain-DONE/deployments.yaml",
+      "sourceSha256": "ff421abcab3bd90f5e87c0d74277de526edd45b5e3a059855a72bba567d67dde",
+      "archiveSha256": "ff421abcab3bd90f5e87c0d74277de526edd45b5e3a059855a72bba567d67dde",
+      "bytes": 2624
+    },
+    {
+      "source": "issues/bugs/019-preferred-subgroup-order-lost-on-abstain-DONE/hypernodes.yaml",
+      "archive": "sources/issues/bugs/019-preferred-subgroup-order-lost-on-abstain-DONE/hypernodes.yaml",
+      "sourceSha256": "0f72681dee337e94f2c703cd66238c227648c7292148a9f424cdcdd7c3d071d5",
+      "archiveSha256": "0f72681dee337e94f2c703cd66238c227648c7292148a9f424cdcdd7c3d071d5",
+      "bytes": 2072
+    },
+    {
+      "source": "issues/bugs/019-preferred-subgroup-order-lost-on-abstain-DONE/kind-config.yaml",
+      "archive": "sources/issues/bugs/019-preferred-subgroup-order-lost-on-abstain-DONE/kind-config.yaml",
+      "sourceSha256": "2afc11b56875054d43a4e435e7960de0f82bf808ba8b81f2e8546674e9d326cd",
+      "archiveSha256": "2afc11b56875054d43a4e435e7960de0f82bf808ba8b81f2e8546674e9d326cd",
+      "bytes": 138
+    },
+    {
+      "source": "issues/bugs/019-preferred-subgroup-order-lost-on-abstain-DONE/podgroup-hard-cd.yaml",
+      "archive": "sources/issues/bugs/019-preferred-subgroup-order-lost-on-abstain-DONE/podgroup-hard-cd.yaml",
+      "sourceSha256": "6fc288df3207df9ff89bc870277e88368ead835aa90c885c622b52a638a10487",
+      "archiveSha256": "6fc288df3207df9ff89bc870277e88368ead835aa90c885c622b52a638a10487",
+      "bytes": 991
+    },
+    {
+      "source": "issues/bugs/019-preferred-subgroup-order-lost-on-abstain-DONE/podgroup.yaml",
+      "archive": "sources/issues/bugs/019-preferred-subgroup-order-lost-on-abstain-DONE/podgroup.yaml",
+      "sourceSha256": "6ec2fdd056f4ad3a34343de55dbe0ed9b20232b6c00579cabd0e7aa51693f850",
+      "archiveSha256": "6ec2fdd056f4ad3a34343de55dbe0ed9b20232b6c00579cabd0e7aa51693f850",
+      "bytes": 907
+    },
+    {
+      "source": "issues/bugs/019-preferred-subgroup-order-lost-on-abstain-DONE/scheduler.conf",
+      "archive": "sources/issues/bugs/019-preferred-subgroup-order-lost-on-abstain-DONE/scheduler.conf",
+      "sourceSha256": "2b2d82b5cc6d0e4c5e82da3b545ad1d3a39ad06fa392c57240a5add025c08b22",
+      "archiveSha256": "2b2d82b5cc6d0e4c5e82da3b545ad1d3a39ad06fa392c57240a5add025c08b22",
+      "bytes": 579
+    },
+    {
+      "source": "issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/DESCRIPTION.md",
+      "archive": "sources/issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/DESCRIPTION.md",
+      "sourceSha256": "717c85b5817bae9e9afac02281361c141443eb314cb72915b6fe4a90596ad82c",
+      "archiveSha256": "c08cff27d4431e5e1fe44097bd1740bf0b78c7421e029bd9317de6eb85bbe665",
+      "bytes": 4054
+    },
+    {
+      "source": "issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/PROPOSAL_COMMIT.md",
+      "sourceSha256": "7f70fd262dd281c1f5970963a126722761829e76fc00fb0c5de8893f4b20de7b",
+      "archiveSha256": "de71d4e88d337253d6e58c66d4c60bbdce8d49af36900e294c4e6ff660c2c2ec",
+      "bytes": 29448
+    },
+    {
+      "source": "issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/assert-reschedule-layout.sh",
+      "archive": "sources/issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/assert-reschedule-layout.sh",
+      "sourceSha256": "74e8e90b801a396217815bc38e8a8a480dc08469828de76b037a4ce1d788d2ba",
+      "archiveSha256": "74e8e90b801a396217815bc38e8a8a480dc08469828de76b037a4ce1d788d2ba",
+      "bytes": 1621
+    },
+    {
+      "source": "issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/hypernodes.yaml",
+      "archive": "sources/issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/hypernodes.yaml",
+      "sourceSha256": "b91a609296e80fbba6dcc895701c0c5a54dcd4eba9aed795487e89c99e0d934a",
+      "archiveSha256": "b91a609296e80fbba6dcc895701c0c5a54dcd4eba9aed795487e89c99e0d934a",
+      "bytes": 1206
+    },
+    {
+      "source": "issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/kind-config.yaml",
+      "archive": "sources/issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/kind-config.yaml",
+      "sourceSha256": "08bbcdfea1e5ab688492710e2c5a9c439c0d276ab3eb43f23e146051314225f0",
+      "archiveSha256": "08bbcdfea1e5ab688492710e2c5a9c439c0d276ab3eb43f23e146051314225f0",
+      "bytes": 123
+    },
+    {
+      "source": "issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/podgroup.yaml",
+      "archive": "sources/issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/podgroup.yaml",
+      "sourceSha256": "8891c2f19aeafa2da5abf10601447a1ea387838694ba8df3176fdb407e74edee",
+      "archiveSha256": "8891c2f19aeafa2da5abf10601447a1ea387838694ba8df3176fdb407e74edee",
+      "bytes": 728
+    },
+    {
+      "source": "issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/reschedule-baseline.yaml",
+      "archive": "sources/issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/reschedule-baseline.yaml",
+      "sourceSha256": "f50664c98bc14e6bbb2dd4f9d7ac1689652fdbcfb67a5dc16f00fda2ca8627bf",
+      "archiveSha256": "f50664c98bc14e6bbb2dd4f9d7ac1689652fdbcfb67a5dc16f00fda2ca8627bf",
+      "bytes": 1305
+    },
+    {
+      "source": "issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/reschedule-podgroup.yaml",
+      "archive": "sources/issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/reschedule-podgroup.yaml",
+      "sourceSha256": "ab1652ee3ff63ea895355a98149fd9b97b400d1a931371cf07ec1485db7e538d",
+      "archiveSha256": "ab1652ee3ff63ea895355a98149fd9b97b400d1a931371cf07ec1485db7e538d",
+      "bytes": 484
+    },
+    {
+      "source": "issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/reschedule-target.yaml",
+      "archive": "sources/issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/reschedule-target.yaml",
+      "sourceSha256": "f8f10e074ed0649841a39314cd6b7edc73d4a04e2f35fe52ad1b194f9f53430d",
+      "archiveSha256": "f8f10e074ed0649841a39314cd6b7edc73d4a04e2f35fe52ad1b194f9f53430d",
+      "bytes": 578
+    },
+    {
+      "source": "issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/run-layout-repetitions.sh",
+      "archive": "sources/issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/run-layout-repetitions.sh",
+      "sourceSha256": "f084f395720c1641e2bcdf42faec2ec8942df728e462134efcabcada4f53f20f",
+      "archiveSha256": "f084f395720c1641e2bcdf42faec2ec8942df728e462134efcabcada4f53f20f",
+      "bytes": 1494
+    },
+    {
+      "source": "issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/scheduler.conf",
+      "archive": "sources/issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/scheduler.conf",
+      "sourceSha256": "1c9765b14c7148318c831489d32c9536e8e7575740effe3f6beb27253719ddce",
+      "archiveSha256": "1c9765b14c7148318c831489d32c9536e8e7575740effe3f6beb27253719ddce",
+      "bytes": 812
+    },
+    {
+      "source": "issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/workloads.yaml",
+      "archive": "sources/issues/bugs/020-preferred-subgroup-antiaffinity-count-blind-scoring-DONE/workloads.yaml",
+      "sourceSha256": "4bf04036e56366df5b52285e5c05aa17d429f016b6153f490493ff4990faa507",
+      "archiveSha256": "4bf04036e56366df5b52285e5c05aa17d429f016b6153f490493ff4990faa507",
+      "bytes": 4065
+    },
+    {
+      "source": "issues/bugs/021-soft-topology-default-lowest-tier-IP/DESCRIPTION.md",
+      "archive": "sources/issues/bugs/021-soft-topology-default-lowest-tier-IP/DESCRIPTION.md",
+      "sourceSha256": "08badaf45cefff24fd877aac3b010e947b587b2b7e843516bfd0bd7db6c85823",
+      "archiveSha256": "be773cc64df9095fb3491d57248b4509fe41d742e5931f3332fdab106480cf39",
+      "bytes": 4271
+    },
+    {
+      "source": "issues/bugs/021-soft-topology-default-lowest-tier-IP/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/bugs/021-soft-topology-default-lowest-tier-IP/PROPOSAL_COMMIT.md",
+      "sourceSha256": "5d871e078accf01d8b26ed09f39bae449a18da843c4610468812ae22df64c1f5",
+      "archiveSha256": "a1e00aecddbd0edf95a743a3a44a10c176d663a7f952d9ae84072b63271cd52e",
+      "bytes": 30335
+    },
+    {
+      "source": "issues/bugs/021-soft-topology-default-lowest-tier-IP/hypernodes.yaml",
+      "archive": "sources/issues/bugs/021-soft-topology-default-lowest-tier-IP/hypernodes.yaml",
+      "sourceSha256": "66d15414eabf8ea4b026aab6c24987cfdafb4a7919948d9e03e0bad635d25bb3",
+      "archiveSha256": "66d15414eabf8ea4b026aab6c24987cfdafb4a7919948d9e03e0bad635d25bb3",
+      "bytes": 1779
+    },
+    {
+      "source": "issues/bugs/021-soft-topology-default-lowest-tier-IP/k1-filler.yaml",
+      "archive": "sources/issues/bugs/021-soft-topology-default-lowest-tier-IP/k1-filler.yaml",
+      "sourceSha256": "9b05a09e5fa8db23aa7d08610cdf8b4e5ac547c9d0d4611d5b40b92eb414f7d3",
+      "archiveSha256": "9b05a09e5fa8db23aa7d08610cdf8b4e5ac547c9d0d4611d5b40b92eb414f7d3",
+      "bytes": 379
+    },
+    {
+      "source": "issues/bugs/021-soft-topology-default-lowest-tier-IP/k1-podgroup-explicit-tier1.yaml",
+      "archive": "sources/issues/bugs/021-soft-topology-default-lowest-tier-IP/k1-podgroup-explicit-tier1.yaml",
+      "sourceSha256": "acdd0cc8628034d94f81ffaacb89994e8422bcc22bd5635c91a7909385c1520a",
+      "archiveSha256": "acdd0cc8628034d94f81ffaacb89994e8422bcc22bd5635c91a7909385c1520a",
+      "bytes": 487
+    },
+    {
+      "source": "issues/bugs/021-soft-topology-default-lowest-tier-IP/k1-podgroup.yaml",
+      "archive": "sources/issues/bugs/021-soft-topology-default-lowest-tier-IP/k1-podgroup.yaml",
+      "sourceSha256": "1a4e6974e5c876ad0a73dd3db6df6980de7ff2ac8bbd346c8e24aba1a6d573dc",
+      "archiveSha256": "1a4e6974e5c876ad0a73dd3db6df6980de7ff2ac8bbd346c8e24aba1a6d573dc",
+      "bytes": 461
+    },
+    {
+      "source": "issues/bugs/021-soft-topology-default-lowest-tier-IP/k1-role-a.yaml",
+      "archive": "sources/issues/bugs/021-soft-topology-default-lowest-tier-IP/k1-role-a.yaml",
+      "sourceSha256": "03c70f80f43e80ea6981257c0661b6fac8c597737331de9152407c46ef80272a",
+      "archiveSha256": "03c70f80f43e80ea6981257c0661b6fac8c597737331de9152407c46ef80272a",
+      "bytes": 788
+    },
+    {
+      "source": "issues/bugs/021-soft-topology-default-lowest-tier-IP/k1-role-b.yaml",
+      "archive": "sources/issues/bugs/021-soft-topology-default-lowest-tier-IP/k1-role-b.yaml",
+      "sourceSha256": "dadacd0017122d86028a6577acdd63e4d1bda7b3a0f21d49919464452b5be263",
+      "archiveSha256": "dadacd0017122d86028a6577acdd63e4d1bda7b3a0f21d49919464452b5be263",
+      "bytes": 711
+    },
+    {
+      "source": "issues/bugs/021-soft-topology-default-lowest-tier-IP/k2-filler.yaml",
+      "archive": "sources/issues/bugs/021-soft-topology-default-lowest-tier-IP/k2-filler.yaml",
+      "sourceSha256": "55bfefcb4b95d78110fd8a5366348a9260be895d44761ebf918a1b81724b7afe",
+      "archiveSha256": "55bfefcb4b95d78110fd8a5366348a9260be895d44761ebf918a1b81724b7afe",
+      "bytes": 381
+    },
+    {
+      "source": "issues/bugs/021-soft-topology-default-lowest-tier-IP/k2-podgroup.yaml",
+      "archive": "sources/issues/bugs/021-soft-topology-default-lowest-tier-IP/k2-podgroup.yaml",
+      "sourceSha256": "cbb46b9b09cdf024d92e5ed6779ff0a634f9f22274fe179efe4454b5f6161ab4",
+      "archiveSha256": "cbb46b9b09cdf024d92e5ed6779ff0a634f9f22274fe179efe4454b5f6161ab4",
+      "bytes": 461
+    },
+    {
+      "source": "issues/bugs/021-soft-topology-default-lowest-tier-IP/k2-role-a.yaml",
+      "archive": "sources/issues/bugs/021-soft-topology-default-lowest-tier-IP/k2-role-a.yaml",
+      "sourceSha256": "20a7c66fa3b95e74801adaface60e9487bc4c626cf803fee35b224334f691a5d",
+      "archiveSha256": "20a7c66fa3b95e74801adaface60e9487bc4c626cf803fee35b224334f691a5d",
+      "bytes": 788
+    },
+    {
+      "source": "issues/bugs/021-soft-topology-default-lowest-tier-IP/k2-role-b.yaml",
+      "archive": "sources/issues/bugs/021-soft-topology-default-lowest-tier-IP/k2-role-b.yaml",
+      "sourceSha256": "129fdb1107fbc80774f0ab3e7ff6cf106af2b40b0d24af264c2e864d54aba017",
+      "archiveSha256": "129fdb1107fbc80774f0ab3e7ff6cf106af2b40b0d24af264c2e864d54aba017",
+      "bytes": 711
+    },
+    {
+      "source": "issues/bugs/021-soft-topology-default-lowest-tier-IP/kind-config.yaml",
+      "archive": "sources/issues/bugs/021-soft-topology-default-lowest-tier-IP/kind-config.yaml",
+      "sourceSha256": "7b09dd97929f9b9f7d5ec50ab0e9dcc4e369d438be0218f2993d29bab274c744",
+      "archiveSha256": "7b09dd97929f9b9f7d5ec50ab0e9dcc4e369d438be0218f2993d29bab274c744",
+      "bytes": 138
+    },
+    {
+      "source": "issues/bugs/021-soft-topology-default-lowest-tier-IP/scheduler-config.yaml",
+      "archive": "sources/issues/bugs/021-soft-topology-default-lowest-tier-IP/scheduler-config.yaml",
+      "sourceSha256": "acf2a0f8eabfc888497b0ca552a80a826ead7e08e1b3a298fb6e872a89ba616c",
+      "archiveSha256": "acf2a0f8eabfc888497b0ca552a80a826ead7e08e1b3a298fb6e872a89ba616c",
+      "bytes": 557
+    },
+    {
+      "source": "issues/bugs/022-candidate-forest-memory-scaling-DONE/DESCRIPTION.md",
+      "archive": "sources/issues/bugs/022-candidate-forest-memory-scaling-DONE/DESCRIPTION.md",
+      "sourceSha256": "bb100d4692ef66e72eb5a522f39bd08e6531d0ce2b7f511072be7f071a10335d",
+      "archiveSha256": "1978e365d8834c87a3513a43e784c4f3ec7ab202e3687fba8d9de9781326cea5",
+      "bytes": 5060
+    },
+    {
+      "source": "issues/bugs/022-candidate-forest-memory-scaling-DONE/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/bugs/022-candidate-forest-memory-scaling-DONE/PROPOSAL_COMMIT.md",
+      "sourceSha256": "50d0945b32667ec5c0a33ec133cbed6063477a6a75c4e7cf5f298fd599ff4173",
+      "archiveSha256": "e378e81aedd8e722d9f6733bb4ef08432a8477bf6f57ac7fbbc92c42d66deac8",
+      "bytes": 23290
+    },
+    {
+      "source": "issues/bugs/022-candidate-forest-memory-scaling-DONE/SOFT_FOREST_MEMORY_REPORT.md",
+      "archive": "sources/issues/bugs/022-candidate-forest-memory-scaling-DONE/SOFT_FOREST_MEMORY_REPORT.md",
+      "sourceSha256": "dbc8719205d3ccdef1fbad5569ecc6391eb713f6aac40ab322f7104147a3668c",
+      "archiveSha256": "83d5b8c3eee38ddebd8ee40c2def5b889ef5933f619ed6b3a27412929c0e5d88",
+      "bytes": 16345
+    },
+    {
+      "source": "issues/bugs/022-candidate-forest-memory-scaling-DONE/anchor-podgroup.yaml",
+      "archive": "sources/issues/bugs/022-candidate-forest-memory-scaling-DONE/anchor-podgroup.yaml",
+      "sourceSha256": "cbdc65d09d441de2e2ea969044b52f4292d2cab787b6374eeceb745436da4ce9",
+      "archiveSha256": "cbdc65d09d441de2e2ea969044b52f4292d2cab787b6374eeceb745436da4ce9",
+      "bytes": 213
+    },
+    {
+      "source": "issues/bugs/022-candidate-forest-memory-scaling-DONE/anchor-workload.yaml",
+      "archive": "sources/issues/bugs/022-candidate-forest-memory-scaling-DONE/anchor-workload.yaml",
+      "sourceSha256": "ec6918ddc8ac521e436c63ede7eb5ccd16ccf958c2ee4f83cabf516fb8bdeabe",
+      "archiveSha256": "ec6918ddc8ac521e436c63ede7eb5ccd16ccf958c2ee4f83cabf516fb8bdeabe",
+      "bytes": 444
+    },
+    {
+      "source": "issues/bugs/022-candidate-forest-memory-scaling-DONE/hypernodes.yaml",
+      "archive": "sources/issues/bugs/022-candidate-forest-memory-scaling-DONE/hypernodes.yaml",
+      "sourceSha256": "475dc3e73bceebb31122123f6e8395a418062ba3269eca749ebfde5331ee63ee",
+      "archiveSha256": "475dc3e73bceebb31122123f6e8395a418062ba3269eca749ebfde5331ee63ee",
+      "bytes": 2006
+    },
+    {
+      "source": "issues/bugs/022-candidate-forest-memory-scaling-DONE/insufficient-podgroup.yaml",
+      "archive": "sources/issues/bugs/022-candidate-forest-memory-scaling-DONE/insufficient-podgroup.yaml",
+      "sourceSha256": "01f37e4198f7c5f61da910580c8ad7b6402e6b4ae8aef6ac587b3f95c2f64872",
+      "archiveSha256": "01f37e4198f7c5f61da910580c8ad7b6402e6b4ae8aef6ac587b3f95c2f64872",
+      "bytes": 397
+    },
+    {
+      "source": "issues/bugs/022-candidate-forest-memory-scaling-DONE/insufficient-workload.yaml",
+      "archive": "sources/issues/bugs/022-candidate-forest-memory-scaling-DONE/insufficient-workload.yaml",
+      "sourceSha256": "c8544ff8235483bbd2ea86b9d45711bee7e8bdb40d0625a8921c2125d8d7bcf6",
+      "archiveSha256": "c8544ff8235483bbd2ea86b9d45711bee7e8bdb40d0625a8921c2125d8d7bcf6",
+      "bytes": 395
+    },
+    {
+      "source": "issues/bugs/022-candidate-forest-memory-scaling-DONE/kind-config.yaml",
+      "archive": "sources/issues/bugs/022-candidate-forest-memory-scaling-DONE/kind-config.yaml",
+      "sourceSha256": "08bbcdfea1e5ab688492710e2c5a9c439c0d276ab3eb43f23e146051314225f0",
+      "archiveSha256": "08bbcdfea1e5ab688492710e2c5a9c439c0d276ab3eb43f23e146051314225f0",
+      "bytes": 123
+    },
+    {
+      "source": "issues/bugs/022-candidate-forest-memory-scaling-DONE/target-podgroup.yaml",
+      "archive": "sources/issues/bugs/022-candidate-forest-memory-scaling-DONE/target-podgroup.yaml",
+      "sourceSha256": "1c2f49e8e095989610eb57b49136e095839a6e6278f454a807a61e5051aa88b8",
+      "archiveSha256": "1c2f49e8e095989610eb57b49136e095839a6e6278f454a807a61e5051aa88b8",
+      "bytes": 1310
+    },
+    {
+      "source": "issues/bugs/022-candidate-forest-memory-scaling-DONE/target-workload.yaml",
+      "archive": "sources/issues/bugs/022-candidate-forest-memory-scaling-DONE/target-workload.yaml",
+      "sourceSha256": "857846b79655e233bf7a7df1a37b6d8466ab626969d671aaf5b50f1471b4eabf",
+      "archiveSha256": "857846b79655e233bf7a7df1a37b6d8466ab626969d671aaf5b50f1471b4eabf",
+      "bytes": 1957
+    },
+    {
+      "source": "issues/bugs/023-topology-nodeaffinity-preferred-score-isolation-OPEN/DESCRIPTION.md",
+      "archive": "sources/issues/bugs/023-topology-nodeaffinity-preferred-score-isolation-OPEN/DESCRIPTION.md",
+      "sourceSha256": "e0730dd1c815a4ff2810c50aa284afeee12e132d75f7313478fd98f70dbbedbf",
+      "archiveSha256": "2b4bd0d76210d8ee6e26cd3985ce0af885d1ec2c7bdff3b57dac58f2a2264568",
+      "bytes": 6710
+    },
+    {
+      "source": "issues/bugs/023-topology-nodeaffinity-preferred-score-isolation-OPEN/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/bugs/023-topology-nodeaffinity-preferred-score-isolation-OPEN/PROPOSAL_COMMIT.md",
+      "sourceSha256": "35d573fcc801fe8fab7beb53f87106d1c416b89e2742b84b2c5e47ba2681caf6",
+      "archiveSha256": "613402cc51c92c4d6bdafc860dfc717a3b5ef47b8cdb92d56d58fbb0f1d2f6d0",
+      "bytes": 9989
+    },
+    {
+      "source": "issues/bugs/024-required-subgroup-antiaffinity-hard-semantics-DONE/DESCRIPTION.md",
+      "archive": "sources/issues/bugs/024-required-subgroup-antiaffinity-hard-semantics-DONE/DESCRIPTION.md",
+      "sourceSha256": "11bedbf8cfaf3437f49a90251fda91afa6fc610816cdd7b75a7bec88d983109d",
+      "archiveSha256": "6260eb19282244a6f0fe380d249d65296c03a78149af222a8ed13a660dd91ed5",
+      "bytes": 850
+    },
+    {
+      "source": "issues/bugs/024-required-subgroup-antiaffinity-hard-semantics-DONE/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/bugs/024-required-subgroup-antiaffinity-hard-semantics-DONE/PROPOSAL_COMMIT.md",
+      "sourceSha256": "27efd791733b4b0337b8e59249d079a7a397b27f746b36938a739ff152d2b226",
+      "archiveSha256": "02945a2d3e18ae7d748f9375ddb858db3181b6da685706f87f10c530dce0cccc",
+      "bytes": 4757
+    },
+    {
+      "source": "issues/bugs/024-required-subgroup-antiaffinity-hard-semantics-DONE/helm-values.yaml",
+      "archive": "sources/issues/bugs/024-required-subgroup-antiaffinity-hard-semantics-DONE/helm-values.yaml",
+      "sourceSha256": "a1db88e72ebf210187f3dd4dd34ef8ef9f0f53f203e9819ba8e44402900776bc",
+      "archiveSha256": "a1db88e72ebf210187f3dd4dd34ef8ef9f0f53f203e9819ba8e44402900776bc",
+      "bytes": 888
+    },
+    {
+      "source": "issues/bugs/024-required-subgroup-antiaffinity-hard-semantics-DONE/hypernodes.yaml",
+      "archive": "sources/issues/bugs/024-required-subgroup-antiaffinity-hard-semantics-DONE/hypernodes.yaml",
+      "sourceSha256": "b8fa56587579976204a9b69a34c0e0b10a74eace247a5b0834660599c8eafdfa",
+      "archiveSha256": "b8fa56587579976204a9b69a34c0e0b10a74eace247a5b0834660599c8eafdfa",
+      "bytes": 2073
+    },
+    {
+      "source": "issues/bugs/024-required-subgroup-antiaffinity-hard-semantics-DONE/kind-config.yaml",
+      "archive": "sources/issues/bugs/024-required-subgroup-antiaffinity-hard-semantics-DONE/kind-config.yaml",
+      "sourceSha256": "6ade16de5ac6c65019994b2a4d15bf9895c4bbaca0ca31ede3069e3e68c01506",
+      "archiveSha256": "6ade16de5ac6c65019994b2a4d15bf9895c4bbaca0ca31ede3069e3e68c01506",
+      "bytes": 139
+    },
+    {
+      "source": "issues/bugs/024-required-subgroup-antiaffinity-hard-semantics-DONE/pg-feasible.yaml",
+      "archive": "sources/issues/bugs/024-required-subgroup-antiaffinity-hard-semantics-DONE/pg-feasible.yaml",
+      "sourceSha256": "1845b7dd00c9b0c161fc5aeb43b573dee1214164c45cd6d74b0e3a52b04b1cb8",
+      "archiveSha256": "1845b7dd00c9b0c161fc5aeb43b573dee1214164c45cd6d74b0e3a52b04b1cb8",
+      "bytes": 546
+    },
+    {
+      "source": "issues/bugs/024-required-subgroup-antiaffinity-hard-semantics-DONE/pg-infeasible.yaml",
+      "archive": "sources/issues/bugs/024-required-subgroup-antiaffinity-hard-semantics-DONE/pg-infeasible.yaml",
+      "sourceSha256": "09e69002184692cf1556066e5c2d038c60aaaef87c11bd3a5050c4f803840ac3",
+      "archiveSha256": "09e69002184692cf1556066e5c2d038c60aaaef87c11bd3a5050c4f803840ac3",
+      "bytes": 557
+    },
+    {
+      "source": "issues/bugs/024-required-subgroup-antiaffinity-hard-semantics-DONE/pods-feasible.yaml",
+      "archive": "sources/issues/bugs/024-required-subgroup-antiaffinity-hard-semantics-DONE/pods-feasible.yaml",
+      "sourceSha256": "2445492a21496f22a54ceba8fc51f581edba7985afb17925fe741689400d96b1",
+      "archiveSha256": "2445492a21496f22a54ceba8fc51f581edba7985afb17925fe741689400d96b1",
+      "bytes": 1658
+    },
+    {
+      "source": "issues/bugs/024-required-subgroup-antiaffinity-hard-semantics-DONE/pods-infeasible.yaml",
+      "archive": "sources/issues/bugs/024-required-subgroup-antiaffinity-hard-semantics-DONE/pods-infeasible.yaml",
+      "sourceSha256": "3c6f3e023af2d440a38b2ad31e1edc5e1e8eaa0e621768253943386229568176",
+      "archiveSha256": "3c6f3e023af2d440a38b2ad31e1edc5e1e8eaa0e621768253943386229568176",
+      "bytes": 2338
+    },
+    {
+      "source": "issues/features/005-topology-affinity-user-guide-DONE/DESCRIPTION.md",
+      "archive": "sources/issues/features/005-topology-affinity-user-guide-DONE/DESCRIPTION.md",
+      "sourceSha256": "cfad3245e09c5f93da2d1a7f6c151522977e26423b525b965f48576fe59ba061",
+      "archiveSha256": "129cfb078fd4c88694293da5fdbaae47a1cdc676df810c93ebc9afe6ee0e2ec8",
+      "bytes": 938
+    },
+    {
+      "source": "issues/features/005-topology-affinity-user-guide-DONE/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/features/005-topology-affinity-user-guide-DONE/PROPOSAL_COMMIT.md",
+      "sourceSha256": "317c751c0eb1aafba0b5074d468bf0311acfdc180bea8807762ab37d04d24068",
+      "archiveSha256": "a4341b7734df2dcbf56d2d4a86d2e8aa4741d47b7c507a1135ccf732f25bbdac",
+      "bytes": 2352
+    },
+    {
+      "source": "issues/features/006-hypernode-plugins-implementation-guide-DONE/DESCRIPTION.md",
+      "archive": "sources/issues/features/006-hypernode-plugins-implementation-guide-DONE/DESCRIPTION.md",
+      "sourceSha256": "902ab762e0e529af00ca7aaac66bcee726fd1be5412a7fce73f8a7ae94d87d86",
+      "archiveSha256": "c18767fe83880baa2453292d8b83bb95b829efe137c83e0c881a6932bbeb3d44",
+      "bytes": 1039
+    },
+    {
+      "source": "issues/features/006-hypernode-plugins-implementation-guide-DONE/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/features/006-hypernode-plugins-implementation-guide-DONE/PROPOSAL_COMMIT.md",
+      "sourceSha256": "f6d948fa1705911b8b6b5ac6e9ae54ddb8f2789211f259a935ec7686c6ab7cf8",
+      "archiveSha256": "f34a16ac14bff774bfcbfe4351c02397055e7394f826bc143695f50b2377303a",
+      "bytes": 2263
+    },
+    {
+      "source": "issues/features/007-hypernode-plugins-implementation-guide-cn-DONE/DESCRIPTION.md",
+      "archive": "sources/issues/features/007-hypernode-plugins-implementation-guide-cn-DONE/DESCRIPTION.md",
+      "sourceSha256": "c1acadbd8066dfce598be014eaa7533a0d36a0a1df09a4bce7b159c8a5c6d0b5",
+      "archiveSha256": "c8837427f142216f9944bcbba2210d6c6d1ad17851d4eebcaf5b20a59a32d063",
+      "bytes": 965
+    },
+    {
+      "source": "issues/features/007-hypernode-plugins-implementation-guide-cn-DONE/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/features/007-hypernode-plugins-implementation-guide-cn-DONE/PROPOSAL_COMMIT.md",
+      "sourceSha256": "86700b25fdf463ebbf1af7125c93df1e560e360daccf35fa75a6b9a34ec30a2b",
+      "archiveSha256": "fc8d02479ec41b918f5c374331c648f56a4d715779c23dc9afea7aa0c5115d85",
+      "bytes": 2022
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/DESCRIPTION.md",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/DESCRIPTION.md",
+      "sourceSha256": "bf9ba0a451863732f44c91059f69fb45f9ea3b3136259c5a305c3db4bfe06262",
+      "archiveSha256": "e3092048543cfa1f45e0c26e1b2b51386acd61b480ed4a6eabd3672fb333eaa9",
+      "bytes": 9849
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/DESIGN_COMPLETION_AUDIT.md",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/DESIGN_COMPLETION_AUDIT.md",
+      "sourceSha256": "065bdfb887f370b63612a1a07e2d625d05c2d93748ad04243309d5e8d4312177",
+      "archiveSha256": "9e087276cad4c6b7b16ade7ed3f668ed8f494842aef79b2515b65e5f12b04070",
+      "bytes": 6381
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/PROPOSAL_COMMIT.md",
+      "sourceSha256": "0becde731bd160b394a4d8c763a9f9abf6dc164fa64f7d7c4ccfd40ca32969fb",
+      "archiveSha256": "6b8067ee20460e4d44297099ac3282e268923e5aa17bea1186f63eb2384f4a28",
+      "bytes": 68431
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/README.md",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/README.md",
+      "sourceSha256": "444670ebb74e3d320fa267f9ca8bc5f003c7401c6112de3b29fc04961dbe152c",
+      "archiveSha256": "d76cdb500f8702267decd166398d732608d3450e37b13928bb0a01ad7be7f302",
+      "bytes": 3662
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/REQUIREMENTS_2026-09-11.md",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/REQUIREMENTS_2026-09-11.md",
+      "sourceSha256": "700420764865fddabbc4d2cbf5fb051dba4000075d0e9da4eccddd396c5d7b72",
+      "archiveSha256": "ff8ee5b4cddd8e24271ce37102e89ed001878647b0c2f13dd2fada52f7bd25b1",
+      "bytes": 11324
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/REVIEW_2026-09-11.md",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/REVIEW_2026-09-11.md",
+      "sourceSha256": "f62a4c44d684ce239cfa6a01d67a853fd575cdf41d12e5b7719a97020378c5b0",
+      "archiveSha256": "5bda4623a1434ff72f8b45548baa44a83fdd4f50c6432a0482dce2ab767df115",
+      "bytes": 54599
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "sourceSha256": "0dfa2dd8da156cd7dcd4f6d6a2d6d5d432a6b8e0c8b04f0bb7278bd5dbc91f97",
+      "archiveSha256": "683d69f7ace720f3c7f284d92d2fdcbb5d112246551dd9947f0cf645abbb7846",
+      "bytes": 94856
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_SCHEDULING_REFACTOR.md",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_SCHEDULING_REFACTOR.md",
+      "sourceSha256": "3c62b45db40d085e7145d6c9ecc24d6fd92690f8e791176e9ea588342f53c77f",
+      "archiveSha256": "b8fcd5f931b32cc6faca4f1b3d5b6a4fb9cdadc6d4d939a11187046c2fb13b76",
+      "bytes": 50485
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_SCHEDULING_REFACTOR_BLOG.md",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_SCHEDULING_REFACTOR_BLOG.md",
+      "sourceSha256": "4a128943091ced6dea16fef7b4f4265487816594f9d7e26caa7a5e6c482bbd13",
+      "archiveSha256": "c28f8ee338099120c0d24d293612f87c96e87641fca81b16ce50278a58e20e0a",
+      "bytes": 31414
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/UNIFIED_TOPOLOGY_SCHEDULING_DESIGN.md",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/UNIFIED_TOPOLOGY_SCHEDULING_DESIGN.md",
+      "sourceSha256": "17de139eca4637b89c20d5b9c51799c52eafeaacfa2c4ae76dc53ac6b3ffdf91",
+      "archiveSha256": "214fa52a15ae93071ebc66982cc03b80a09ebba608e25e980c82c0eeb2a143f6",
+      "bytes": 47282
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/VOLCANO_UPSTREAM_SCORING_CODE_WALKTHROUGH_CN.md",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/VOLCANO_UPSTREAM_SCORING_CODE_WALKTHROUGH_CN.md",
+      "sourceSha256": "6c2ed945ebd98dc9bfdc6913616528dfa31f5760244bc2efc1803770dea7dcca",
+      "archiveSha256": "86b9052e13ba622920064fb4c22076886ef7d2bc16ceb8523c3f55641b6ee1b9",
+      "bytes": 90397
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/VOLCANO_UPSTREAM_TOPOLOGY_REFACTOR_DESIGN_CN.md",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/VOLCANO_UPSTREAM_TOPOLOGY_REFACTOR_DESIGN_CN.md",
+      "sourceSha256": "f1c176e16784751561182fe28526156166566593b2b9d34de13c031c8a0bee72",
+      "archiveSha256": "991c2b26725f2b7a391d2e448a14f95dd016068b23bba1fb32875fdf6de7c606",
+      "bytes": 68352
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/artifacts/VERIFICATION_RESULTS.md",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/artifacts/VERIFICATION_RESULTS.md",
+      "sourceSha256": "a79b8783b06f973e2d82c7c087f8c60798c00f44ce3523be7bc8c8faee3e2f19",
+      "archiveSha256": "9f45a7ad65bc3a91de3bcd9dcabd2dbb5193d8c83ad1432669da298e4bd5ca08",
+      "bytes": 11074
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/artifacts/helm-values-unified.yaml",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/artifacts/helm-values-unified.yaml",
+      "sourceSha256": "9c9c9e3a975e0b273eb567943f4bae03d8eb7d5f1b66006c0a018b1266823c24",
+      "archiveSha256": "9c9c9e3a975e0b273eb567943f4bae03d8eb7d5f1b66006c0a018b1266823c24",
+      "bytes": 604
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/artifacts/k0-podgroup-selector-crd-patch.json",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/artifacts/k0-podgroup-selector-crd-patch.json",
+      "sourceSha256": "541bbb5cd91f1073ead176ab9205b5fcd484d4761e304405cbda0eb01e97b069",
+      "archiveSha256": "541bbb5cd91f1073ead176ab9205b5fcd484d4761e304405cbda0eb01e97b069",
+      "bytes": 1280
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/artifacts/k1-hypernodes.yaml",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/artifacts/k1-hypernodes.yaml",
+      "sourceSha256": "2ed7cacf763cd65ee3aec740d8f23c92633a2d70b76f59dbb2f177792cb1143c",
+      "archiveSha256": "2ed7cacf763cd65ee3aec740d8f23c92633a2d70b76f59dbb2f177792cb1143c",
+      "bytes": 2027
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/artifacts/k1-occupied-deployment.yaml",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/artifacts/k1-occupied-deployment.yaml",
+      "sourceSha256": "2979b54eba0c3605c014f094a21a323f58d532b56f040a6e2a9cecbf6d5df00d",
+      "archiveSha256": "2979b54eba0c3605c014f094a21a323f58d532b56f040a6e2a9cecbf6d5df00d",
+      "bytes": 595
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/artifacts/k1-podgroups.yaml",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/artifacts/k1-podgroups.yaml",
+      "sourceSha256": "0c79c11b511f58bf8f1ebf52c082e447d859f5f5d729436bc672b6dbd2c4aff7",
+      "archiveSha256": "0c79c11b511f58bf8f1ebf52c082e447d859f5f5d729436bc672b6dbd2c4aff7",
+      "bytes": 961
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/artifacts/k1-target-deployment.yaml",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/artifacts/k1-target-deployment.yaml",
+      "sourceSha256": "8cb53ef7e63d644d17a30ddc680fe175a2fe8d61b61e6a159e705340ad63d483",
+      "archiveSha256": "8cb53ef7e63d644d17a30ddc680fe175a2fe8d61b61e6a159e705340ad63d483",
+      "bytes": 612
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/artifacts/k2-deployments.yaml",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/artifacts/k2-deployments.yaml",
+      "sourceSha256": "107c5c75dbfb725764c354f47a913070117e7e36a33ba22001843ca1bf37ac68",
+      "archiveSha256": "107c5c75dbfb725764c354f47a913070117e7e36a33ba22001843ca1bf37ac68",
+      "bytes": 1990
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/artifacts/k2-podgroup.yaml",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/artifacts/k2-podgroup.yaml",
+      "sourceSha256": "724912fae2c04aaa161291d09fa19f59411cf33463db8a3f0572307f3ec90933",
+      "archiveSha256": "724912fae2c04aaa161291d09fa19f59411cf33463db8a3f0572307f3ec90933",
+      "bytes": 762
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/artifacts/k3-deployments.yaml",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/artifacts/k3-deployments.yaml",
+      "sourceSha256": "a8fd58548fd12a913b071e2487b99cda7796b2e50e82c8caa30e906fa6ec9af5",
+      "archiveSha256": "a8fd58548fd12a913b071e2487b99cda7796b2e50e82c8caa30e906fa6ec9af5",
+      "bytes": 2111
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/artifacts/k3-podgroup.yaml",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/artifacts/k3-podgroup.yaml",
+      "sourceSha256": "c4954de1df6083209109fcf47d8b97bda5d7b67322ae47515aa10e64351b2c58",
+      "archiveSha256": "c4954de1df6083209109fcf47d8b97bda5d7b67322ae47515aa10e64351b2c58",
+      "bytes": 419
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/artifacts/k4-deployment.yaml",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/artifacts/k4-deployment.yaml",
+      "sourceSha256": "caddcf79c9d8bf9440c1241944925fe73baa1915e28d59c2802b2529fa856adc",
+      "archiveSha256": "caddcf79c9d8bf9440c1241944925fe73baa1915e28d59c2802b2529fa856adc",
+      "bytes": 569
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/artifacts/k4-podgroup.yaml",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/artifacts/k4-podgroup.yaml",
+      "sourceSha256": "98247951c6f980b28fa094bbbb8208e564b7d9e343760ae294bae843f5787c7a",
+      "archiveSha256": "98247951c6f980b28fa094bbbb8208e564b7d9e343760ae294bae843f5787c7a",
+      "bytes": 147
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/artifacts/kind-4node.yaml",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/artifacts/kind-4node.yaml",
+      "sourceSha256": "9b3f43dfb8dc545ee3b1c44b341ab4b03559255969fe4b05ae8c891ba40b3ad0",
+      "archiveSha256": "9b3f43dfb8dc545ee3b1c44b341ab4b03559255969fe4b05ae8c891ba40b3ad0",
+      "bytes": 131
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/artifacts/run-kind-verification.sh",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/artifacts/run-kind-verification.sh",
+      "sourceSha256": "f21537387a20082bdd913ee27d1533f9c2ada7f8d8cb903caf6d9800ffca5bd5",
+      "archiveSha256": "f21537387a20082bdd913ee27d1533f9c2ada7f8d8cb903caf6d9800ffca5bd5",
+      "bytes": 3899
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/design-validation/bug020-results.json",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/design-validation/bug020-results.json",
+      "sourceSha256": "3712390955f2bbb269fdfa594e4d6f41817db6a9a8d91dd58f3b65c8b923355d",
+      "archiveSha256": "3712390955f2bbb269fdfa594e4d6f41817db6a9a8d91dd58f3b65c8b923355d",
+      "bytes": 4278
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/design-validation/bug020_model.py",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/design-validation/bug020_model.py",
+      "sourceSha256": "043b18c0de9a36e7a156342184303ef103370d275689be0bd317214659dbb9cc",
+      "archiveSha256": "043b18c0de9a36e7a156342184303ef103370d275689be0bd317214659dbb9cc",
+      "bytes": 8462
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/design-validation/performance-cost-results.json",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/design-validation/performance-cost-results.json",
+      "sourceSha256": "5ae91af04330bb30e3ecd517e21d00a5ed2709bb4a63b966823c5a44852f732b",
+      "archiveSha256": "5ae91af04330bb30e3ecd517e21d00a5ed2709bb4a63b966823c5a44852f732b",
+      "bytes": 2747
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/design-validation/performance_cost_model.py",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/design-validation/performance_cost_model.py",
+      "sourceSha256": "aebce24fa4f0a37edcab58921df6ebcabb974ccd8fdbb573d5451a22e064c557",
+      "archiveSha256": "aebce24fa4f0a37edcab58921df6ebcabb974ccd8fdbb573d5451a22e064c557",
+      "bytes": 8229
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/design-validation/unified-results.json",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/design-validation/unified-results.json",
+      "sourceSha256": "616f14350451073cfd566c182980fbf19d1b35e7556bb0332fe7ad78367094e4",
+      "archiveSha256": "616f14350451073cfd566c182980fbf19d1b35e7556bb0332fe7ad78367094e4",
+      "bytes": 11602
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/design-validation/unified_model.py",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/design-validation/unified_model.py",
+      "sourceSha256": "75524b1b74744bd88f65a640572255686d83d9ae5e8ed47346af2908725359fe",
+      "archiveSha256": "75524b1b74744bd88f65a640572255686d83d9ae5e8ed47346af2908725359fe",
+      "bytes": 22376
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/review-2026-09-11/model-results.json",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/review-2026-09-11/model-results.json",
+      "sourceSha256": "8db22f9d4b4d47f731e2384ba1dc9c82c3eaff07ea36f59f0b148b124080e0e6",
+      "archiveSha256": "8db22f9d4b4d47f731e2384ba1dc9c82c3eaff07ea36f59f0b148b124080e0e6",
+      "bytes": 840
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/review-2026-09-11/model_checks.py",
+      "archive": "sources/issues/features/015-unified-topology-planning-framework-IP/review-2026-09-11/model_checks.py",
+      "sourceSha256": "859038514e648d87f401b28681ca1e3ef89d692cbb84747d54efd31a1b3f803e",
+      "archiveSha256": "859038514e648d87f401b28681ca1e3ef89d692cbb84747d54efd31a1b3f803e",
+      "bytes": 10144
+    },
+    {
+      "source": "issues/features/016-native-soft-topology-scoring-OPEN/DESCRIPTION.md",
+      "archive": "sources/issues/features/016-native-soft-topology-scoring-OPEN/DESCRIPTION.md",
+      "sourceSha256": "63f72931379913b53329c61a1b12fbdaf5c54b9e165738acfd165d350c1e6959",
+      "archiveSha256": "e844ddbd63e4f23a964595adb41088eb332a761b05b5dea5d488298557f8408b",
+      "bytes": 11018
+    },
+    {
+      "source": "issues/features/016-native-soft-topology-scoring-OPEN/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/features/016-native-soft-topology-scoring-OPEN/PROPOSAL_COMMIT.md",
+      "sourceSha256": "82be8b1a89710b4cd20aa3d7cf156d635c608f5ce45cb93d8fbab14471227eba",
+      "archiveSha256": "a383eb11dc2b19c2ecab42a0d9b2b6fb9c194d90ca8d8aa1fd9ce194fac54756",
+      "bytes": 31976
+    },
+    {
+      "source": "issues/features/017-bounded-joint-placement-search-OPEN/DESCRIPTION.md",
+      "archive": "sources/issues/features/017-bounded-joint-placement-search-OPEN/DESCRIPTION.md",
+      "sourceSha256": "ef45600eaa387dfe94b6916ab9d3354a88af9070f8f1810994c585d24d42d7b2",
+      "archiveSha256": "fc02b75a68b884a8b08b7136dee3756c5bc09f2409702e4f0ec88d674d4d5df7",
+      "bytes": 7438
+    },
+    {
+      "source": "issues/features/017-bounded-joint-placement-search-OPEN/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/features/017-bounded-joint-placement-search-OPEN/PROPOSAL_COMMIT.md",
+      "sourceSha256": "fad6769bd4c349de786f122b39c975ea51be77826a729a5cf4841d858a8f4974",
+      "archiveSha256": "ffd6fd091de41f24b0205be6598d0ffd276a0e27a9d82ae05a13556959ed2f42",
+      "bytes": 679
+    },
+    {
+      "source": "issues/features/025-hypernode-tree-index-planning-OPEN/DESCRIPTION.md",
+      "archive": "sources/issues/features/025-hypernode-tree-index-planning-OPEN/DESCRIPTION.md",
+      "sourceSha256": "6e724cef9c8175cbaa95dcbb38b9e9d6f31cdb358d9f8706a840763d5faed2aa",
+      "archiveSha256": "710523489a1ed19a63fa2562e479d165e05c3812afa498565e1afdeffe3afcdd",
+      "bytes": 2419
+    },
+    {
+      "source": "issues/features/025-hypernode-tree-index-planning-OPEN/HYPERNODE_TREE_INDEX_DESIGN_CN.md",
+      "archive": "sources/issues/features/025-hypernode-tree-index-planning-OPEN/HYPERNODE_TREE_INDEX_DESIGN_CN.md",
+      "sourceSha256": "c910bb707e7630ee5168efb6b7681a8ed43a5d224551001e3508a18b5d9228f7",
+      "archiveSha256": "ec4e5e9e241c98f93eb6d85fa4d7ecc110335fb4fc636d8c07ea6ac6e5ac9dd6",
+      "bytes": 36953
+    },
+    {
+      "source": "issues/features/025-hypernode-tree-index-planning-OPEN/PROPOSAL_COMMIT.md",
+      "archive": "sources/issues/features/025-hypernode-tree-index-planning-OPEN/PROPOSAL_COMMIT.md",
+      "sourceSha256": "0386f87ec16ce945fbb55d814d97ee4b1dc8c044863e3e3ef42b8a4f6a069e79",
+      "archiveSha256": "b73e97281afa217f6fd5420cc885bb4613cad9684a02fd7ebad70e9e6964a2d1",
+      "bytes": 20145
+    }
+  ],
+  "codeLinkConversions": [
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/REVIEW_2026-09-11.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/actions/allocate/allocate.go:640",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/actions/allocate/allocate.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/REVIEW_2026-09-11.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/actions/allocate/allocate.go:851",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/actions/allocate/allocate.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/REVIEW_2026-09-11.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/plugins/nodeorder/nodeorder.go:250",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/plugins/nodeorder/nodeorder.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/REVIEW_2026-09-11.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/plugins/nodeorder/nodeorder.go:314",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/plugins/nodeorder/nodeorder.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/REVIEW_2026-09-11.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/util/predicate_helper.go:90",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/util/predicate_helper.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/REVIEW_2026-09-11.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/util/predicate_helper.go:139",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/util/predicate_helper.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/REVIEW_2026-09-11.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/actions/allocate/allocate.go:1201",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/actions/allocate/allocate.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/REVIEW_2026-09-11.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/util/predicate_helper.go:42",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/util/predicate_helper.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/REVIEW_2026-09-11.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/plugins/group-topology-affinity/group_topology_affinity.go:603",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/plugins/group-topology-affinity/group_topology_affinity.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/REVIEW_2026-09-11.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/api/hyper_node_info.go:130",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/api/hyper_node_info.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/REVIEW_2026-09-11.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/api/hyper_node_info.go:517",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/api/hyper_node_info.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/actions/allocate/allocate.go:279",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/actions/allocate/allocate.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/actions/allocate/allocate.go:1094",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/actions/allocate/allocate.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/plugins/binpack/binpack.go:206",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/plugins/binpack/binpack.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/plugins/nodeorder/nodeorder.go:195",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/plugins/nodeorder/nodeorder.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/plugins/nodeorder/nodeorder.go:314",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/plugins/nodeorder/nodeorder.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/util/scheduler_helper.go:75",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/util/scheduler_helper.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/plugins/network-topology-aware/network_topology_aware.go:351",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/plugins/network-topology-aware/network_topology_aware.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/plugins/group-topology-affinity/group_topology_affinity.go:860",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/plugins/group-topology-affinity/group_topology_affinity.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/util/predicate_helper.go:53",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/util/predicate_helper.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/framework/statement.go:263",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/framework/statement.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/framework/statement.go:357",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/framework/statement.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/util/scheduler_helper.go:190",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/util/scheduler_helper.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/actions/allocate/allocate.go:346",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/actions/allocate/allocate.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/actions/allocate/allocate.go:640",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/actions/allocate/allocate.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/framework/statement.go:442",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/framework/statement.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/actions/allocate/allocate.go:1094",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/actions/allocate/allocate.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/plugins/binpack/binpack.go:206",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/plugins/binpack/binpack.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/plugins/nodeorder/nodeorder.go:314",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/plugins/nodeorder/nodeorder.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/util/scheduler_helper.go:75",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/util/scheduler_helper.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/plugins/network-topology-aware/network_topology_aware.go:351",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/plugins/network-topology-aware/network_topology_aware.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/plugins/group-topology-affinity/group_topology_affinity.go:860",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/plugins/group-topology-affinity/group_topology_affinity.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/util/predicate_helper.go:53",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/util/predicate_helper.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/framework/statement.go:263",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/framework/statement.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/util/scheduler_helper.go:190",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/util/scheduler_helper.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/actions/allocate/allocate.go:346",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/actions/allocate/allocate.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/actions/allocate/allocate.go:640",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/actions/allocate/allocate.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/framework/statement.go:442",
+      "ref": "7947e875600ff450318b412bb0c8c39f7020238a",
+      "path": "pkg/scheduler/framework/statement.go"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/UNIFIED_TOPOLOGY_SCHEDULING_DESIGN.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/plugins/binpack/binpack.go:206",
+      "ref": "c4c6c3643efed8a17f1ef31e8991d9ce1e25f891",
+      "path": "pkg/scheduler/plugins/binpack/binpack.go",
+      "localSnapshot": "prototype/source/pkg/scheduler/plugins/binpack/binpack.go.txt"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/UNIFIED_TOPOLOGY_SCHEDULING_DESIGN.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/plugins/nodeorder/nodeorder.go:314",
+      "ref": "c4c6c3643efed8a17f1ef31e8991d9ce1e25f891",
+      "path": "pkg/scheduler/plugins/nodeorder/nodeorder.go",
+      "localSnapshot": "prototype/source/pkg/scheduler/plugins/nodeorder/nodeorder.go.txt"
+    },
+    {
+      "source": "issues/features/015-unified-topology-planning-framework-IP/UNIFIED_TOPOLOGY_SCHEDULING_DESIGN.md",
+      "original": "/Users/vanderchen/workspace/dev/volcano-workspace/volcano/pkg/scheduler/plugins/network-topology-aware/network_topology_aware.go:351",
+      "ref": "c4c6c3643efed8a17f1ef31e8991d9ce1e25f891",
+      "path": "pkg/scheduler/plugins/network-topology-aware/network_topology_aware.go",
+      "localSnapshot": "prototype/source/pkg/scheduler/plugins/network-topology-aware/network_topology_aware.go.txt"
+    }
+  ],
+  "unresolvedOriginalLinks": [],
+  "prototypeCodeSnapshots": [
+    {
+      "ref": "c4c6c3643efed8a17f1ef31e8991d9ce1e25f891",
+      "path": "pkg/scheduler/plugins/binpack/binpack.go",
+      "archive": "prototype/source/pkg/scheduler/plugins/binpack/binpack.go.txt",
+      "sha256": "15ec2536d118a49ccf235aa28a175bd3afd5ed37532f146b13f928f008a79760"
+    },
+    {
+      "ref": "c4c6c3643efed8a17f1ef31e8991d9ce1e25f891",
+      "path": "pkg/scheduler/plugins/nodeorder/nodeorder.go",
+      "archive": "prototype/source/pkg/scheduler/plugins/nodeorder/nodeorder.go.txt",
+      "sha256": "db7a32dcea0153236cc958a33060ca90c2f0c1b4742874038169814f4e44656f"
+    },
+    {
+      "ref": "c4c6c3643efed8a17f1ef31e8991d9ce1e25f891",
+      "path": "pkg/scheduler/plugins/network-topology-aware/network_topology_aware.go",
+      "archive": "prototype/source/pkg/scheduler/plugins/network-topology-aware/network_topology_aware.go.txt",
+      "sha256": "a6ec07b87138251698374ea399e3488194bf7f4afc6e1a588d32ab69b324e8b7"
+    },
+    {
+      "ref": "c4c6c3643efed8a17f1ef31e8991d9ce1e25f891",
+      "path": "pkg/scheduler/actions/allocate/topology_planner.go",
+      "archive": "prototype/source/pkg/scheduler/actions/allocate/topology_planner.go.txt",
+      "sha256": "7c510661088646927b4f5fe681b6167caf4d9c7fbd0ce93a59738e93e3397a21"
+    },
+    {
+      "ref": "c4c6c3643efed8a17f1ef31e8991d9ce1e25f891",
+      "path": "pkg/scheduler/api/topology_placement.go",
+      "archive": "prototype/source/pkg/scheduler/api/topology_placement.go.txt",
+      "sha256": "1d33f691ca53cf63bc8efa6bc099d7a33ee0b7ffa2eb25723322fb1c3d13cb0b"
+    }
+  ]
+}

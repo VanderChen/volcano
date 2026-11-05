@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bug022-insufficient
+  namespace: default
+  labels:
+    bug022.volcano.sh/role: insufficient
+  annotations:
+    scheduling.k8s.io/group-name: bug022-insufficient
+spec:
+  schedulerName: volcano
+  restartPolicy: Never
+  containers:
+  - name: pause
+    image: registry.k8s.io/pause:3.10
+    resources:
+      requests:
+        cpu: 10m
+        memory: 16Mi

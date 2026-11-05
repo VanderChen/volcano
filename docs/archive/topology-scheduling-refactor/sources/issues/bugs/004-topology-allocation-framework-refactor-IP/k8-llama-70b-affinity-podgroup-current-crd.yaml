@@ -1,0 +1,56 @@
+# Compatibility variant for the currently installed CRD.  Its atomic
+# podGroupSelector schema rejects matchLabels, so this empty selector matches
+# the sole anchor PodGroup in the otherwise empty default namespace.  Do not
+# use this variant in a shared namespace.
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: llama-70b-instance-0
+  namespace: default
+  labels:
+    topology.volcano.sh/group: llama-70b-prod
+spec:
+  minMember: 4
+  queue: default
+  subGroupPolicy:
+  - name: prefill
+    labelSelector:
+      matchLabels:
+        volcano.sh/role: prefill
+    matchLabelKeys:
+    - volcano.sh/shard-id
+    subGroupSize: 1
+    minSubGroups: 2
+    networkTopology:
+      mode: hard
+      highestTierName: rack
+  - name: decode
+    labelSelector:
+      matchLabels:
+        volcano.sh/role: decode
+    matchLabelKeys:
+    - volcano.sh/shard-id
+    subGroupSize: 1
+    minSubGroups: 2
+    networkTopology:
+      mode: hard
+      highestTierName: rack
+  topologyAffinity:
+    podGroupAntiAffinity:
+      required:
+      - podGroupSelector: {}
+        topologyTierName: supernode
+    subGroupAffinity:
+      required:
+      - subGroups:
+        - prefill
+        - decode
+        topologyTierName: supernode
+    subGroupAntiAffinity:
+      required:
+      - subGroups:
+        - prefill
+        topologyTierName: rack
+      - subGroups:
+        - decode
+        topologyTierName: rack

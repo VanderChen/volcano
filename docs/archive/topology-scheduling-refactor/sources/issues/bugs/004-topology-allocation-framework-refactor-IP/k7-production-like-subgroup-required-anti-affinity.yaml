@@ -1,0 +1,32 @@
+# Same subgroup construction as the soft reproduction, with a hard placement
+# constraint. This confirms the operational workaround for workloads that must
+# never co-locate distinct role-0 groups within one tier1 HyperNode.
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: bug004-k7-required
+  namespace: default
+spec:
+  minMember: 2
+  queue: default
+  networkTopology:
+    highestTierName: tier3
+    mode: soft
+  subGroupPolicy:
+  - name: role-0
+    labelSelector:
+      matchLabels:
+        app.modelarts.huaweicloud/role: role-0
+    matchLabelKeys:
+    - app.modelarts.huaweicloud/role-0-group
+    minSubGroups: 2
+    subGroupSize: 1
+    networkTopology:
+      highestTierName: tier1
+      mode: soft
+  topologyAffinity:
+    subGroupAntiAffinity:
+      required:
+      - subGroups:
+        - role-0
+        topologyTierName: tier1

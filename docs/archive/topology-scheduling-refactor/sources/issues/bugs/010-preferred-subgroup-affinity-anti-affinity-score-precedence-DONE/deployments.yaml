@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pg-myq-010-prefill-0
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: pg-myq-010-prefill-0}
+  template:
+    metadata:
+      labels:
+        app: pg-myq-010-prefill-0
+        volcano.sh/role: prefill
+        volcano.sh/shard-id: "0"
+      annotations: {scheduling.k8s.io/group-name: pg-myq-010}
+    spec:
+      schedulerName: volcano
+      nodeSelector: {volcano-010/candidate: "true"}
+      containers:
+      - name: nginx
+        image: nginx:1.27-alpine
+        resources: {requests: {cpu: 500m, memory: 200Mi}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pg-myq-010-prefill-1
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: pg-myq-010-prefill-1}
+  template:
+    metadata:
+      labels:
+        app: pg-myq-010-prefill-1
+        volcano.sh/role: prefill
+        volcano.sh/shard-id: "1"
+      annotations: {scheduling.k8s.io/group-name: pg-myq-010}
+    spec:
+      schedulerName: volcano
+      nodeSelector: {volcano-010/candidate: "true"}
+      containers:
+      - name: nginx
+        image: nginx:1.27-alpine
+        resources: {requests: {cpu: 500m, memory: 200Mi}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pg-myq-010-decode-0
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: pg-myq-010-decode-0}
+  template:
+    metadata:
+      labels:
+        app: pg-myq-010-decode-0
+        volcano.sh/role: decode
+        volcano.sh/shard-id: "0"
+      annotations: {scheduling.k8s.io/group-name: pg-myq-010}
+    spec:
+      schedulerName: volcano
+      nodeSelector: {volcano-010/candidate: "true"}
+      containers:
+      - name: nginx
+        image: nginx:1.27-alpine
+        resources: {requests: {cpu: 500m, memory: 200Mi}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pg-myq-010-decode-1
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: pg-myq-010-decode-1}
+  template:
+    metadata:
+      labels:
+        app: pg-myq-010-decode-1
+        volcano.sh/role: decode
+        volcano.sh/shard-id: "1"
+      annotations: {scheduling.k8s.io/group-name: pg-myq-010}
+    spec:
+      schedulerName: volcano
+      nodeSelector: {volcano-010/candidate: "true"}
+      containers:
+      - name: nginx
+        image: nginx:1.27-alpine
+        resources: {requests: {cpu: 500m, memory: 200Mi}}

@@ -1,0 +1,39 @@
+# Production-shaped soft SubGroup anti-affinity reproduction.
+#
+# Apply this PodGroup first. The Deployments are intentionally kept in the
+# companion file so their Pods associate only after this group exists.
+#
+# The production-only PodGroup anti-affinity term is deliberately omitted here:
+# the current local Helm-installed CRD predates its structured LabelSelector
+# schema and rejects podGroupSelector.matchLabels. It does not participate in
+# the intra-PodGroup SubGroup anti-affinity assertion below.
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: bug004-k7-production-like
+  namespace: default
+spec:
+  minMember: 2
+  queue: default
+  networkTopology:
+    highestTierName: tier3
+    mode: soft
+  subGroupPolicy:
+  - name: role-0
+    labelSelector:
+      matchLabels:
+        app.modelarts.huaweicloud/role: role-0
+    matchLabelKeys:
+    - app.modelarts.huaweicloud/role-0-group
+    minSubGroups: 2
+    subGroupSize: 1
+    networkTopology:
+      highestTierName: tier1
+      mode: soft
+  topologyAffinity:
+    subGroupAntiAffinity:
+      preferred:
+      - subGroups:
+        - role-0
+        topologyTierName: tier1
+        weight: 40

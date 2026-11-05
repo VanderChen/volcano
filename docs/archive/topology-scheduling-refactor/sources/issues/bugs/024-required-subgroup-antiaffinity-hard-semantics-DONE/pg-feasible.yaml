@@ -1,0 +1,27 @@
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: req024-feasible
+  namespace: req024
+spec:
+  minMember: 4
+  queue: default
+  subGroupPolicy:
+  - name: prefill
+    labelSelector:
+      matchLabels:
+        role: prefill
+    matchLabelKeys:
+    - shard
+    subGroupSize: 1
+    minSubGroups: 4
+    networkTopology:
+      mode: hard
+      highestTierName: volcano.sh/hypernode
+  topologyAffinity:
+    subGroupAntiAffinity:
+      required:
+      - subGroups:
+        - prefill
+        topologyTierName: volcano.sh/hypernode
+

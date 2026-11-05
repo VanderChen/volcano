@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bug020-reschedule-target
+  namespace: default
+  labels: {issue: "020", case: reschedule-target, role: decode, shard: shard-target}
+  annotations: {scheduling.k8s.io/group-name: bug020-reschedule}
+spec:
+  schedulerName: volcano
+  restartPolicy: Never
+  terminationGracePeriodSeconds: 0
+  containers:
+  - name: sleeper
+    image: busybox:1.36
+    imagePullPolicy: IfNotPresent
+    command: ["/bin/sh", "-c", "sleep 3600"]
+    resources:
+      requests: {cpu: 10m, memory: 16Mi, example.com/gpu: "1"}
+      limits: {example.com/gpu: "1"}

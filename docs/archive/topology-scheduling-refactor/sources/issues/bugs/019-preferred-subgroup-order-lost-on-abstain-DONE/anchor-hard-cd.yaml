@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bug019-hard-cd-anchor
+  namespace: default
+  labels:
+    app: bug019-hard-cd-anchor
+    role: anchor
+  annotations:
+    scheduling.k8s.io/group-name: bug019-hard-cd
+spec:
+  nodeName: volcano-dev-019-worker3
+  containers:
+  - name: sleeper
+    image: volcanosh/vc-scheduler:dev-019-k0
+    imagePullPolicy: IfNotPresent
+    command: ["/bin/sh", "-c", "sleep 3600"]
+    resources:
+      requests:
+        cpu: 10m
+        memory: 16Mi

@@ -1,0 +1,19 @@
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: fit-first
+  namespace: feature-015
+spec:
+  minMember: 2
+  queue: default
+  networkTopology:
+    mode: soft
+    highestTierAllowed: 1
+  subGroupPolicy:
+    - name: worker
+      labelSelector:
+        matchLabels:
+          feature-015.volcano.sh/role: fit-worker
+      matchLabelKeys:
+        - feature-015.volcano.sh/role
+      subGroupSize: 2

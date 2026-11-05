@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: feature-015
+---
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: occupied-a
+  namespace: feature-015
+  labels:
+    feature-015.volcano.sh/scenario: occupied-a
+spec:
+  minMember: 1
+  queue: default
+---
+apiVersion: scheduling.volcano.sh/v1beta1
+kind: PodGroup
+metadata:
+  name: exact-bc
+  namespace: feature-015
+spec:
+  minMember: 4
+  queue: default
+  networkTopology:
+    mode: hard
+    highestTierAllowed: 3
+  subGroupPolicy:
+    - name: worker
+      labelSelector:
+        matchLabels:
+          feature-015.volcano.sh/role: worker
+      matchLabelKeys:
+        - feature-015.volcano.sh/role
+      subGroupSize: 4
+      networkTopology:
+        mode: soft
+        highestTierAllowed: 1
+  topologyAffinity:
+    podGroupAntiAffinity:
+      required:
+        - podGroupSelector:
+            matchLabels:
+              feature-015.volcano.sh/scenario: occupied-a
+          topologyTier: 2

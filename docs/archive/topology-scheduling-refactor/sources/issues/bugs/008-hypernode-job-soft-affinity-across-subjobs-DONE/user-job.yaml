@@ -1,0 +1,28 @@
+apiVersion: batch.volcano.sh/v1alpha1
+kind: Job
+metadata:
+  name: bug2026052338589-vcjob
+spec:
+  schedulerName: volcano
+  networkTopology:
+    mode: soft
+    highestTierAllowed: 2
+  tasks:
+    - name: ps
+      replicas: 4
+      partitionPolicy:
+        totalPartitions: 2
+        partitionSize: 2
+        networkTopology:
+          mode: soft
+          highestTierAllowed: 1
+      template:
+        spec:
+          containers:
+            - image: nginx:latest
+              command: ["/bin/sh", "-c", "sleep 1000"]
+              imagePullPolicy: IfNotPresent
+              name: ps
+          restartPolicy: OnFailure
+          imagePullSecrets:
+            - name: default-secret

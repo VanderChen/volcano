@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: List
+items:
+- &decode
+  apiVersion: v1
+  kind: Pod
+  metadata:
+    name: bug020-reschedule-0
+    namespace: default
+    labels: {issue: "020", case: reschedule, role: decode, shard: shard-0}
+    annotations: {scheduling.k8s.io/group-name: bug020-reschedule}
+  spec:
+    schedulerName: volcano
+    restartPolicy: Never
+    terminationGracePeriodSeconds: 0
+    containers:
+    - name: sleeper
+      image: busybox:1.36
+      imagePullPolicy: IfNotPresent
+      command: ["/bin/sh", "-c", "sleep 3600"]
+      resources:
+        requests: {cpu: 10m, memory: 16Mi, example.com/gpu: "1"}
+        limits: {example.com/gpu: "1"}
+- <<: *decode
+  metadata:
+    name: bug020-reschedule-1
+    namespace: default
+    labels: {issue: "020", case: reschedule, role: decode, shard: shard-1}
+    annotations: {scheduling.k8s.io/group-name: bug020-reschedule}
+- <<: *decode
+  metadata:
+    name: bug020-reschedule-2
+    namespace: default
+    labels: {issue: "020", case: reschedule, role: decode, shard: shard-2}
+    annotations: {scheduling.k8s.io/group-name: bug020-reschedule}
+- <<: *decode
+  metadata:
+    name: bug020-reschedule-3
+    namespace: default
+    labels: {issue: "020", case: reschedule, role: decode, shard: shard-3}
+    annotations: {scheduling.k8s.io/group-name: bug020-reschedule}
