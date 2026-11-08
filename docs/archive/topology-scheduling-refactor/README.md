@@ -12,6 +12,7 @@
 | --- | --- | --- |
 | 1 | [前因后果与决策演变](HISTORY_CN.md) | 从哪些问题走到重构，为什么局部修复和第一版原型还不够？ |
 | 2 | [最终方案整合稿](FINAL_DESIGN_CN.md) | 最后决定如何分层、如何评分与回退、缓存和性能边界是什么？ |
+| 2a | [补充设计：可解释性合同](EXPLAINABILITY_SUPPLEMENT_CN.md) | 整合稿 §7、§10 承诺的“解释各来源贡献”“记录截断与覆盖”，需要什么数据合同、对账不变量与验收？ |
 | 3 | [025 完整架构与算法原文](sources/issues/features/025-hypernode-tree-index-planning-OPEN/HYPERNODE_TREE_INDEX_DESIGN_CN.md) | 树视图、CR 发布、状态一致性、SubGroup 关系与算法细节。 |
 | 4 | [015 上游重构设计](sources/issues/features/015-unified-topology-planning-framework-IP/VOLCANO_UPSTREAM_TOPOLOGY_REFACTOR_DESIGN_CN.md) | 共同评分 cohort、完整 evaluator、插件生命周期和上游兼容边界。 |
 | 5 | [015 完整模型与复杂度](sources/issues/features/015-unified-topology-planning-framework-IP/TOPOLOGY_PLANNING_FRAMEWORK.md) | 目标函数、约束传播、安全界、搜索及成本对账。 |
@@ -44,4 +45,4 @@
 - 外部文献以书目信息、原始链接和适用边界归档，不复制第三方全文。历史记录里的 `/tmp` 日志、已删除集群、镜像和本机目录不代表它们随仓库一起保存。
 - 旧材料里的 Python 命令仅为历史记录。重新运行模型时应使用当前所选项目根目录的 `.venv` / `uv` 工作流。
 
-本次是文档和证据归档，没有修改调度器、API、CRD 或集群；没有把任何未完成的重构 issue 标成 DONE。远端目标是个人 fork `VanderChen/volcano` 的 `archive/topology-scheduling-refactor-20261105` 分支，没有创建社区 PR。
+本次是文档和证据归档，没有修改调度器、API、CRD 或集群；没有把任何未完成的重构 issue 标成 DONE。2026-11-08 增补了 [可解释性补充设计](EXPLAINABILITY_SUPPLEMENT_CN.md)，同样只含文档，不新增运行时方案。远端目标是个人 fork `VanderChen/volcano` 的 `archive/topology-scheduling-refactor-20261105` 分支，没有创建社区 PR。

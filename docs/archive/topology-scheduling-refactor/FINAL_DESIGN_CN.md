@@ -91,6 +91,8 @@ SubGroup required/preferred affinity/anti-affinity 全部纳入 P3 核心：
 
 完整生命周期与算例保留在 [015 上游方案](sources/issues/features/015-unified-topology-planning-framework-IP/VOLCANO_UPSTREAM_TOPOLOGY_REFACTOR_DESIGN_CN.md)。
 
+> 补充（2026-11-08）：“解释各来源贡献”的数据结构、首个拒绝者归因与对账不变量、确定性 tie-break，见 [可解释性补充设计](EXPLAINABILITY_SUPPLEMENT_CN.md)。该补充还指出本节的比较序需要写明 tier 层优先这一层。
+
 ## 8. 一份可撤销状态，同时处理可行性和质量
 
 ```text
@@ -123,7 +125,7 @@ Undo 必须恢复资源、组占用、共同域、peer 计数、CycleState、Res
 
 固定比例 p 仍有 O(pH) 随 HyperNode 数增长。设计采用首批比例、最少候选、绝对工作量和渐进扩展：跨合法子树惰性覆盖，历史成功可作提示，稳定轮转避免长期偏置。不能先展开并排序全量域，再宣称比例选优省掉遍历。
 
-预算计入域访问、Node Predicate、Score、传播、回退、状态恢复、内存与时间；计数和结果必须记录截断原因与覆盖范围。未访问唯一可行域时只能说预算耗尽／覆盖不足，不能永久缓存“全局无解”。发现首解后，质量探索使用独立预算。
+预算计入域访问、Node Predicate、Score、传播、回退、状态恢复、内存与时间；计数和结果必须记录截断原因与覆盖范围。未访问唯一可行域时只能说预算耗尽／覆盖不足，不能永久缓存“全局无解”。发现首解后，质量探索使用独立预算。截断原因与覆盖范围的记录结构、轮转与 tie-break 必须是确定函数的要求，见 [可解释性补充设计](EXPLAINABILITY_SUPPLEMENT_CN.md) §7、§11。
 
 成本分开核算：
 
