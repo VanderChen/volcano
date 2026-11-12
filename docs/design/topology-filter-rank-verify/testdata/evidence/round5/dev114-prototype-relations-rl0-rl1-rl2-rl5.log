@@ -1,0 +1,38 @@
+# worktree: dev-1.14 7947e8756 + probes/prototype-round5-dev-1.14-7947e8756.patch (round 3 plus the round-5 relations prototype)
+# command (equivalent): probes/run_probe.sh <worktree> history,prototype,prototype2,relations-dev114 -run 'TestRelRL[0125]' -v -timeout 90m; the five groups ran in parallel from one test binary built with 'go test -c' from the same files
+# the round-5 switch (framework.ProbeSubJobRelations) is on only in the configurations named 'relations'; 'reuse' sets relationReuse; 'today's reading first' sets relationFallback (and relationFallbackRetry where the first search keeps the retry)
+=== RUN   TestRelRL1RequiredSubGroupTerms
+    zz_probe_relations_test.go:267: | scenario | legal placement exists | today | ranked | ranked + retry 4 | today + relations | ranked + relations | ranked + relations + retry 4 | ranked, today's reading first, then relations + reuse among ties + retry 4 |
+    zz_probe_relations_test.go:268: |---|---|---|---|---|---|---|---|---|
+    zz_probe_relations_test.go:287: | RA1 anti-affinity at tier 1; SubGroup a must span two racks | true | 0/3 | 0/3 | 0/3 | 3/3 | 3/3 | 3/3 | 3/3 |
+    zz_probe_relations_test.go:289:     (b in one rack, a in the other two)
+    zz_probe_relations_test.go:287: | RA1c control: RA1 without the term | true | 3/3 | 3/3 | 3/3 | 3/3 | 3/3 | 3/3 | 3/3 |
+    zz_probe_relations_test.go:287: | RA2 anti-affinity at tier 1; flexible SubGroup first | true | 0/2 | 0/2 | 2/2 | 0/2 | 0/2 | 2/2 | 2/2 |
+    zz_probe_relations_test.go:289:     (y can only use r00; x takes it first because it is the fullest rack)
+    zz_probe_relations_test.go:287: | RA2c control: RA2 with the pinned SubGroup first | true | 2/2 | 2/2 | 2/2 | 2/2 | 2/2 | 2/2 | 2/2 |
+    zz_probe_relations_test.go:287: | RA3 affinity at tier 1 for p,q; third SubGroup r | true | 0/3 | 0/3 | 0/3 | 3/3 | 3/3 | 3/3 | 3/3 |
+    zz_probe_relations_test.go:289:     (r00 has one free node and is the fullest; p,q fit only in r01)
+    zz_probe_relations_test.go:287: | RA3c control: RA3 with r first | true | 3/3 | 3/3 | 3/3 | 3/3 | 3/3 | 3/3 | 3/3 |
+    zz_probe_relations_test.go:287: | RA4 anti-affinity at tier 1 among three replicas of one policy | true | 3/3 | 3/3 | 3/3 | 3/3 | 3/3 | 3/3 | 3/3 |
+    zz_probe_relations_test.go:287: | RA4n control: three replicas, two racks | false | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 |
+    zz_probe_relations_test.go:287: | RA6 affinity at tier 2 for p,q; anti-affinity at tier 1 for r,p; r first | true | 4/4 | 4/4 | 4/4 | 4/4 | 4/4 | 4/4 | 4/4 |
+    zz_probe_relations_test.go:289:     (p fills one rack; q shares the other rack with r. A group filter that counts only what p may use would drop p's rack)
+    zz_probe_relations_test.go:287: | RA7 control: anti-affinity on a tier that does not exist | false | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 | 0/3 |
+    zz_probe_relations_test.go:289:     (today every candidate is rejected; the relaxed reading must not turn the term off)
+    zz_probe_relations_test.go:287: | RA5 affinity at tier 2 for p,q; each limited to a rack | true | 2/2 | 2/2 | 2/2 | 2/2 | 2/2 | 2/2 | 2/2 |
+    zz_probe_relations_test.go:289:     (zone z0 has one free slot in its fullest rack; both fit only in z1)
+--- PASS: TestRelRL1RequiredSubGroupTerms (7.91s)
+=== RUN   TestRelRL2PreferredTermsDifferential
+    zz_probe_relations_test.go:369: 600 scenarios with preferred SubGroup terms: scheduled today 550, ranked 550; lost 0, gained 0, placed differently 0; task attempts 15201 -> 8187
+--- PASS: TestRelRL2PreferredTermsDifferential (124.04s)
+=== RUN   TestRelRL0GeneratedScenariosAreAdmissible
+    zz_probe_relations_test.go:533: 1200 mixed and 600 spanning scenarios pass the admission checks; 54 mixed scenarios had the anti-affinity tier lowered to the affinity tier to do so
+--- PASS: TestRelRL0GeneratedScenariosAreAdmissible (0.06s)
+=== RUN   TestRelRL5NodeScoringOnRemainingMisses
+    zz_probe_relations_test.go:731: | scenario | ranked + relations + retry 16 | the same with binpack scoring nodes |
+    zz_probe_relations_test.go:732: |---|---|---|
+    zz_probe_relations_test.go:764: | mixed seed 19 | not scheduled | not scheduled |
+    zz_probe_relations_test.go:764: | span seed 151 | not scheduled | scheduled, 5 pods |
+    zz_probe_relations_test.go:764: | span seed 479 | not scheduled | not scheduled |
+--- PASS: TestRelRL5NodeScoringOnRemainingMisses (0.63s)
+PASS

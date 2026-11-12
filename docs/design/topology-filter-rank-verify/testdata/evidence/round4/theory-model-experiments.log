@@ -1,0 +1,64 @@
+x1: 6000 instances of class H, 3359 feasible (oracle)
+  counting condition (Thm 4a) disagrees with the oracle: 0
+  narrowest-limit-first search, rank=bestfit node=bestfit: wrong answer or wrong tier: 0
+  narrowest-limit-first search, rank=emptiest node=emptiest: wrong answer or wrong tier: 0
+  narrowest-limit-first search, rank=name node=bestfit: wrong answer or wrong tier: 0
+  narrowest-limit-first search, rank=random node=random: wrong answer or wrong tier: 0
+  container reading (current), same order: feasible but not scheduled 36, scheduled at a wider tier 0
+  Thm 2: scheduled under the container reading but different under region + retry: 0
+  arbitrary order, no retry: missed 32, wider tier 5
+  arbitrary order, design retry budget 4: missed 0, wider tier 5, retries used 301
+  arbitrary order, unbounded move-to-front per container: wrong answer or tier 0, most retries in the winning container 4
+  [x1 took 2.4s]
+
+x2: 1500 feasible instances with at least two limit classes, 283008 (initial order, policy) runs
+  move-to-front ended without a placement: 0; runs above the bound of Thm 5: 0
+  retries histogram: {0: 270363, 1: 7472, 2: 2892, 3: 1461, 4: 520, 5: 100, 6: 104, 7: 96}
+  2 limit classes: most retries observed 4 (class sizes narrow->wide (4, 1), bound 4)
+  3 limit classes: most retries observed 7 (class sizes narrow->wide (3, 1, 1), bound 7)
+  two classes: bound m_narrow attained for 10 of 10 class-size profiles
+  prototype variant (all blocked SubJobs move together): ended without a placement 0; above the bound 0; more retries than the one-at-a-time variant 0
+  prototype variant retries histogram: {0: 270363, 1: 7715, 2: 2860, 3: 1262, 4: 512, 5: 132, 6: 116, 7: 48}
+  [x2 took 15.9s]
+
+x3a: SubJobs of different sizes, limit tier 1, tight capacity: 5203 feasible instances
+  largest-first order fails: 190; move-to-front from the given order fails: 5; every order fails: 0
+  smallest instance where move-to-front fails: free [4, 5, 6]; domains t1.2(tier 1: nodes [0]), t1.3(tier 1: nodes [1]), t1.4(tier 1: nodes [2]), t2.1(tier 2: nodes [0, 1, 2]); SubJobs u0: tasks [1, 1, 1], limit 1; u1: tasks [1, 1, 1, 1], limit 1; u2: tasks [1, 1, 1], limit 1; u3: tasks [1, 1, 1, 1], limit 1; job limit None
+x3b: tasks of different sizes in one domain: 27939 feasible instances
+  per-task best fit in the given order fails: 866; in largest-first order fails: 80
+  smallest instance where largest-first best fit fails: free [4, 5]; domains t1.2(tier 1: nodes [0, 1]), t2.1(tier 2: nodes [0, 1]); SubJobs u0: tasks [3, 2, 2, 2], limit None; job limit None
+x3c: same-size SubJobs with their own admissible node sets: 25329 feasible instances
+  given order fails: 8764; move-to-front from the given order fails: 0; every order fails: 0
+  [x3 took 6.9s]
+
+x4: every graph with 2 SubJobs and 2 slots, common preference, every initial order: 7 feasible graphs, move-to-front fails 0, most retries 1 (2^(m-1)-1 = 1); prototype variant fails 0, most retries 1
+x4: every graph with 3 SubJobs and 3 slots, common preference, every initial order: 247 feasible graphs, move-to-front fails 0, most retries 3 (2^(m-1)-1 = 3); prototype variant fails 0, most retries 3
+x4: every graph with 3 SubJobs and 4 slots, common preference, every initial order: 3125 feasible graphs, move-to-front fails 0, most retries 3 (2^(m-1)-1 = 3); prototype variant fails 0, most retries 3
+x4: every graph with 4 SubJobs and 4 slots, common preference, every initial order: 37823 feasible graphs, move-to-front fails 0, most retries 7 (2^(m-1)-1 = 7); prototype variant fails 0, most retries 7
+x4: random, 5 SubJobs, 5 slots, common preference: 52631 feasible, move-to-front fails 0, most retries 12 (2^(m-1)-1 = 15); prototype variant fails 0, most retries 11
+x4: random, 6 SubJobs, 6 slots, common preference: 40653 feasible, move-to-front fails 0, most retries 17 (2^(m-1)-1 = 31); prototype variant fails 0, most retries 17
+x4: random, 8 SubJobs, 8 slots, common preference: 22958 feasible, move-to-front fails 0, most retries 26 (2^(m-1)-1 = 127); prototype variant fails 0, most retries 21
+x4: random, 6 SubJobs, 8 slots, common preference: 68596 feasible, move-to-front fails 0, most retries 14 (2^(m-1)-1 = 31); prototype variant fails 0, most retries 14
+x4: random, 4 SubJobs, 4 slots, own preference per SubJob: 67841 feasible, move-to-front fails 0, most retries 7 (2^(m-1)-1 = 7); prototype variant fails 0, most retries 7
+x4: random, 5 SubJobs, 5 slots, own preference per SubJob: 53004 feasible, move-to-front fails 0, most retries 12 (2^(m-1)-1 = 15); prototype variant fails 0, most retries 12
+x4: random, 6 SubJobs, 6 slots, own preference per SubJob: 40693 feasible, move-to-front fails 0, most retries 19 (2^(m-1)-1 = 31); prototype variant fails 0, most retries 19
+x4: random, 8 SubJobs, 8 slots, own preference per SubJob: 23094 feasible, move-to-front fails 0, most retries 30 (2^(m-1)-1 = 127); prototype variant fails 0, most retries 29
+x4: nested chain, widest first, retries by number of SubJobs: 2:1 3:3 4:6 5:13 6:26 7:47 8:95 9:179 10:345 11:676 12:1346 13:2636 14:5232 15:10409 16:20794
+x4: hill climbing, 5 SubJobs: most retries found 15 (2^(m-1)-1 = 15)
+x4: hill climbing, 6 SubJobs: most retries found 31 (2^(m-1)-1 = 31)
+  [x4 took 18.6s]
+
+x5: 1500 random job sequences (9669 jobs), each job confined to one rack of equal capacity
+  racks an optimal packing needs: 6355 of 9669
+  best    : racks touched 6469 (empty racks left 3200); worst touched/optimum 3/2 = 1.50 (capacity 8, sizes [1, 1, 7, 5, 2]); jobs rejected when the cluster has exactly the optimal number of racks: 114
+  first   : racks touched 6493 (empty racks left 3176); worst touched/optimum 3/2 = 1.50 (capacity 8, sizes [1, 1, 7, 5, 2]); jobs rejected when the cluster has exactly the optimal number of racks: 138
+  emptiest: racks touched 9669 (empty racks left 0); worst touched/optimum 4/1 = 4.00 (capacity 8, sizes [2, 1, 1, 3]); jobs rejected when the cluster has exactly the optimal number of racks: 839
+  best fit above floor(1.7 * OPT): 0
+  [x5 took 0.3s]
+
+x6: 1 good of 2 tied choices: mean cycles 2.01 (1/p = 2.00); P(more than 9 cycles) 0.0025 ((1-p)^9 = 0.0020)
+x6: 1 good of 4 tied choices: mean cycles 4.00 (1/p = 4.00); P(more than 9 cycles) 0.0755 ((1-p)^9 = 0.0751)
+x6: 2 good of 8 tied choices: mean cycles 3.99 (1/p = 4.00); P(more than 9 cycles) 0.0743 ((1-p)^9 = 0.0751)
+  [x6 took 0.0s]
+
+exit=0

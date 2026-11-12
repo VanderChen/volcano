@@ -1,0 +1,22 @@
+# worktree: dev-1.14 7947e8756 + probes/prototype-round5-dev-1.14-7947e8756.patch (round 3 plus the round-5 relations prototype)
+# command (equivalent): probes/run_probe.sh <worktree> history,prototype,prototype2,relations-dev114 -run 'TestRelRL6FollowUpMixed' -v -timeout 90m; the five groups ran in parallel from one test binary built with 'go test -c' from the same files
+# the round-5 switch (framework.ProbeSubJobRelations) is on only in the configurations named 'relations'; 'reuse' sets relationReuse; 'today's reading first' sets relationFallback (and relationFallbackRetry where the first search keeps the retry)
+=== RUN   TestRelRL6FollowUpMixed
+    zz_probe_relations_test.go:829: mixed required terms, 1200 scenarios. Jobs that the relaxed reading, applied directly, places differently from today:
+    zz_probe_relations_test.go:860:   seed 24: zones used 1 -> 1; SubGroups on more than one rack 0 -> 0; affinity [tier1[p0 p1]] anti [tier1[p2 p0]]; today map[job-p0-g0-p0:z1-r00-n0 job-p0-g0-p1:z1-r00-n1 job-p1-g1-p0:z1-r00-n1 job-p2-g2-p0:z1-r02-n0]; now map[job-p0-g0-p0:z0-r02-n1 job-p0-g0-p1:z0-r02-n0 job-p1-g1-p0:z0-r02-n1 job-p2-g2-p0:z0-r00-n1]
+    zz_probe_relations_test.go:865: | reference | configuration | scheduled by reference | scheduled by configuration | lost | placed differently | gained |
+    zz_probe_relations_test.go:866: |---|---|---|---|---|---|---|
+    zz_probe_relations_test.go:882: | today | ranked + relations | 348 | 350 | 0 | 1 | 2 |
+    zz_probe_relations_test.go:882: | ranked + relations + reuse among ties + retry 16 | ranked + relations + reuse first + retry 16 | 399 | 399 | 0 | 2 | 0 |
+    zz_probe_relations_test.go:882: | today | today's reading first without retry, then relations + reuse among ties + retry 4 | 348 | 396 | 0 | 0 | 48 |
+    zz_probe_relations_test.go:882: | today | today's reading first with retry 4, then relations + reuse among ties + retry 4 | 348 | 396 | 0 | 0 | 48 |
+    zz_probe_relations_test.go:882: | ranked + retry 4 | today's reading first without retry, then relations + reuse among ties + retry 4 | 391 | 396 | 0 | 6 | 5 |
+    zz_probe_relations_test.go:882: | ranked + retry 4 | today's reading first with retry 4, then relations + reuse among ties + retry 4 | 391 | 396 | 0 | 0 | 5 |
+    zz_probe_relations_test.go:893: | configuration | task attempts where today schedules | task attempts where today does not |
+    zz_probe_relations_test.go:894: |---|---|---|
+    zz_probe_relations_test.go:896: | today | 8907 | 18804 |
+    zz_probe_relations_test.go:896: | ranked + retry 4 | 5484 | 15729 |
+    zz_probe_relations_test.go:896: | today's reading first without retry, then relations + reuse among ties + retry 4 | 5484 | 23346 |
+    zz_probe_relations_test.go:896: | today's reading first with retry 4, then relations + reuse among ties + retry 4 | 5484 | 26409 |
+--- PASS: TestRelRL6FollowUpMixed (870.19s)
+PASS

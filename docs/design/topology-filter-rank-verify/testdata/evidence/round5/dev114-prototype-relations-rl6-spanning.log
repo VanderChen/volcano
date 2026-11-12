@@ -1,0 +1,25 @@
+# worktree: dev-1.14 7947e8756 + probes/prototype-round5-dev-1.14-7947e8756.patch (round 3 plus the round-5 relations prototype)
+# command (equivalent): probes/run_probe.sh <worktree> history,prototype,prototype2,relations-dev114 -run 'TestRelRL6FollowUpSpanning' -v -timeout 90m; the five groups ran in parallel from one test binary built with 'go test -c' from the same files
+# the round-5 switch (framework.ProbeSubJobRelations) is on only in the configurations named 'relations'; 'reuse' sets relationReuse; 'today's reading first' sets relationFallback (and relationFallbackRetry where the first search keeps the retry)
+=== RUN   TestRelRL6FollowUpSpanning
+    zz_probe_relations_test.go:829: anti-affinity with a SubGroup that may span racks, 600 scenarios. Jobs that the relaxed reading, applied directly, places differently from today:
+    zz_probe_relations_test.go:860:   seed 247: zones used 2 -> 1; SubGroups on more than one rack 0 -> 1; affinity [] anti [tier1[a]]; today map[job-a-g0-p0:z0-r02-n0 job-a-g0-p1:z0-r02-n1 job-a-g1-p0:z1-r01-n1 job-a-g1-p1:z1-r01-n0]; now map[job-a-g0-p0:z0-r02-n0 job-a-g0-p1:z0-r02-n1 job-a-g1-p0:z0-r00-n1 job-a-g1-p1:z0-r01-n0]
+    zz_probe_relations_test.go:860:   seed 278: zones used 2 -> 1; SubGroups on more than one rack 0 -> 1; affinity [] anti [tier1[a]]; today map[job-a-g0-p0:z0-r00-n0 job-a-g0-p1:z0-r00-n0 job-a-g1-p0:z1-r00-n0 job-a-g1-p1:z1-r00-n0]; now map[job-a-g0-p0:z0-r00-n0 job-a-g0-p1:z0-r00-n0 job-a-g1-p0:z0-r02-n0 job-a-g1-p1:z0-r01-n0]
+    zz_probe_relations_test.go:860:   seed 422: zones used 1 -> 1; SubGroups on more than one rack 0 -> 1; affinity [] anti [tier1[a b]]; today map[job-a-g0-p0:z1-r01-n0 job-a-g0-p1:z1-r01-n1 job-a-g0-p2:z1-r01-n1 job-b-g1-p0:z1-r02-n0 job-b-g2-p0:z1-r02-n0 job-c-g3-p0:z1-r00-n0]; now map[job-a-g0-p0:z0-r02-n0 job-a-g0-p1:z0-r02-n0 job-a-g0-p2:z0-r01-n0 job-b-g1-p0:z0-r00-n1 job-b-g2-p0:z0-r00-n1 job-c-g3-p0:z0-r01-n0]
+    zz_probe_relations_test.go:860:   seed 523: zones used 1 -> 1; SubGroups on more than one rack 0 -> 1; affinity [] anti [tier1[a b]]; today map[job-a-g2-p0:z0-r01-n1 job-a-g2-p1:z0-r01-n0 job-a-g2-p2:z0-r01-n1 job-b-g0-p0:z0-r02-n1 job-b-g1-p0:z0-r02-n0]; now map[job-a-g2-p0:z1-r02-n1 job-a-g2-p1:z1-r02-n0 job-a-g2-p2:z1-r00-n1 job-b-g0-p0:z1-r01-n1 job-b-g1-p0:z1-r01-n0]
+    zz_probe_relations_test.go:865: | reference | configuration | scheduled by reference | scheduled by configuration | lost | placed differently | gained |
+    zz_probe_relations_test.go:866: |---|---|---|---|---|---|---|
+    zz_probe_relations_test.go:882: | today | ranked + relations | 317 | 449 | 0 | 4 | 132 |
+    zz_probe_relations_test.go:882: | ranked + relations + reuse among ties + retry 16 | ranked + relations + reuse first + retry 16 | 461 | 461 | 0 | 0 | 0 |
+    zz_probe_relations_test.go:882: | today | today's reading first without retry, then relations + reuse among ties + retry 4 | 317 | 461 | 0 | 0 | 144 |
+    zz_probe_relations_test.go:882: | today | today's reading first with retry 4, then relations + reuse among ties + retry 4 | 317 | 461 | 0 | 0 | 144 |
+    zz_probe_relations_test.go:882: | ranked + retry 4 | today's reading first without retry, then relations + reuse among ties + retry 4 | 317 | 461 | 0 | 0 | 144 |
+    zz_probe_relations_test.go:882: | ranked + retry 4 | today's reading first with retry 4, then relations + reuse among ties + retry 4 | 317 | 461 | 0 | 0 | 144 |
+    zz_probe_relations_test.go:893: | configuration | task attempts where today schedules | task attempts where today does not |
+    zz_probe_relations_test.go:894: |---|---|---|
+    zz_probe_relations_test.go:896: | today | 7055 | 4923 |
+    zz_probe_relations_test.go:896: | ranked + retry 4 | 4532 | 2354 |
+    zz_probe_relations_test.go:896: | today's reading first without retry, then relations + reuse among ties + retry 4 | 4532 | 5718 |
+    zz_probe_relations_test.go:896: | today's reading first with retry 4, then relations + reuse among ties + retry 4 | 4532 | 5764 |
+--- PASS: TestRelRL6FollowUpSpanning (433.80s)
+PASS

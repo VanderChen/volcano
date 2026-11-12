@@ -1,0 +1,26 @@
+# worktree: upstream master d423e427c + probes/prototype-round3-upstream-master-d423e427c.patch
+# command: probes/run_probe.sh <worktree> history,prototype,prototype2,weights -run 'TestWeights' -v
+=== RUN   TestWeightsWT1PluginWeightsDecideTheDomain
+    zz_probe_weights_test.go:106: | w_nta | w_gta | term weight | score r00 (with peer) | score r01 | expected | current flow | ranked flow | terms recorded for r00 / r01 |
+    zz_probe_weights_test.go:107: |---|---|---|---|---|---|---|---|---|
+    zz_probe_weights_test.go:143: | 1 | 1 | 10 | 140.0 | 125.0 | z0-r00 | z0-r00 | z0-r00 | 140.0 (group-topology-affinity=90.0 + network-topology-aware=50.0) / 125.0 (group-topology-affinity=100.0 + network-topology-aware=25.0) |
+    zz_probe_weights_test.go:143: | 1 | 1 | 30 | 120.0 | 125.0 | z0-r01 | z0-r01 | z0-r01 | 120.0 (group-topology-affinity=70.0 + network-topology-aware=50.0) / 125.0 (group-topology-affinity=100.0 + network-topology-aware=25.0) |
+    zz_probe_weights_test.go:143: | 1 | 1 | 100 | 50.0 | 125.0 | z0-r01 | z0-r01 | z0-r01 | 50.0 (group-topology-affinity=0.0 + network-topology-aware=50.0) / 125.0 (group-topology-affinity=100.0 + network-topology-aware=25.0) |
+    zz_probe_weights_test.go:143: | 4 | 1 | 50 | 250.0 | 200.0 | z0-r00 | z0-r00 | z0-r00 | 250.0 (group-topology-affinity=50.0 + network-topology-aware=200.0) / 200.0 (group-topology-affinity=100.0 + network-topology-aware=100.0) |
+    zz_probe_weights_test.go:143: | 4 | 2 | 100 | 200.0 | 300.0 | z0-r01 | z0-r01 | z0-r01 | 200.0 (group-topology-affinity=0.0 + network-topology-aware=200.0) / 300.0 (group-topology-affinity=200.0 + network-topology-aware=100.0) |
+    zz_probe_weights_test.go:143: | 10 | 1 | 100 | 500.0 | 350.0 | z0-r00 | z0-r00 | z0-r00 | 500.0 (group-topology-affinity=0.0 + network-topology-aware=500.0) / 350.0 (group-topology-affinity=100.0 + network-topology-aware=250.0) |
+    zz_probe_weights_test.go:143: | 1 | 10 | 10 | 950.0 | 1025.0 | z0-r01 | z0-r01 | z0-r01 | 950.0 (group-topology-affinity=900.0 + network-topology-aware=50.0) / 1025.0 (group-topology-affinity=1000.0 + network-topology-aware=25.0) |
+    zz_probe_weights_test.go:143: | 4 | 1 | 100 | 200.0 | 200.0 | tie | z0-r00 | z0-r00 | 200.0 (group-topology-affinity=0.0 + network-topology-aware=200.0) / 200.0 (group-topology-affinity=100.0 + network-topology-aware=100.0) |
+--- PASS: TestWeightsWT1PluginWeightsDecideTheDomain (0.04s)
+=== RUN   TestWeightsWT2DefaultResourceWeights
+    zz_probe_weights_test.go:106: | w_nta | w_gta | term weight | score r00 (with peer) | score r01 | expected | current flow | ranked flow | terms recorded for r00 / r01 |
+    zz_probe_weights_test.go:107: |---|---|---|---|---|---|---|---|---|
+    zz_probe_weights_test.go:143: | 1 | 1 | 10 | 116.2 | 113.3 | z0-r00 | z0-r00 | z0-r00 | 116.2 (group-topology-affinity=90.0 + network-topology-aware=26.2) / 113.3 (group-topology-affinity=100.0 + network-topology-aware=13.3) |
+    zz_probe_weights_test.go:143: | 1 | 1 | 30 | 96.2 | 113.3 | z0-r01 | z0-r01 | z0-r01 | 96.2 (group-topology-affinity=70.0 + network-topology-aware=26.2) / 113.3 (group-topology-affinity=100.0 + network-topology-aware=13.3) |
+    zz_probe_weights_test.go:143: | 4 | 1 | 50 | 154.7 | 153.1 | z0-r00 | z0-r00 | z0-r00 | 154.7 (group-topology-affinity=50.0 + network-topology-aware=104.7) / 153.1 (group-topology-affinity=100.0 + network-topology-aware=53.1) |
+    zz_probe_weights_test.go:143: | 4 | 1 | 60 | 144.7 | 153.1 | z0-r01 | z0-r01 | z0-r01 | 144.7 (group-topology-affinity=40.0 + network-topology-aware=104.7) / 153.1 (group-topology-affinity=100.0 + network-topology-aware=53.1) |
+    zz_probe_weights_test.go:143: | 4 | 1 | 100 | 104.7 | 153.1 | z0-r01 | z0-r01 | z0-r01 | 104.7 (group-topology-affinity=0.0 + network-topology-aware=104.7) / 153.1 (group-topology-affinity=100.0 + network-topology-aware=53.1) |
+    zz_probe_weights_test.go:143: | 10 | 1 | 100 | 261.7 | 232.8 | z0-r00 | z0-r00 | z0-r00 | 261.7 (group-topology-affinity=0.0 + network-topology-aware=261.7) / 232.8 (group-topology-affinity=100.0 + network-topology-aware=132.8) |
+--- PASS: TestWeightsWT2DefaultResourceWeights (0.02s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	0.096s

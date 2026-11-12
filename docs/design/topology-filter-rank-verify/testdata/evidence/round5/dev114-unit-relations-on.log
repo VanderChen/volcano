@@ -1,0 +1,5 @@
+# worktree: dev-1.14 7947e8756 + probes/prototype-round5-dev-1.14-7947e8756.patch (round 3 plus the round-5 relations prototype)
+# command: env VC_PROBE_SUBJOB_RELATIONS=1 go test ./pkg/scheduler/actions/allocate/ ./pkg/scheduler/plugins/group-topology-affinity/ ./pkg/scheduler/framework/ -count=1
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	91.938s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/group-topology-affinity	0.027s
+ok  	volcano.sh/volcano/pkg/scheduler/framework	0.032s

@@ -1,0 +1,27 @@
+# worktree: dev-1.14 7947e8756 + probes/prototype-round5-dev-1.14-7947e8756.patch (round 3 plus the round-5 relations prototype)
+# command (equivalent): probes/run_probe.sh <worktree> history,prototype,prototype2,relations-dev114 -run 'TestRelRL4' -v -timeout 90m; the five groups ran in parallel from one test binary built with 'go test -c' from the same files
+# the round-5 switch (framework.ProbeSubJobRelations) is on only in the configurations named 'relations'; 'reuse' sets relationReuse; 'today's reading first' sets relationFallback (and relationFallbackRetry where the first search keeps the retry)
+=== RUN   TestRelRL4SpanningSubGroupOracle
+    zz_probe_relations_test.go:701: anti-affinity with a SubGroup that may span racks: 600 scenarios; oracle: 463 have a legal placement, 317 of them also under today's reading (a SubGroup of an anti-affinity term stays in one domain of the term's tier); 0 with an affinity term, 463 with an anti-affinity term
+    zz_probe_relations_test.go:703: | configuration | scheduled | missed | lost vs today | placed differently vs today | task attempts where today schedules | task attempts where today does not |
+    zz_probe_relations_test.go:704: |---|---|---|---|---|---|---|
+    zz_probe_relations_test.go:707: | today | 317 | 146 | 0 | 0 | 7055 | 4923 |
+    zz_probe_relations_test.go:707: | ranked | 317 | 146 | 0 | 0 | 4532 | 2308 |
+    zz_probe_relations_test.go:707: | ranked + retry 4 | 317 | 146 | 0 | 0 | 4532 | 2354 |
+    zz_probe_relations_test.go:707: | today + relations | 449 | 14 | 0 | 4 | 7065 | 4216 |
+    zz_probe_relations_test.go:707: | ranked + relations | 449 | 14 | 0 | 4 | 4563 | 2858 |
+    zz_probe_relations_test.go:707: | ranked + relations + retry 4 | 461 | 2 | 0 | 4 | 4563 | 3410 |
+    zz_probe_relations_test.go:707: | ranked + relations + retry 16 | 461 | 2 | 0 | 4 | 4563 | 3584 |
+    zz_probe_relations_test.go:707: | ranked + relations + reuse first | 449 | 14 | 0 | 4 | 4563 | 2858 |
+    zz_probe_relations_test.go:707: | ranked + relations + reuse among ties + retry 16 | 461 | 2 | 0 | 4 | 4563 | 3584 |
+    zz_probe_relations_test.go:707: | ranked + relations + reuse first + retry 16 | 461 | 2 | 0 | 4 | 4563 | 3584 |
+    zz_probe_relations_test.go:707: | ranked, today's reading first, then relations | 449 | 14 | 0 | 0 | 4532 | 5166 |
+    zz_probe_relations_test.go:707: | ranked, today's reading first, then relations + reuse among ties + retry 4 | 461 | 2 | 0 | 0 | 4532 | 5718 |
+    zz_probe_relations_test.go:707: | ranked, today's reading first, then relations + reuse among ties + retry 16 | 461 | 2 | 0 | 0 | 4532 | 5892 |
+    zz_probe_relations_test.go:713: still missed with every mechanism on: seed 151: topo 1x3x1 fillers map[z0-r00-n0:4] policies [{name:b cpu:4 size:1 groups:2 tier:1 pinned:false} {name:a cpu:4 size:3 groups:1 tier:2 pinned:false}] affinity [] anti [tier1[a b]]
+    zz_probe_relations_test.go:713: still missed with every mechanism on: seed 479: topo 1x3x2 fillers map[z0-r00-n1:4] policies [{name:a cpu:6 size:3 groups:1 tier:2 pinned:false} {name:b cpu:6 size:1 groups:2 tier:1 pinned:false}] affinity [] anti [tier1[a b]]
+    zz_probe_relations_test.go:716: placed differently from today: seed 247, today + relations: topo 2x3x2 fillers map[z0-r00-n0:4 z0-r00-n1:2 z0-r01-n1:4 z1-r00-n0:6 z1-r02-n0:4] policies [{name:a cpu:6 size:2 groups:2 tier:2 pinned:false}] affinity [] anti [tier1[a]]; today map[job-a-g0-p0:z0-r02-n0 job-a-g0-p1:z0-r02-n1 job-a-g1-p0:z1-r01-n1 job-a-g1-p1:z1-r01-n0]; now map[job-a-g0-p0:z0-r02-n0 job-a-g0-p1:z0-r02-n1 job-a-g1-p0:z0-r00-n1 job-a-g1-p1:z0-r01-n0]
+    zz_probe_relations_test.go:716: placed differently from today: seed 247, ranked + relations: topo 2x3x2 fillers map[z0-r00-n0:4 z0-r00-n1:2 z0-r01-n1:4 z1-r00-n0:6 z1-r02-n0:4] policies [{name:a cpu:6 size:2 groups:2 tier:2 pinned:false}] affinity [] anti [tier1[a]]; today map[job-a-g0-p0:z0-r02-n0 job-a-g0-p1:z0-r02-n1 job-a-g1-p0:z1-r01-n1 job-a-g1-p1:z1-r01-n0]; now map[job-a-g0-p0:z0-r02-n0 job-a-g0-p1:z0-r02-n1 job-a-g1-p0:z0-r00-n1 job-a-g1-p1:z0-r01-n0]
+    zz_probe_relations_test.go:716: placed differently from today: seed 247, ranked + relations + retry 4: topo 2x3x2 fillers map[z0-r00-n0:4 z0-r00-n1:2 z0-r01-n1:4 z1-r00-n0:6 z1-r02-n0:4] policies [{name:a cpu:6 size:2 groups:2 tier:2 pinned:false}] affinity [] anti [tier1[a]]; today map[job-a-g0-p0:z0-r02-n0 job-a-g0-p1:z0-r02-n1 job-a-g1-p0:z1-r01-n1 job-a-g1-p1:z1-r01-n0]; now map[job-a-g0-p0:z0-r02-n0 job-a-g0-p1:z0-r02-n1 job-a-g1-p0:z0-r00-n1 job-a-g1-p1:z0-r01-n0]
+--- PASS: TestRelRL4SpanningSubGroupOracle (805.44s)
+PASS

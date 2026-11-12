@@ -1,0 +1,33 @@
+# worktree: upstream master d423e427c + probes/prototype-round3-upstream-master-d423e427c.patch
+# command: probes/run_probe.sh <worktree> history,prototype,prototype2,prototype2-ext,theory -run 'TestTheoryTH' -v -timeout 30m
+# plugins enabled by the probe harness: gang (with SubJob pipelining), predicates, network-topology-aware, group-topology-affinity, and a counting probe plugin. No priority, proportion or capacity plugin. Retry order "reserve".
+=== RUN   TestTheoryTH1HomogeneousClassIsExact
+    zz_probe_theory_test.go:228: 2000 scenarios of the homogeneous class (hard family: false); oracle: 1749 have a legal placement (461 with SubGroups of different tier limits, 827 with a Job-level hard tier)
+    zz_probe_theory_test.go:230: | configuration | scheduled | missed | wider tier than needed | retries | most retries for one Job |
+    zz_probe_theory_test.go:231: |---|---|---|---|---|---|
+    zz_probe_theory_test.go:234: | current search, narrowest limit first | 1731 | 18 | 0 | 0 | 0 |
+    zz_probe_theory_test.go:234: | ranked, no region, narrowest limit first | 1731 | 18 | 0 | 0 | 0 |
+    zz_probe_theory_test.go:234: | ranked + region, narrowest limit first, no retry (Thm 4) | 1749 | 0 | 0 | 0 | 0 |
+    zz_probe_theory_test.go:234: | ranked + region, widest limit first, no retry | 1740 | 9 | 1 | 0 | 0 |
+    zz_probe_theory_test.go:234: | ranked + region, widest limit first, retry 4 | 1747 | 2 | 1 | 270 | 4 |
+    zz_probe_theory_test.go:234: | ranked + region, widest limit first, retry 64 (Thm 5) | 1749 | 0 | 1 | 434 | 17 |
+    zz_probe_theory_test.go:234: | ranked + region, random order, no retry | 1743 | 6 | 0 | 0 | 0 |
+    zz_probe_theory_test.go:234: | ranked + region, random order, retry 4 | 1747 | 2 | 0 | 267 | 4 |
+    zz_probe_theory_test.go:234: | ranked + region, random order, retry 64 (Thm 5) | 1749 | 0 | 0 | 431 | 17 |
+--- PASS: TestTheoryTH1HomogeneousClassIsExact (54.52s)
+=== RUN   TestTheoryTH2HomogeneousClassHardFamily
+    zz_probe_theory_test.go:228: 2000 scenarios of the homogeneous class (hard family: true); oracle: 1451 have a legal placement (1451 with SubGroups of different tier limits, 726 with a Job-level hard tier)
+    zz_probe_theory_test.go:230: | configuration | scheduled | missed | wider tier than needed | retries | most retries for one Job |
+    zz_probe_theory_test.go:231: |---|---|---|---|---|---|
+    zz_probe_theory_test.go:234: | current search, narrowest limit first | 1370 | 81 | 0 | 0 | 0 |
+    zz_probe_theory_test.go:234: | ranked, no region, narrowest limit first | 1370 | 81 | 0 | 0 | 0 |
+    zz_probe_theory_test.go:234: | ranked + region, narrowest limit first, no retry (Thm 4) | 1451 | 0 | 0 | 0 | 0 |
+    zz_probe_theory_test.go:234: | ranked + region, widest limit first, no retry | 1398 | 53 | 3 | 0 | 0 |
+    zz_probe_theory_test.go:234: | ranked + region, widest limit first, retry 4 | 1449 | 2 | 3 | 616 | 4 |
+    zz_probe_theory_test.go:234: | ranked + region, widest limit first, retry 64 (Thm 5) | 1451 | 0 | 3 | 1046 | 21 |
+    zz_probe_theory_test.go:234: | ranked + region, random order, no retry | 1427 | 24 | 1 | 0 | 0 |
+    zz_probe_theory_test.go:234: | ranked + region, random order, retry 4 | 1451 | 0 | 1 | 536 | 4 |
+    zz_probe_theory_test.go:234: | ranked + region, random order, retry 64 (Thm 5) | 1451 | 0 | 1 | 955 | 20 |
+--- PASS: TestTheoryTH2HomogeneousClassHardFamily (61.06s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	118.662s

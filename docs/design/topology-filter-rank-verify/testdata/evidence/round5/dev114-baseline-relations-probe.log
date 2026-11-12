@@ -1,0 +1,19 @@
+# worktree: dev-1.14 7947e8756, unmodified (no prototype patch)
+# command: probes/run_probe.sh <worktree> history,relations-dev114-baseline -run 'TestProbeRB1' -v
+=== RUN   TestProbeRB1RequiredSubGroupTermsUnmodified
+    zz_probe_relations_baseline_test.go:168: | scenario | legal placement exists | pods | sessions that scheduled the Job (of 20) | pods placed per session |
+    zz_probe_relations_baseline_test.go:169: |---|---|---|---|---|
+    zz_probe_relations_baseline_test.go:194: | RA1 anti-affinity at tier 1; SubGroup a must span two racks | true | 3 | 0 | 0 pods x20 |
+    zz_probe_relations_baseline_test.go:194: | RA1c control: RA1 without the term | true | 3 | 20 | 3 pods x20 |
+    zz_probe_relations_baseline_test.go:194: | RA2 anti-affinity at tier 1; flexible SubGroup first | true | 2 | 0 | 0 pods x20 |
+    zz_probe_relations_baseline_test.go:194: | RA2c control: RA2 with the pinned SubGroup first | true | 2 | 20 | 2 pods x20 |
+    zz_probe_relations_baseline_test.go:194: | RA3 affinity at tier 1 for p,q; third SubGroup r | true | 3 | 0 | 0 pods x20 |
+    zz_probe_relations_baseline_test.go:194: | RA3c control: RA3 with r first | true | 3 | 20 | 3 pods x20 |
+    zz_probe_relations_baseline_test.go:194: | RA4 anti-affinity at tier 1 among three replicas of one policy | true | 3 | 20 | 3 pods x20 |
+    zz_probe_relations_baseline_test.go:194: | RA4n control: three replicas, two racks | false | 3 | 0 | 0 pods x20 |
+    zz_probe_relations_baseline_test.go:194: | RA6 affinity at tier 2 for p,q; anti-affinity at tier 1 for r,p; r first | true | 4 | 20 | 4 pods x20 |
+    zz_probe_relations_baseline_test.go:194: | RA7 control: anti-affinity on a tier that does not exist | false | 3 | 0 | 0 pods x20 |
+    zz_probe_relations_baseline_test.go:194: | RA5 affinity at tier 2 for p,q; each limited to a rack | true | 2 | 20 | 2 pods x20 |
+--- PASS: TestProbeRB1RequiredSubGroupTermsUnmodified (22.57s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	22.612s
