@@ -747,7 +747,7 @@ VC_PROBE_REPAIR_BUDGET=4 VC_PROBE_REPAIR_ORDER=reserve go test ./pkg/scheduler/.
 | 分支 | `design/004-topology-filter-rank-verify` |
 | 基线 | 上游 `master` @ `d423e427c847d37271701bf44276156a97ee0346` |
 | 内容 | `docs/design/topology-filter-rank-verify/README.md`，即本目录的 `DESIGN.md`；`docs/design/topology-filter-rank-verify/testdata/`，即本目录其余内容的快照（`DESCRIPTION.md`、本文件、`probes/`、`evidence/`、`subagents/`） |
-| Commit | 本分支的第一个 commit，哈希由随后的 commit 记录在这里 |
+| Commit | `97409ceae2eff4c4d6055143d55d57aa487e2ecd`：设计文档与配套材料。分支上随后的一个 commit 只把这条哈希记录同步进快照 |
 | 对实现代码的改动 | 无。分支相对基线只新增 `docs/design/topology-filter-rank-verify/` 下的文件 |
 | 推送前的检查 | `go list ./...` 不包含该目录（`testdata/` 被 Go 工具链忽略，探测测试不会被编译）；对快照扫描了令牌、私钥、邮箱、IP 和本机会话路径，评审报告里两处本机会话路径已改成材料目录内的相对路径；`*.log` 被仓库的 `.gitignore` 忽略，日志用 `git add -f` 加入 |
 
