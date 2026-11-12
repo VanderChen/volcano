@@ -1,0 +1,20 @@
+=== RUN   TestProbeHBAllowedUnion
+    zz_probe_history_test.go:183: | variant | legal placement exists | placed | nodes | status |
+    zz_probe_history_test.go:184: |---|---|---|---|---|
+    zz_probe_history_test.go:194: | HB1 reported bug: PAA tier 2 + prefill/decode SubGroups hard tier 1, 4 pods | true | 0/4 |  | FALSE NEGATIVE; pod group is not ready, 4 Pending, 4 minAvailable; Pending: 2 Schedulable, 2 Unschedulable. |
+    zz_probe_history_test.go:194: | HB2 PAA tier 2, no SubGroup policy, 4 pods | true | 0/4 |  | FALSE NEGATIVE; pod group is not ready, 4 Pending, 4 minAvailable; Pending: 4 Unschedulable. |
+    zz_probe_history_test.go:194: | HB3 job hard tier 3 + PAA tier 2 + prefill/decode SubGroups, 4 pods | true | 0/4 |  | FALSE NEGATIVE; pod group is not ready, 4 Pending, 4 minAvailable; Pending: 2 Schedulable, 2 Unschedulable. |
+    zz_probe_history_test.go:194: | HB4 job hard tier 3 + PAA tier 2, no SubGroup policy, 4 pods | true | 0/4 |  | FALSE NEGATIVE; pod group is not ready, 4 Pending, 4 minAvailable; Pending: 4 Unschedulable. |
+    zz_probe_history_test.go:194: | HB5 PAA tier 2 + SubGroups of 2 pods hard tier 2, 4 pods | true | 0/4 |  | FALSE NEGATIVE; pod group is not ready, 4 Pending, 4 minAvailable; Pending: 2 Schedulable, 2 Unschedulable. |
+    zz_probe_history_test.go:194: | HB6 job soft tier 2 + PAA tier 2 + prefill/decode SubGroups, 4 pods | true | 0/4 |  | FALSE NEGATIVE; pod group is not ready, 4 Pending, 4 minAvailable; Pending: 2 Schedulable, 2 Unschedulable. |
+    zz_probe_history_test.go:194: | control: 2 pods fit in B alone | true | 2/2 | z2-r00-n0 z2-r01-n0 | ok; pod group is ready, 2 Binding, 2 minAvailable. |
+    zz_probe_history_test.go:194: | control: no PAA, 4 pods | true | 4/4 | z0-r00-n0 z1-r01-n0 z2-r00-n0 z2-r01-n0 | ok; pod group is ready, 4 Binding, 4 minAvailable. |
+    zz_probe_history_test.go:194: | control: job hard tier 2 + PAA, 4 pods need two tier-2 domains | false | 0/4 |  | ok; pod group is not ready, 4 Pending, 4 minAvailable; Pending: 2 Schedulable, 2 Unschedulable. |
+    zz_probe_history_test.go:194: | control: PAA, 5 pods but only 4 nodes outside A | false | 0/5 |  | ok; pod group is not ready, 5 Pending, 5 minAvailable; Pending: 5 Unschedulable. |
+--- PASS: TestProbeHBAllowedUnion (0.04s)
+=== RUN   TestProbeHCCrossSubJobContention
+    zz_probe_history_test.go:236: flexible SubJob first=true  placed 0/2 map[]; pod group is not ready, 2 Pending, 2 minAvailable; Pending: 1 Schedulable, 1 Unschedulable.
+    zz_probe_history_test.go:236: flexible SubJob first=false placed 2/2 map[job-flexible:z0-r01-n0 job-pinned:z0-r00-n0]; pod group is ready, 2 Binding, 2 minAvailable.
+--- PASS: TestProbeHCCrossSubJobContention (0.01s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	0.070s

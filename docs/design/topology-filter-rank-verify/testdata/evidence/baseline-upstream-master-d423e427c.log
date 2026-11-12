@@ -1,0 +1,43 @@
+    zz_probe_baseline_dra_test.go:112: winner z0-r00 is dry-run first, z0-r01 last   placed=map[] bindCheck=failed to get Bind request in case 0(dra-replay) counters: taskAttempts=2 predicate=2 nodeOrder=0 allocate=5 deallocate=5 hyperNodeOrderCalls=2
+    zz_probe_baseline_dra_test.go:114:     fitError: pod group is not ready, 1 Pending, 1 minAvailable; Pending: 1 Unschedulable. HyperNode: 2/4 hyperNodes available: tier-3 0/1 (1 networkTopology); tier-2 0/1 (1 networkTopology); tier-1 2/2
+    zz_probe_baseline_dra_test.go:112: winner z0-r01 is dry-run last                 placed=map[job-p00:z0-r01-n0(Binding)] bindCheck=<nil> counters: taskAttempts=2 predicate=2 nodeOrder=0 allocate=5 deallocate=4 hyperNodeOrderCalls=2
+--- PASS: TestProbeP6ReplayWithDRA (0.63s)
+    zz_probe_baseline_test.go:34: | racks | predicate | nodeOrder | allocate | deallocate | hyperNodeOrder calls | allocate / task |
+    zz_probe_baseline_test.go:35: |---|---|---|---|---|---|---|
+    zz_probe_baseline_test.go:49: | 1 | 10 | 9 | 12 | 8 | 1 | 3.0 |
+    zz_probe_baseline_test.go:49: | 2 | 20 | 18 | 20 | 16 | 2 | 5.0 |
+    zz_probe_baseline_test.go:49: | 4 | 40 | 36 | 36 | 32 | 4 | 9.0 |
+    zz_probe_baseline_test.go:49: | 8 | 80 | 72 | 68 | 64 | 8 | 17.0 |
+    zz_probe_baseline_test.go:49: | 16 | 160 | 144 | 132 | 128 | 16 | 33.0 |
+    zz_probe_baseline_test.go:49: | 32 | 320 | 288 | 260 | 256 | 32 | 65.0 |
+--- PASS: TestProbeP1FanOut (0.04s)
+    zz_probe_baseline_test.go:58: | zones x racks | predicate | allocate | deallocate | hyperNodeOrder calls | allocate / task |
+    zz_probe_baseline_test.go:59: |---|---|---|---|---|---|
+    zz_probe_baseline_test.go:79: | 1x2 | 15 | 22 | 18 | 4 | 5.5 |
+    zz_probe_baseline_test.go:79: | 2x2 | 30 | 40 | 36 | 8 | 10.0 |
+    zz_probe_baseline_test.go:79: | 2x4 | 66 | 72 | 68 | 12 | 18.0 |
+    zz_probe_baseline_test.go:79: | 4x4 | 132 | 140 | 136 | 24 | 35.0 |
+    zz_probe_baseline_test.go:79: | 4x8 | 276 | 268 | 264 | 40 | 67.0 |
+--- PASS: TestProbeP1cNestedFanOut (0.04s)
+    zz_probe_baseline_test.go:133: rack=z0-r00 preScore(all-cohort)=50.00 preScore(singleton)=50.00
+    zz_probe_baseline_test.go:133: rack=z0-r01 preScore(all-cohort)=62.50 preScore(singleton)=62.50
+    zz_probe_baseline_test.go:133: rack=z0-r02 preScore(all-cohort)=75.00 preScore(singleton)=75.00
+    zz_probe_baseline_test.go:133: rack=z0-r03 preScore(all-cohort)=87.50 preScore(singleton)=87.50
+    zz_probe_baseline_test.go:133: rack=z0-r04 preScore(all-cohort)=100.00 preScore(singleton)=100.00
+    zz_probe_baseline_test.go:133: rack=z0-r05 preScore(all-cohort)=50.00 preScore(singleton)=50.00
+    zz_probe_baseline_test.go:142: chosen=[z0-r04] argmax(preScore)=z0-r04 counters: taskAttempts=24 predicate=79 nodeOrder=78 allocate=52 deallocate=48 hyperNodeOrderCalls=6
+    zz_probe_baseline_test.go:155: HyperNodeOrderFn cohort sizes (size -> calls): map[1:6]
+--- PASS: TestProbeP2ScoreKnownBeforeDryRun (0.00s)
+    zz_probe_baseline_test.go:170: identical racks, 40 sessions, chosen rack histogram: map[z0-r00:19 z0-r01:5 z0-r02:7 z0-r03:9] (distinct=4)
+--- PASS: TestProbeP3TieBreakDeterminism (0.09s)
+    zz_probe_baseline_test.go:218: all preferred nodes are in z0-r01; nodeorder nodeaffinity.weight=100
+    zz_probe_baseline_test.go:219: (a) racks otherwise identical      -> chosen rack histogram over 40 sessions: map[z0-r00:34 z0-r01:6]
+    zz_probe_baseline_test.go:220: (b) z0-r00 half used (binpack win) -> chosen rack histogram over 40 sessions: map[z0-r00:40]
+--- PASS: TestProbeP4NodePreferenceAcrossDomains (0.16s)
+    zz_probe_baseline_test.go:257: JobFitErrors: 2/5 hyperNodes available (minResource: cpu 16000.00, memory 2147483648.00): tier-3 0/1 (1 networkTopology); tier-2 0/1 (1 networkTopology); tier-1 2/3 (1 minResource)
+    zz_probe_baseline_test.go:258: FitError():   pod group is not ready, 2 Pending, 2 minAvailable; Pending: 2 Unschedulable. HyperNode: 2/5 hyperNodes available (minResource: cpu 16000.00, memory 2147483648.00): tier-3 0/1 (1 networkTopology); tier-2 0/1 (1 networkTopology); tier-1 2/3 (1 minResource); Node: job-p00: In hyperNode z0-r02: 0/4 nodes are unavailable: 4 Insufficient cpu.
+    zz_probe_baseline_test.go:265: NodesFitErrors[job-p00]: In hyperNode z0-r02: 0/4 nodes are unavailable: 4 Insufficient cpu.
+    zz_probe_baseline_test.go:267: counters: taskAttempts=2 predicate=0 nodeOrder=0 allocate=0 deallocate=0 hyperNodeOrderCalls=0
+--- PASS: TestProbeP5FailureExplanation (0.00s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	1.016s

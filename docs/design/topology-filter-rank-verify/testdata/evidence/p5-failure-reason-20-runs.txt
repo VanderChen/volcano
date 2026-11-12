@@ -1,0 +1,9 @@
+# P5 (failure explanation) repeated 20 times per baseline on unmodified code: which HyperNode's node-level reason is surfaced.
+# Command: probes/run_probe.sh <pristine worktree> baseline-dra -run 'TestProbeP5' -v -count=20
+
+== upstream-master-d423e427c
+     20 In hyperNode z0-r02: 0/4 nodes are unavailable: 4 Insufficient cpu.
+
+== dev-1.14-7947e8756
+      8 In hyperNode z0-r00: 0/4 nodes are unavailable: 4 node(s) had untolerated taint {dedicated: other}.
+     12 In hyperNode z0-r02: 0/4 nodes are unavailable: 4 Insufficient cpu.

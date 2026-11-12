@@ -1,0 +1,25 @@
+=== RUN   TestReviewRB10UncoveredClassesRandom
+    zz_review_behavior_classes_test.go:134: FEWER seed 195 elastic S7b region-replaces-forest (topo 3x3x1; anchor in z1; required PAA tier 2; p0: 2 groups x 1 x 8cpu tier 1 pinned=false; p1: 2 groups x 1 x 4cpu tier 1 pinned=false)
+          today: map[job-p0-g1-p0:z0-r00-n0 job-p0-g4-p0:z0-r01-n0 job-p1-g2-p0:z0-r02-n0 job-p1-g6-p0:z2-r00-n0]
+          now:   map[job-p0-g1-p0:z2-r00-n0 job-p1-g2-p0:z2-r00-n0 job-p1-g6-p0:z0-r02-n0]
+    zz_review_behavior_classes_test.go:134: FEWER seed 195 elastic S7b region-replaces-forest+repair(8) (topo 3x3x1; anchor in z1; required PAA tier 2; p0: 2 groups x 1 x 8cpu tier 1 pinned=false; p1: 2 groups x 1 x 4cpu tier 1 pinned=false)
+          today: map[job-p0-g1-p0:z0-r00-n0 job-p0-g4-p0:z0-r01-n0 job-p1-g2-p0:z0-r02-n0 job-p1-g6-p0:z2-r00-n0]
+          now:   map[job-p0-g1-p0:z2-r00-n0 job-p1-g2-p0:z2-r00-n0 job-p1-g6-p0:z0-r02-n0]
+    zz_review_behavior_classes_test.go:147: | class | scenarios | today schedules | configuration | scheduled | newly scheduled | lost | fewer pods | more pods | placed differently | illegal | leaked |
+    zz_review_behavior_classes_test.go:148: |---|---|---|---|---|---|---|---|---|---|---|---|
+    zz_review_behavior_classes_test.go:155: | elastic | 150 | 125 | S7a forest-first | 125 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+    zz_review_behavior_classes_test.go:155: | elastic | 150 | 125 | S7b region-replaces-forest | 125 | 0 | 0 | 1 | 0 | 13 | 0 | 0 |
+    zz_review_behavior_classes_test.go:155: | elastic | 150 | 125 | S7b region-replaces-forest+repair(8) | 125 | 0 | 0 | 1 | 0 | 13 | 0 | 0 |
+    zz_review_behavior_classes_test.go:155: | soft-job | 150 | 124 | S7a forest-first | 126 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |
+    zz_review_behavior_classes_test.go:155: | soft-job | 150 | 124 | S7b region-replaces-forest | 126 | 2 | 0 | 0 | 0 | 11 | 0 | 0 |
+    zz_review_behavior_classes_test.go:155: | soft-job | 150 | 124 | S7b region-replaces-forest+repair(8) | 126 | 2 | 0 | 0 | 0 | 11 | 0 | 0 |
+    zz_review_behavior_classes_test.go:155: | partly-running | 146 | 104 | S7a forest-first | 104 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+    zz_review_behavior_classes_test.go:155: | partly-running | 146 | 104 | S7b region-replaces-forest | 104 | 0 | 0 | 0 | 0 | 2 | 0 | 0 |
+    zz_review_behavior_classes_test.go:155: | partly-running | 146 | 104 | S7b region-replaces-forest+repair(8) | 112 | 8 | 0 | 0 | 0 | 2 | 0 | 0 |
+    zz_review_behavior_classes_test.go:155: | unchanged | 4 | 0 | S7a forest-first | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+    zz_review_behavior_classes_test.go:155: | unchanged | 4 | 0 | S7b region-replaces-forest | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+    zz_review_behavior_classes_test.go:155: | unchanged | 4 | 0 | S7b region-replaces-forest+repair(8) | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+--- PASS: TestReviewRB10UncoveredClassesRandom (186.76s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	186.909s
+done-rb10

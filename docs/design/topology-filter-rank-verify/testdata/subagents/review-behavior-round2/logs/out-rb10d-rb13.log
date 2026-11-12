@@ -1,0 +1,47 @@
+=== RUN   TestReviewRB10dElasticSeed195
+    zz_review_behavior_debug_test.go:31: with PAA [off+detTies] class=elastic anchorZone=z1 minMember=2
+    zz_review_behavior_debug_test.go:32:     nodes (allocatable-used cpu): [z0-r00-n0=8-0 z0-r01-n0=16-6 z0-r02-n0=8-4 z1-r00-n0=16-0 z1-r01-n0=16-5 z1-r02-n0=8-0 z2-r00-n0=16-4 z2-r01-n0=16-0 z2-r02-n0=8-6]
+    zz_review_behavior_debug_test.go:33:     placed=4 [job-p0-g1-p0@z0-r00-n0 job-p0-g4-p0@z0-r01-n0 job-p1-g2-p0@z0-r02-n0 job-p1-g6-p0@z2-r00-n0]
+    zz_review_behavior_debug_test.go:34:     job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/job/p0-1=z0-r00 c1/job/p0-4=z0-r01 c1/job/p1-2=z0-r02 c1/job/p1-6=z2-r00]
+    zz_review_behavior_debug_test.go:35:     FitError: pod group is ready, 2 minAvailable, 4 Binding. HyperNode: 8/14 hyperNodes available: tier-4 0/1 (1 podGroupAntiAffinity); tier-3 0/1 (1 podGroupAntiAffinity); tier-2 2/3 (1 podGroupAntiAffinity); tier-1 6/9 (3 podGroupAntiAffinity)
+    zz_review_behavior_debug_test.go:36:     NodesFitErrors: (none)
+    zz_review_behavior_debug_test.go:31: with PAA [S7a forest-first] class=elastic anchorZone=z1 minMember=2
+    zz_review_behavior_debug_test.go:32:     nodes (allocatable-used cpu): [z0-r00-n0=8-0 z0-r01-n0=16-6 z0-r02-n0=8-4 z1-r00-n0=16-0 z1-r01-n0=16-5 z1-r02-n0=8-0 z2-r00-n0=16-4 z2-r01-n0=16-0 z2-r02-n0=8-6]
+    zz_review_behavior_debug_test.go:33:     placed=4 [job-p0-g1-p0@z0-r00-n0 job-p0-g4-p0@z0-r01-n0 job-p1-g2-p0@z0-r02-n0 job-p1-g6-p0@z2-r00-n0]
+    zz_review_behavior_debug_test.go:34:     job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/job/p0-1=z0-r00 c1/job/p0-4=z0-r01 c1/job/p1-2=z0-r02 c1/job/p1-6=z2-r00]
+    zz_review_behavior_debug_test.go:35:     FitError: pod group is ready, 2 minAvailable, 4 Binding. HyperNode: 8/14 hyperNodes available: tier-4 0/1 (1 podGroupAntiAffinity); tier-3 0/1 (1 podGroupAntiAffinity); tier-2 2/3 (1 podGroupAntiAffinity); tier-1 6/9 (3 podGroupAntiAffinity)
+    zz_review_behavior_debug_test.go:36:     NodesFitErrors: (none)
+    zz_review_behavior_debug_test.go:31: with PAA [S7b region-replaces-forest] class=elastic anchorZone=z1 minMember=2
+    zz_review_behavior_debug_test.go:32:     nodes (allocatable-used cpu): [z0-r00-n0=8-0 z0-r01-n0=16-6 z0-r02-n0=8-4 z1-r00-n0=16-0 z1-r01-n0=16-5 z1-r02-n0=8-0 z2-r00-n0=16-4 z2-r01-n0=16-0 z2-r02-n0=8-6]
+    zz_review_behavior_debug_test.go:33:     placed=3 [job-p0-g1-p0@z2-r00-n0 job-p1-g2-p0@z2-r00-n0 job-p1-g6-p0@z0-r02-n0]
+    zz_review_behavior_debug_test.go:34:     job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/job/p0-1=z2-r00 c1/job/p1-2=dc c1/job/p1-6=z0-r02]
+    zz_review_behavior_debug_test.go:35:     FitError: pod group is ready, 1 Pending, 2 minAvailable, 3 Binding; Pending: 1 Schedulable. HyperNode: 10/14 hyperNodes available: tier-4 1/1 (1 podGroupAntiAffinity); tier-3 1/1 (1 podGroupAntiAffinity); tier-2 2/3 (1 podGroupAntiAffinity); tier-1 6/9 (3 podGroupAntiAffinity); subJob c1/job/p1-6: 0/14 hyperNodes available (minResource: cpu 4000.00, memory 1073741824.00, pods 1.00): tier-4 0/1 (1 networkTopology); tier-3 0/1 (1 networkTopology); tier-2 0/3 (3 networkTopology); tier-1 0/9 (8 networkTopology, 1 minResource)
+    zz_review_behavior_debug_test.go:36:     NodesFitErrors: (none)
+    zz_review_behavior_debug_test.go:31: PAA removed (general path today) [off+detTies] class=elastic anchorZone=z1 minMember=2
+    zz_review_behavior_debug_test.go:32:     nodes (allocatable-used cpu): [z0-r00-n0=8-0 z0-r01-n0=16-6 z0-r02-n0=8-4 z1-r00-n0=16-0 z1-r01-n0=16-5 z1-r02-n0=8-0 z2-r00-n0=16-4 z2-r01-n0=16-0 z2-r02-n0=8-6]
+    zz_review_behavior_debug_test.go:33:     placed=3 [job-p0-g1-p0@z2-r00-n0 job-p1-g2-p0@z2-r00-n0 job-p1-g6-p0@z0-r02-n0]
+    zz_review_behavior_debug_test.go:34:     job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/job/p0-1=z2-r00 c1/job/p1-2=dc c1/job/p1-6=z0-r02]
+    zz_review_behavior_debug_test.go:35:     FitError: pod group is ready, 1 Pending, 2 minAvailable, 3 Binding; Pending: 1 Schedulable. HyperNode: 14/14 hyperNodes available: tier-4 1/1; tier-3 1/1; tier-2 3/3; tier-1 9/9; subJob c1/job/p1-6: 0/14 hyperNodes available (minResource: cpu 4000.00, memory 1073741824.00, pods 1.00): tier-4 0/1 (1 networkTopology); tier-3 0/1 (1 networkTopology); tier-2 0/3 (3 networkTopology); tier-1 0/9 (8 networkTopology, 1 minResource)
+    zz_review_behavior_debug_test.go:36:     NodesFitErrors: (none)
+    zz_review_behavior_debug_test.go:31: PAA removed (general path today) [S7a forest-first] class=elastic anchorZone=z1 minMember=2
+    zz_review_behavior_debug_test.go:32:     nodes (allocatable-used cpu): [z0-r00-n0=8-0 z0-r01-n0=16-6 z0-r02-n0=8-4 z1-r00-n0=16-0 z1-r01-n0=16-5 z1-r02-n0=8-0 z2-r00-n0=16-4 z2-r01-n0=16-0 z2-r02-n0=8-6]
+    zz_review_behavior_debug_test.go:33:     placed=3 [job-p0-g1-p0@z2-r00-n0 job-p1-g2-p0@z2-r00-n0 job-p1-g6-p0@z0-r02-n0]
+    zz_review_behavior_debug_test.go:34:     job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/job/p0-1=z2-r00 c1/job/p1-2=dc c1/job/p1-6=z0-r02]
+    zz_review_behavior_debug_test.go:35:     FitError: pod group is ready, 1 Pending, 2 minAvailable, 3 Binding; Pending: 1 Schedulable. HyperNode: 14/14 hyperNodes available: tier-4 1/1; tier-3 1/1; tier-2 3/3; tier-1 9/9; subJob c1/job/p1-6: 0/14 hyperNodes available (minResource: cpu 4000.00, memory 1073741824.00, pods 1.00): tier-4 0/1 (1 networkTopology); tier-3 0/1 (1 networkTopology); tier-2 0/3 (3 networkTopology); tier-1 0/9 (8 networkTopology, 1 minResource)
+    zz_review_behavior_debug_test.go:36:     NodesFitErrors: (none)
+    zz_review_behavior_debug_test.go:31: PAA removed (general path today) [S7b region-replaces-forest] class=elastic anchorZone=z1 minMember=2
+    zz_review_behavior_debug_test.go:32:     nodes (allocatable-used cpu): [z0-r00-n0=8-0 z0-r01-n0=16-6 z0-r02-n0=8-4 z1-r00-n0=16-0 z1-r01-n0=16-5 z1-r02-n0=8-0 z2-r00-n0=16-4 z2-r01-n0=16-0 z2-r02-n0=8-6]
+    zz_review_behavior_debug_test.go:33:     placed=3 [job-p0-g1-p0@z2-r00-n0 job-p1-g2-p0@z2-r00-n0 job-p1-g6-p0@z0-r02-n0]
+    zz_review_behavior_debug_test.go:34:     job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/job/p0-1=z2-r00 c1/job/p1-2=dc c1/job/p1-6=z0-r02]
+    zz_review_behavior_debug_test.go:35:     FitError: pod group is ready, 1 Pending, 2 minAvailable, 3 Binding; Pending: 1 Schedulable. HyperNode: 14/14 hyperNodes available: tier-4 1/1; tier-3 1/1; tier-2 3/3; tier-1 9/9; subJob c1/job/p1-6: 0/14 hyperNodes available (minResource: cpu 4000.00, memory 1073741824.00, pods 1.00): tier-4 0/1 (1 networkTopology); tier-3 0/1 (1 networkTopology); tier-2 0/3 (3 networkTopology); tier-1 0/9 (8 networkTopology, 1 minResource)
+    zz_review_behavior_debug_test.go:36:     NodesFitErrors: (none)
+--- PASS: TestReviewRB10dElasticSeed195 (0.62s)
+=== RUN   TestReviewRB13ScopeCostAtScale
+    zz_review_behavior_forest_test.go:209: | zones x racks x nodes | HyperNodes | nodes | gradient call, switch off | gradient call, switch on | setScope | whole session off | option a | option b |
+    zz_review_behavior_forest_test.go:210: |---|---|---|---|---|---|---|---|---|
+    zz_review_behavior_forest_test.go:270: | 5x20x2 | 107 | 200 | 182µs | 238µs | 29µs | 129ms (placed 4, taskAttempts 320) | 123ms (placed 4, taskAttempts 320) | 132ms (placed 4, taskAttempts 320) |
+    zz_review_behavior_forest_test.go:270: | 10x50x2 | 512 | 1000 | 2.266ms | 3.571ms | 174µs | 353ms (placed 4, taskAttempts 1800) | 365ms (placed 4, taskAttempts 1800) | 446ms (placed 4, taskAttempts 1800) |
+    zz_review_behavior_forest_test.go:270: | 20x100x2 | 2022 | 4000 | 27.12ms | 51.427ms | 686µs | 3.574s (placed 4, taskAttempts 7600) | 3.522s (placed 4, taskAttempts 7600) | 4.885s (placed 4, taskAttempts 7600) |
+--- PASS: TestReviewRB13ScopeCostAtScale (18.06s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	18.737s

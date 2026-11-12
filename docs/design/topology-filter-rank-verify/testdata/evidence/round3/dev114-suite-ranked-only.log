@@ -1,0 +1,64 @@
+ok  	volcano.sh/volcano/pkg/scheduler	0.058s
+?   	volcano.sh/volcano/pkg/scheduler/actions	[no test files]
+--- FAIL: TestAllocateWithPVC (0.91s)
+    --- FAIL: TestAllocateWithPVC/static_pv_matched_and_node_with_enough_resources (0.45s)
+        allocate_test.go:2655: case 1(static pv matched and node with enough resources) check podgroup <c1/pg1> task status Binding: want 2, got 0
+FAIL
+FAIL	volcano.sh/volcano/pkg/scheduler/actions/allocate	91.992s
+ok  	volcano.sh/volcano/pkg/scheduler/actions/backfill	1.457s
+ok  	volcano.sh/volcano/pkg/scheduler/actions/enqueue	2.300s
+ok  	volcano.sh/volcano/pkg/scheduler/actions/preempt	10.481s
+ok  	volcano.sh/volcano/pkg/scheduler/actions/reclaim	4.570s
+ok  	volcano.sh/volcano/pkg/scheduler/actions/shuffle	0.497s
+ok  	volcano.sh/volcano/pkg/scheduler/api	0.133s
+?   	volcano.sh/volcano/pkg/scheduler/api/devices	[no test files]
+ok  	volcano.sh/volcano/pkg/scheduler/api/devices/ascend/hami	0.021s
+?   	volcano.sh/volcano/pkg/scheduler/api/devices/ascend/mindcluster/ascend310p/vnpu	[no test files]
+ok  	volcano.sh/volcano/pkg/scheduler/api/devices/config	0.018s
+ok  	volcano.sh/volcano/pkg/scheduler/api/devices/nvidia/gpushare	0.017s
+ok  	volcano.sh/volcano/pkg/scheduler/api/devices/nvidia/vgpu	0.025s
+ok  	volcano.sh/volcano/pkg/scheduler/api/helpers	0.030s
+ok  	volcano.sh/volcano/pkg/scheduler/cache	0.439s
+ok  	volcano.sh/volcano/pkg/scheduler/capabilities/volumebinding	16.738s
+?   	volcano.sh/volcano/pkg/scheduler/conf	[no test files]
+ok  	volcano.sh/volcano/pkg/scheduler/framework	0.047s
+?   	volcano.sh/volcano/pkg/scheduler/framework/mock_gen	[no test files]
+ok  	volcano.sh/volcano/pkg/scheduler/metrics	0.026s
+ok  	volcano.sh/volcano/pkg/scheduler/metrics/source	0.048s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins	0.040s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/binpack	0.259s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/capacity	12.477s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/cdp	0.041s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/conformance	0.140s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/deviceshare	0.048s
+?   	volcano.sh/volcano/pkg/scheduler/plugins/deviceshare/devices/ascend/310p/vnpu	[no test files]
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/drf	0.248s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/extender	0.096s
+?   	volcano.sh/volcano/pkg/scheduler/plugins/gang	[no test files]
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/group-topology-affinity	0.034s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/network-topology-aware	2.218s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/nodegroup	0.645s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/nodeorder	3.347s
+?   	volcano.sh/volcano/pkg/scheduler/plugins/numaaware	[no test files]
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/numaaware/policy	0.026s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/numaaware/provider/cpumanager	0.022s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/overcommit	0.440s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/pdb	0.036s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/predicates	1.429s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/priority	0.938s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/proportion	11.825s
+?   	volcano.sh/volcano/pkg/scheduler/plugins/rescheduling	[no test files]
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/resource-strategy-fit	1.583s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/resourcequota	0.432s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/sla	0.338s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/task-topology	0.027s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/tdm	8.452s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/usage	0.739s
+?   	volcano.sh/volcano/pkg/scheduler/plugins/util	[no test files]
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/util/k8s	0.028s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/util/nodelock	0.016s
+?   	volcano.sh/volcano/pkg/scheduler/plugins/util/nodescore	[no test files]
+?   	volcano.sh/volcano/pkg/scheduler/uthelper	[no test files]
+ok  	volcano.sh/volcano/pkg/scheduler/util	0.024s
+?   	volcano.sh/volcano/pkg/scheduler/util/assert	[no test files]
+FAIL

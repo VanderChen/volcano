@@ -1,0 +1,12 @@
+# P6 (DRA replay) repeated 20 times per baseline on unmodified code.
+# Command: probes/run_probe.sh <pristine worktree> baseline-dra -run 'TestProbeP6' -v -count=20
+
+== upstream-master-d423e427c
+     20 winner z0-r00 is dry-run first, z0-r01 last   placed=map[] bindCheck=FAILED
+     20 winner z0-r01 is dry-run last                 placed=map[job-p00:z0-r01-n0(Binding)] bindCheck=<nil>
+
+== dev-1.14-7947e8756
+     17 winner z0-r00 is dry-run first, z0-r01 last   placed=map[] bindCheck=FAILED
+      3 winner z0-r00 is dry-run first, z0-r01 last   placed=map[job-p00:z0-r00-n0(Binding)] bindCheck=<nil>
+      2 winner z0-r01 is dry-run last                 placed=map[] bindCheck=FAILED
+     18 winner z0-r01 is dry-run last                 placed=map[job-p00:z0-r01-n0(Binding)] bindCheck=<nil>

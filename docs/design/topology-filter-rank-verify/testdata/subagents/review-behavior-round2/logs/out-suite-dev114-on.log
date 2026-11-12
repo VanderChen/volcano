@@ -1,0 +1,4 @@
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	91.992s
+ok  	volcano.sh/volcano/pkg/scheduler/framework	0.037s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/group-topology-affinity	0.034s
+ok  	volcano.sh/volcano/pkg/scheduler/api	0.105s

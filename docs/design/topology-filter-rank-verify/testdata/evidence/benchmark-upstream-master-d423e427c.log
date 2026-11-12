@@ -1,0 +1,16 @@
+goos: linux
+goarch: amd64
+pkg: volcano.sh/volcano/pkg/scheduler/actions/allocate
+cpu: AMD EPYC 9474F 48-Core Processor               
+BenchmarkProtoAllocate/plain-20jobs-x8/exhaustive-32         	       5	2000397976 ns/op	     20576 allocEvents/op	     20416 deallocEvents/op	    162943 predicates/op
+BenchmarkProtoAllocate/plain-20jobs-x8/ranked-32             	       5	  45861490 ns/op	       160.0 allocEvents/op	         0 deallocEvents/op	      2090 predicates/op
+BenchmarkProtoAllocate/plain-20jobs-x8/ranked+fitBound-32    	       5	  44753531 ns/op	       160.0 allocEvents/op	         0 deallocEvents/op	      2090 predicates/op
+BenchmarkProtoAllocate/plain-20jobs-x8/ranked+top1-32        	       5	  46935853 ns/op	       160.0 allocEvents/op	         0 deallocEvents/op	      2090 predicates/op
+BenchmarkProtoAllocate/plain-20jobs-x8/ranked+top3-32        	       5	  45329606 ns/op	       160.0 allocEvents/op	         0 deallocEvents/op	      2090 predicates/op
+BenchmarkProtoAllocate/subgroup-8jobs-x16/exhaustive-32      	       5	1508039370 ns/op	     16512 allocEvents/op	     16384 deallocEvents/op	    130694 predicates/op
+BenchmarkProtoAllocate/subgroup-8jobs-x16/ranked-32          	       5	1374325525 ns/op	      8320 allocEvents/op	      8192 deallocEvents/op	    130576 predicates/op
+BenchmarkProtoAllocate/subgroup-8jobs-x16/ranked+fitBound-32 	       5	1397556305 ns/op	      8320 allocEvents/op	      8192 deallocEvents/op	    130576 predicates/op
+BenchmarkProtoAllocate/subgroup-8jobs-x16/ranked+top1-32     	       5	  41016086 ns/op	       256.0 allocEvents/op	       128.0 deallocEvents/op	      1552 predicates/op
+BenchmarkProtoAllocate/subgroup-8jobs-x16/ranked+top3-32     	       5	  86486653 ns/op	       512.0 allocEvents/op	       384.0 deallocEvents/op	      5648 predicates/op
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	41.157s

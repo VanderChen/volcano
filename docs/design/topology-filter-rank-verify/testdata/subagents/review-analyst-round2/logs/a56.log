@@ -1,0 +1,22 @@
+=== RUN   TestReviewA5DisplacedJobsComeAfterGainedJobs
+    zz_review_analyst_targeted_test.go:363: seed 52: displaced job jc has no recorded task attempt in the new run (order [c1/ja])
+    zz_review_analyst_targeted_test.go:363: seed 380: displaced job jc has no recorded task attempt in the new run (order [c1/ja c1/jb])
+    zz_review_analyst_targeted_test.go:383: 600 sessions: 6 displaced jobs; 4 handled after a newly scheduled job; 0 not explained; 2 without recorded order
+--- PASS: TestReviewA5DisplacedJobsComeAfterGainedJobs (8.19s)
+=== RUN   TestReviewA6DefaultBudgetAndIncompleteFlag
+    zz_review_analyst_targeted_test.go:459: R4 scenarios: 1200 scenarios, oracle finds a legal placement for 982
+    zz_review_analyst_targeted_test.go:460: | configuration | scheduled | missed | missed and flagged search-incomplete | missed, repair ran, not flagged | missed, no repair ran, not flagged | repair attempts | failed attempts with no blocked SubJob | budget exhausted | task attempts, current fails |
+    zz_review_analyst_targeted_test.go:461: |---|---|---|---|---|---|---|---|---|---|
+    zz_review_analyst_targeted_test.go:464: | current search | 943 | 39 | 0 | 0 | 39 | 0 | 0 | 0 | 6287 |
+    zz_review_analyst_targeted_test.go:464: | ranked + region + repair(4) [proposal row, expect 7 missed] | 975 | 7 | 3 | 0 | 4 | 380 | 140 | 72 | 6973 |
+    zz_review_analyst_targeted_test.go:464: | ranked + region + repair(4, reserve) [recommended default] | 977 | 5 | 1 | 0 | 4 | 380 | 141 | 70 | 7042 |
+    zz_review_analyst_targeted_test.go:464: | ranked + region + repair(8, reserve) | 978 | 4 | 0 | 0 | 4 | 547 | 160 | 26 | 8078 |
+    zz_review_analyst_targeted_test.go:459: R5 scenarios: 1000 scenarios, oracle finds a legal placement for 410
+    zz_review_analyst_targeted_test.go:460: | configuration | scheduled | missed | missed and flagged search-incomplete | missed, repair ran, not flagged | missed, no repair ran, not flagged | repair attempts | failed attempts with no blocked SubJob | budget exhausted | task attempts, current fails |
+    zz_review_analyst_targeted_test.go:461: |---|---|---|---|---|---|---|---|---|---|
+    zz_review_analyst_targeted_test.go:464: | current search | 390 | 20 | 0 | 0 | 20 | 0 | 0 | 0 | 31959 |
+    zz_review_analyst_targeted_test.go:464: | ranked + repair(2, reserve) | 407 | 3 | 3 | 0 | 0 | 604 | 347 | 271 | 19171 |
+    zz_review_analyst_targeted_test.go:464: | ranked + repair(4, reserve) [recommended default] | 409 | 1 | 1 | 0 | 0 | 918 | 431 | 131 | 21063 |
+--- PASS: TestReviewA6DefaultBudgetAndIncompleteFlag (37.42s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	46.580s

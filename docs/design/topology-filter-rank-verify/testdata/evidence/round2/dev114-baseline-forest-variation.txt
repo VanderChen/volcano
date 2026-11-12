@@ -1,0 +1,6 @@
+run 1: control: 2 pods fit in B alone | true | 2/2 | z1-r00-n0 z2-r01-n0 | ok; pod group is ready, 2 Binding, 2 minAvailable. |
+run 2: control: 2 pods fit in B alone | true | 2/2 | z1-r00-n0 z2-r01-n0 | ok; pod group is ready, 2 Binding, 2 minAvailable. |
+run 3: control: 2 pods fit in B alone | true | 2/2 | z1-r01-n0 z2-r01-n0 | ok; pod group is ready, 2 Binding, 2 minAvailable. |
+run 4: control: 2 pods fit in B alone | true | 2/2 | z2-r00-n0 z2-r01-n0 | ok; pod group is ready, 2 Binding, 2 minAvailable. |
+run 5: control: 2 pods fit in B alone | true | 2/2 | z1-r00-n0 z2-r01-n0 | ok; pod group is ready, 2 Binding, 2 minAvailable. |
+run 6: control: 2 pods fit in B alone | true | 2/2 | z1-r01-n0 z2-r00-n0 | ok; pod group is ready, 2 Binding, 2 minAvailable. |

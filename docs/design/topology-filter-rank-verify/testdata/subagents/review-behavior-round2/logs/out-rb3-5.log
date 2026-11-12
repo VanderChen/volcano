@@ -1,0 +1,91 @@
+=== RUN   TestReviewRB1cConditionAfterFailedRepair
+    zz_review_behavior_rollout_test.go:25: budget=0 placed=0 [] condition="NotEnoughResources: 2/3 tasks in gang unschedulable: pod group is not ready, 3 Pending, 3 minAvailable; Pending: 1 Schedulable, 2 Unschedulable."
+    zz_review_behavior_rollout_test.go:25: budget=1 placed=0 [] condition="NotEnoughResources: 1/3 tasks in gang unschedulable: pod group is not ready, 3 Pending, 3 minAvailable; Pending: 1 Unschedulable, 2 Schedulable."
+    zz_review_behavior_rollout_test.go:25: budget=4 placed=0 [] condition="NotEnoughResources: 0/3 tasks in gang unschedulable: pod group is not ready, 3 Pending, 3 minAvailable; Pending: 3 Schedulable."
+--- PASS: TestReviewRB1cConditionAfterFailedRepair (0.31s)
+=== RUN   TestReviewRB3RecordAfterPlacement
+    zz_review_behavior_rollout_test.go:33: ### HB1 reported bug: PAA tier 2 + prefill/decode SubGroups hard tier 1, 4 pods
+    zz_review_behavior_rollout_test.go:37:   [off+detTies] placed=4 [myq-decode-2@z2-r00-n0 myq-decode-3@z2-r01-n0 myq-prefill-0@z1-r01-n0 myq-prefill-1@z1-r00-n0]
+    zz_review_behavior_rollout_test.go:38:       job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq/decode-2=z2-r00 c1/pg-myq/decode-3=z2-r01 c1/pg-myq/prefill-0=z1-r01 c1/pg-myq/prefill-1=z1-r00] recorderDecision="dc"
+    zz_review_behavior_rollout_test.go:37:   [S7a forest-first] placed=4 [myq-decode-2@z2-r00-n0 myq-decode-3@z2-r01-n0 myq-prefill-0@z1-r01-n0 myq-prefill-1@z1-r00-n0]
+    zz_review_behavior_rollout_test.go:38:       job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq/decode-2=z2-r00 c1/pg-myq/decode-3=z2-r01 c1/pg-myq/prefill-0=z1-r01 c1/pg-myq/prefill-1=z1-r00] recorderDecision="dc"
+    zz_review_behavior_rollout_test.go:37:   [S7b region-replaces-forest] placed=4 [myq-decode-2@z2-r00-n0 myq-decode-3@z2-r01-n0 myq-prefill-0@z1-r01-n0 myq-prefill-1@z1-r00-n0]
+    zz_review_behavior_rollout_test.go:38:       job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq/decode-2=z2-r00 c1/pg-myq/decode-3=z2-r01 c1/pg-myq/prefill-0=z1-r01 c1/pg-myq/prefill-1=z1-r00] recorderDecision="dc"
+    zz_review_behavior_rollout_test.go:33: ### HB2 PAA tier 2, no SubGroup policy, 4 pods
+    zz_review_behavior_rollout_test.go:37:   [off+detTies] placed=0 []
+    zz_review_behavior_rollout_test.go:38:       job.AllocatedHyperNode="" annotation="" subJobs=[] recorderDecision=""
+    zz_review_behavior_rollout_test.go:37:   [S7a forest-first] placed=4 [myq-worker-0@z2-r01-n0 myq-worker-1@z2-r00-n0 myq-worker-2@z1-r01-n0 myq-worker-3@z1-r00-n0]
+    zz_review_behavior_rollout_test.go:38:       job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq=dc] recorderDecision="dc"
+    zz_review_behavior_rollout_test.go:37:   [S7b region-replaces-forest] placed=4 [myq-worker-0@z2-r01-n0 myq-worker-1@z2-r00-n0 myq-worker-2@z1-r01-n0 myq-worker-3@z1-r00-n0]
+    zz_review_behavior_rollout_test.go:38:       job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq=dc] recorderDecision="dc"
+    zz_review_behavior_rollout_test.go:33: ### HB3 job hard tier 3 + PAA tier 2 + prefill/decode SubGroups, 4 pods
+    zz_review_behavior_rollout_test.go:37:   [off+detTies] placed=0 []
+    zz_review_behavior_rollout_test.go:38:       job.AllocatedHyperNode="" annotation="" subJobs=[] recorderDecision=""
+    zz_review_behavior_rollout_test.go:37:   [S7a forest-first] placed=4 [myq-decode-2@z2-r00-n0 myq-decode-3@z2-r01-n0 myq-prefill-0@z1-r01-n0 myq-prefill-1@z1-r00-n0]
+    zz_review_behavior_rollout_test.go:38:       job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq/decode-2=z2-r00 c1/pg-myq/decode-3=z2-r01 c1/pg-myq/prefill-0=z1-r01 c1/pg-myq/prefill-1=z1-r00] recorderDecision="dc"
+    zz_review_behavior_rollout_test.go:37:   [S7b region-replaces-forest] placed=4 [myq-decode-2@z2-r00-n0 myq-decode-3@z2-r01-n0 myq-prefill-0@z1-r01-n0 myq-prefill-1@z1-r00-n0]
+    zz_review_behavior_rollout_test.go:38:       job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq/decode-2=z2-r00 c1/pg-myq/decode-3=z2-r01 c1/pg-myq/prefill-0=z1-r01 c1/pg-myq/prefill-1=z1-r00] recorderDecision="dc"
+    zz_review_behavior_rollout_test.go:33: ### HB4 job hard tier 3 + PAA tier 2, no SubGroup policy, 4 pods
+    zz_review_behavior_rollout_test.go:37:   [off+detTies] placed=0 []
+    zz_review_behavior_rollout_test.go:38:       job.AllocatedHyperNode="" annotation="" subJobs=[] recorderDecision=""
+    zz_review_behavior_rollout_test.go:37:   [S7a forest-first] placed=4 [myq-worker-0@z2-r01-n0 myq-worker-1@z2-r00-n0 myq-worker-2@z1-r01-n0 myq-worker-3@z1-r00-n0]
+    zz_review_behavior_rollout_test.go:38:       job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq=dc] recorderDecision="dc"
+    zz_review_behavior_rollout_test.go:37:   [S7b region-replaces-forest] placed=4 [myq-worker-0@z2-r01-n0 myq-worker-1@z2-r00-n0 myq-worker-2@z1-r01-n0 myq-worker-3@z1-r00-n0]
+    zz_review_behavior_rollout_test.go:38:       job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq=dc] recorderDecision="dc"
+    zz_review_behavior_rollout_test.go:33: ### control: 2 pods fit in B alone
+    zz_review_behavior_rollout_test.go:37:   [off+detTies] placed=2 [myq-decode-1@z1-r00-n0 myq-prefill-0@z1-r01-n0]
+    zz_review_behavior_rollout_test.go:38:       job.AllocatedHyperNode="z1" annotation="z1" subJobs=[c1/pg-myq/decode-1=z1-r00 c1/pg-myq/prefill-0=z1-r01] recorderDecision="z1"
+    zz_review_behavior_rollout_test.go:37:   [S7a forest-first] placed=2 [myq-decode-1@z1-r00-n0 myq-prefill-0@z1-r01-n0]
+    zz_review_behavior_rollout_test.go:38:       job.AllocatedHyperNode="z1" annotation="z1" subJobs=[c1/pg-myq/decode-1=z1-r00 c1/pg-myq/prefill-0=z1-r01] recorderDecision="z1"
+    zz_review_behavior_rollout_test.go:37:   [S7b region-replaces-forest] placed=2 [myq-decode-1@z1-r00-n0 myq-prefill-0@z1-r01-n0]
+    zz_review_behavior_rollout_test.go:38:       job.AllocatedHyperNode="z1" annotation="z1" subJobs=[c1/pg-myq/decode-1=z1-r00 c1/pg-myq/prefill-0=z1-r01] recorderDecision="z1"
+--- PASS: TestReviewRB3RecordAfterPlacement (1.54s)
+=== RUN   TestReviewRB4SecondSession
+    zz_review_behavior_rollout_test.go:76: ### HB2-like (no SubGroups): 2 running on B1,C1 + 2 pending, minMember 4
+    zz_review_behavior_rollout_test.go:80:   [off+detTies] atOpen job.AllocatedHyperNode="dc"; newly placed=0 []
+    zz_review_behavior_rollout_test.go:81:       after: job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq=dc]
+    zz_review_behavior_rollout_test.go:82:       FitError: pod group is not ready, 2 Pending, 2 Running, 4 minAvailable; Pending: 1 Schedulable, 1 Unschedulable.
+    zz_review_behavior_rollout_test.go:80:   [S7a forest-first] atOpen job.AllocatedHyperNode="dc"; newly placed=2 [myq-worker-2@z1-r01-n0 myq-worker-3@z2-r01-n0]
+    zz_review_behavior_rollout_test.go:81:       after: job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq=dc]
+    zz_review_behavior_rollout_test.go:82:       FitError: pod group is ready, 2 Binding, 2 Running, 4 minAvailable.
+    zz_review_behavior_rollout_test.go:80:   [S7b region-replaces-forest] atOpen job.AllocatedHyperNode="dc"; newly placed=2 [myq-worker-2@z1-r01-n0 myq-worker-3@z2-r01-n0]
+    zz_review_behavior_rollout_test.go:81:       after: job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq=dc]
+    zz_review_behavior_rollout_test.go:82:       FitError: pod group is ready, 2 Binding, 2 Running, 4 minAvailable.
+    zz_review_behavior_rollout_test.go:76: ### HB1-like (prefill/decode): prefill-0 on B1, decode-2 on C1 + 2 pending
+    zz_review_behavior_rollout_test.go:80:   [off+detTies] atOpen job.AllocatedHyperNode="dc"; newly placed=2 [myq-decode-3@z2-r01-n0 myq-prefill-1@z1-r01-n0]
+    zz_review_behavior_rollout_test.go:81:       after: job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq/decode-2=z2-r00 c1/pg-myq/decode-3=z2-r01 c1/pg-myq/prefill-0=z1-r00 c1/pg-myq/prefill-1=z1-r01]
+    zz_review_behavior_rollout_test.go:82:       FitError: pod group is ready, 2 Binding, 2 Running, 4 minAvailable.
+    zz_review_behavior_rollout_test.go:80:   [S7a forest-first] atOpen job.AllocatedHyperNode="dc"; newly placed=2 [myq-decode-3@z2-r01-n0 myq-prefill-1@z1-r01-n0]
+    zz_review_behavior_rollout_test.go:81:       after: job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq/decode-2=z2-r00 c1/pg-myq/decode-3=z2-r01 c1/pg-myq/prefill-0=z1-r00 c1/pg-myq/prefill-1=z1-r01]
+    zz_review_behavior_rollout_test.go:82:       FitError: pod group is ready, 2 Binding, 2 Running, 4 minAvailable.
+    zz_review_behavior_rollout_test.go:80:   [S7b region-replaces-forest] atOpen job.AllocatedHyperNode="dc"; newly placed=2 [myq-decode-3@z2-r01-n0 myq-prefill-1@z1-r01-n0]
+    zz_review_behavior_rollout_test.go:81:       after: job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq/decode-2=z2-r00 c1/pg-myq/decode-3=z2-r01 c1/pg-myq/prefill-0=z1-r00 c1/pg-myq/prefill-1=z1-r01]
+    zz_review_behavior_rollout_test.go:82:       FitError: pod group is ready, 2 Binding, 2 Running, 4 minAvailable.
+    zz_review_behavior_rollout_test.go:76: ### HB4-like (job hard tier 3): 2 running on B1,C1 + 2 pending
+    zz_review_behavior_rollout_test.go:80:   [off+detTies] atOpen job.AllocatedHyperNode="dc"; newly placed=0 []
+    zz_review_behavior_rollout_test.go:81:       after: job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq=dc]
+    zz_review_behavior_rollout_test.go:82:       FitError: pod group is not ready, 2 Pending, 2 Running, 4 minAvailable; Pending: 1 Schedulable, 1 Unschedulable.
+    zz_review_behavior_rollout_test.go:80:   [S7a forest-first] atOpen job.AllocatedHyperNode="dc"; newly placed=2 [myq-worker-2@z1-r01-n0 myq-worker-3@z2-r01-n0]
+    zz_review_behavior_rollout_test.go:81:       after: job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq=dc]
+    zz_review_behavior_rollout_test.go:82:       FitError: pod group is ready, 2 Binding, 2 Running, 4 minAvailable.
+    zz_review_behavior_rollout_test.go:80:   [S7b region-replaces-forest] atOpen job.AllocatedHyperNode="dc"; newly placed=2 [myq-worker-2@z1-r01-n0 myq-worker-3@z2-r01-n0]
+    zz_review_behavior_rollout_test.go:81:       after: job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq=dc]
+    zz_review_behavior_rollout_test.go:82:       FitError: pod group is ready, 2 Binding, 2 Running, 4 minAvailable.
+    zz_review_behavior_rollout_test.go:76: ### excluded set changed: peer now runs in B2; target elastic (minMember 2), 2 pending
+    zz_review_behavior_rollout_test.go:80:   [off+detTies] atOpen job.AllocatedHyperNode="dc"; newly placed=1 [myq-worker-2@z2-r01-n0]
+    zz_review_behavior_rollout_test.go:81:       after: job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq=dc]
+    zz_review_behavior_rollout_test.go:82:       FitError: pod group is ready, 1 Binding, 1 Pending, 2 Running, 2 minAvailable; Pending: 1 Unschedulable.
+    zz_review_behavior_rollout_test.go:80:   [S7a forest-first] atOpen job.AllocatedHyperNode="dc"; newly placed=1 [myq-worker-2@z2-r01-n0]
+    zz_review_behavior_rollout_test.go:81:       after: job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq=dc]
+    zz_review_behavior_rollout_test.go:82:       FitError: pod group is ready, 1 Binding, 1 Pending, 2 Running, 2 minAvailable; Pending: 1 Unschedulable.
+    zz_review_behavior_rollout_test.go:80:   [S7b region-replaces-forest] atOpen job.AllocatedHyperNode="dc"; newly placed=1 [myq-worker-2@z2-r01-n0]
+    zz_review_behavior_rollout_test.go:81:       after: job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq=dc]
+    zz_review_behavior_rollout_test.go:82:       FitError: pod group is ready, 1 Binding, 1 Pending, 2 Running, 2 minAvailable; Pending: 1 Unschedulable.
+--- PASS: TestReviewRB4SecondSession (1.23s)
+=== RUN   TestReviewRB5PeerScaleUp
+    zz_review_behavior_rollout_test.go:113: [off+detTies] target atOpen AllocatedHyperNode="dc"; peer newly placed=1 [anchor-1@z0-r00-n0]; peer FitError=pod group is ready, 1 Binding, 1 Running, 1 minAvailable.
+    zz_review_behavior_rollout_test.go:113: [S7a forest-first] target atOpen AllocatedHyperNode="dc"; peer newly placed=1 [anchor-1@z0-r00-n0]; peer FitError=pod group is ready, 1 Binding, 1 Running, 1 minAvailable.
+    zz_review_behavior_rollout_test.go:113: [S7b region-replaces-forest] target atOpen AllocatedHyperNode="dc"; peer newly placed=1 [anchor-1@z0-r00-n0]; peer FitError=pod group is ready, 1 Binding, 1 Running, 1 minAvailable.
+--- PASS: TestReviewRB5PeerScaleUp (0.30s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	3.417s

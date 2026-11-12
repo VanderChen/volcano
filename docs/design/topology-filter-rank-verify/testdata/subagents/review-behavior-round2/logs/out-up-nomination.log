@@ -1,0 +1,43 @@
+=== RUN   TestReviewNominationSoundness
+    zz_review_behavior_nomination_test.go:139: ### ProbeScopeUnion=false: 480 (root, pinned, level) combinations
+    zz_review_behavior_nomination_test.go:146:   fast path agrees with both oracles everywhere
+    zz_review_behavior_nomination_test.go:139: ### ProbeScopeUnion=true: 480 (root, pinned, level) combinations
+    zz_review_behavior_nomination_test.go:149:     72    ... of which: pinned contains the excluded node, oracle counts the partly excluded container   e.g. network=false job=false subJob=false placed=false root=root pinned=cab-a sub=false
+    zz_review_behavior_nomination_test.go:149:      8    ... of which: pinned lies inside the region   e.g. network=true job=false subJob=false placed=false root=root pinned=cab-b sub=true
+    zz_review_behavior_nomination_test.go:149:      8  differs from container-intersect-region semantics (fast=false legal=true)   e.g. network=true job=false subJob=false placed=false root=root pinned=cab-b sub=true
+    zz_review_behavior_nomination_test.go:149:     80  differs from the committed test oracle (fast=false full=true)   e.g. network=false job=false subJob=false placed=false root=root pinned=cab-a sub=false
+--- PASS: TestReviewNominationSoundness (0.03s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/group-topology-affinity	0.055s
+--- FAIL: TestNominationFastPathMatchesPluginGradients (0.01s)
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=false/job=false/subJob=false/placed=false (0.00s)
+        constraints_test.go:357: root root pinned root sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=false/job=false/subJob=false/placed=true (0.00s)
+        constraints_test.go:357: root root pinned cab-a sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=false/job=false/subJob=true/placed=false (0.00s)
+        constraints_test.go:357: root root pinned cab-a sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=false/job=false/subJob=true/placed=true (0.00s)
+        constraints_test.go:357: root root pinned sn-a sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=false/job=true/subJob=false/placed=false (0.00s)
+        constraints_test.go:357: root root pinned cab-a sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=false/job=true/subJob=false/placed=true (0.00s)
+        constraints_test.go:357: root root pinned cab-a sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=false/job=true/subJob=true/placed=false (0.00s)
+        constraints_test.go:357: root root pinned root sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=false/job=true/subJob=true/placed=true (0.00s)
+        constraints_test.go:357: root root pinned cab-a sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=true/job=false/subJob=false/placed=false (0.00s)
+        constraints_test.go:357: root root pinned cab-a sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=true/job=false/subJob=false/placed=true (0.00s)
+        constraints_test.go:357: root root pinned root sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=true/job=false/subJob=true/placed=false (0.00s)
+        constraints_test.go:357: root root pinned root sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=true/job=false/subJob=true/placed=true (0.00s)
+        constraints_test.go:357: root root pinned root sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=true/job=true/subJob=false/placed=false (0.00s)
+        constraints_test.go:357: root root pinned sn-a sub=true: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=true/job=true/subJob=false/placed=true (0.00s)
+        constraints_test.go:357: root root pinned root sub=true: fast=false full=true
+FAIL
+FAIL	volcano.sh/volcano/pkg/scheduler/plugins/group-topology-affinity	0.040s
+FAIL

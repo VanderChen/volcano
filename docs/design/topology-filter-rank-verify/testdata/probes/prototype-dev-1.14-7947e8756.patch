@@ -1,0 +1,607 @@
+diff --git a/pkg/scheduler/actions/allocate/allocate.go b/pkg/scheduler/actions/allocate/allocate.go
+index 3dffed4ea..44dc8e9c9 100644
+--- a/pkg/scheduler/actions/allocate/allocate.go
++++ b/pkg/scheduler/actions/allocate/allocate.go
+@@ -19,6 +19,7 @@ package allocate
+ import (
+ 	"fmt"
+ 	"math"
++	"os"
+ 	"slices"
+ 	"sort"
+ 	"time"
+@@ -98,11 +99,22 @@ type Action struct {
+ 	enablePredicateErrorCache bool
+ 
+ 	recorder *Recorder
++
++	// PROTOTYPE (issue 004), see rank_verify.go.
++	rankThenVerify    bool // rank candidates before the dry-run, stop at the first that verifies
++	fitBound          bool // skip candidates that resources prove infeasible
++	deterministicTies bool // break score ties by name instead of rand / map order
++	trace             *DecisionTrace
+ }
+ 
+ func New() *Action {
+ 	return &Action{
+ 		enablePredicateErrorCache: true, // default to enable it
++		// PROTOTYPE (issue 004): environment switches let the unmodified test
++		// suites run against the ranked path.
++		rankThenVerify:    os.Getenv("VC_PROBE_RANK_THEN_VERIFY") == "1",
++		fitBound:          os.Getenv("VC_PROBE_FIT_BOUND") == "1",
++		deterministicTies: os.Getenv("VC_PROBE_DETERMINISTIC") == "1",
+ 	}
+ }
+ 
+@@ -397,6 +409,12 @@ func (alloc *Action) allocateForJob(job *api.JobInfo, jobWorksheet *JobWorksheet
+ 			klog.V(3).Infof("Build PodGroup anti-affinity candidate forest, job=%s, allowedRootCount=%d, allowedRootSample=%v, envelope=%s, tierLayer=%d",
+ 				job.UID, len(allowedRoots), candidateForestRootLogSample(allowedRoots), envelope.Name, gradient)
+ 		}
++		if alloc.rankThenVerify && !useCandidateForest && !job.ContainsSubJobPolicy() {
++			if stmt, done := alloc.verifyRankedForJob(job, jobWorksheet, gradient, hyperNodes, jobHyperNodeBaseline); done {
++				return stmt
++			}
++			continue
++		}
+ 		stmtBackup := make(map[string]*framework.Statement)   // backup the statement after the job is allocated to a hyperNode
+ 		jobWorksheetsBackup := make(map[string]*JobWorksheet) // backup the job worksheet after the job is allocated to a hyperNode
+ 		subJobsAllocationScores := make(map[string]float64)   // save the subJobs allocation score of the job allocated to a hyperNode
+@@ -682,6 +700,12 @@ func (alloc *Action) allocateForSubJobInCandidateForest(
+ 			resourceStats.ExcludedByReason)
+ 	}
+ 	for gradient, hyperNodes := range hyperNodeGradients {
++		if alloc.rankThenVerify {
++			if stmt, score, done := alloc.verifyRankedForSubJob(subJob, subJobWorksheet, hyperNodeForJob, allowedRoots, gradient, hyperNodes); done {
++				return stmt, score
++			}
++			continue
++		}
+ 		stmtBackup := make(map[string]*framework.Statement)         // backup the statement after the subJob is allocated to a hyperNode
+ 		subJobWorksheetsBackup := make(map[string]*SubJobWorksheet) // backup the subJob worksheet after the subJob is allocated to a hyperNode
+ 
+@@ -835,7 +859,7 @@ func (alloc *Action) selectBestHyperNodeForJob(subJobsAllocationScores map[strin
+ 	highestScore := math.Inf(-1)
+ 	bestHyperNode := ""
+ 	for hyperNode, score := range subJobsAllocationScores {
+-		if score > highestScore {
++		if score > highestScore || (alloc.deterministic() && score == highestScore && tieLess(string(job.UID), hyperNode, bestHyperNode)) {
+ 			highestScore = score
+ 			bestHyperNode = hyperNode
+ 		}
+@@ -856,6 +880,17 @@ func (alloc *Action) selectBestHyperNodeForSubJob(stmts map[string]*framework.St
+ 	}
+ 
+ 	ssn := alloc.session
++	if alloc.deterministic() {
++		candidates := make([]*api.HyperNodeInfo, 0, len(stmts))
++		for hyperNode := range stmts {
++			candidates = append(candidates, ssn.HyperNodes[hyperNode])
++		}
++		records, err := alloc.rankHyperNodes(string(subJob.UID), subJob, candidates, false)
++		if err != nil {
++			return "", 0, fmt.Errorf("prioritize hyperNodes for subJob %s fail: %w", subJob.UID, err)
++		}
++		return records[0].HyperNode, records[0].Score, nil
++	}
+ 	candidateHyperNodeGroups := make(map[string][]*api.NodeInfo)
+ 	for hyperNode := range stmts {
+ 		candidateHyperNodeGroups[hyperNode] = ssn.RealNodesList[hyperNode]
+@@ -1150,7 +1185,11 @@ func (alloc *Action) prioritizeNodes(ssn *framework.Session, task *api.TaskInfo,
+ 
+ 			bestNode = ssn.BestNodeFn(task, nodeScores)
+ 			if bestNode == nil {
+-				bestNode, higestScore = util.SelectBestNodeAndScore(nodeScores)
++				if alloc.deterministic() {
++					bestNode, higestScore = selectBestNodeDeterministic(task, nodeScores)
++				} else {
++					bestNode, higestScore = util.SelectBestNodeAndScore(nodeScores)
++				}
+ 			}
+ 		}
+ 
+diff --git a/pkg/scheduler/actions/allocate/rank_verify.go b/pkg/scheduler/actions/allocate/rank_verify.go
+new file mode 100644
+index 000000000..ec29ab724
+--- /dev/null
++++ b/pkg/scheduler/actions/allocate/rank_verify.go
+@@ -0,0 +1,480 @@
++/*
++Copyright 2026 The Volcano Authors.
++
++Licensed under the Apache License, Version 2.0 (the "License");
++you may not use this file except in compliance with the License.
++You may obtain a copy of the License at
++
++    http://www.apache.org/licenses/LICENSE-2.0
++
++Unless required by applicable law or agreed to in writing, software
++distributed under the License is distributed on an "AS IS" BASIS,
++WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++See the License for the specific language governing permissions and
++limitations under the License.
++*/
++
++package allocate
++
++// PROTOTYPE (issue 004): Filter -> Rank -> Verify for HyperNode candidates.
++// Candidates of a tier layer are ranked once, before any dry-run, and then
++// verified with the unchanged per-task pipeline in rank order. The first
++// candidate that verifies wins and its live statement is kept.
++
++import (
++	"fmt"
++	"hash/fnv"
++	"math"
++	"sort"
++	"strings"
++
++	"k8s.io/klog/v2"
++
++	"volcano.sh/volcano/pkg/scheduler/api"
++	"volcano.sh/volcano/pkg/scheduler/framework"
++)
++
++// Verdict is the outcome of one candidate in one decision.
++type Verdict string
++
++const (
++	VerdictSelected     Verdict = "selected"
++	VerdictFailedVerify Verdict = "failedVerify"
++	VerdictPruned       Verdict = "prunedByFitBound"
++	VerdictNotEvaluated Verdict = "notEvaluated"
++)
++
++// CandidateRecord is one row of a decision: where the candidate ranked, why,
++// and what happened to it.
++type CandidateRecord struct {
++	HyperNode string
++	Tier      int
++	Rank      int
++	Score     float64
++	Terms     map[string]float64
++	Verdict   Verdict
++	Reason    string
++}
++
++// DecisionRecord is one ranked search over the candidates of a tier layer.
++type DecisionRecord struct {
++	Scope      string
++	Within     string
++	Layer      int
++	Candidates []CandidateRecord
++}
++
++func (d DecisionRecord) String() string {
++	var b strings.Builder
++	fmt.Fprintf(&b, "%s within %s layer %d:", d.Scope, d.Within, d.Layer)
++	for _, c := range d.Candidates {
++		fmt.Fprintf(&b, " #%d %s(tier %d) score=%.2f %s", c.Rank, c.HyperNode, c.Tier, c.Score, c.Verdict)
++		if c.Reason != "" {
++			fmt.Fprintf(&b, "[%s]", c.Reason)
++		}
++		b.WriteString(";")
++	}
++	return b.String()
++}
++
++// Count returns how many candidates ended with each verdict.
++func (d DecisionRecord) Count() map[Verdict]int {
++	counts := map[Verdict]int{}
++	for _, c := range d.Candidates {
++		counts[c.Verdict]++
++	}
++	return counts
++}
++
++// DecisionTrace collects the decisions of one allocate execution.
++type DecisionTrace struct {
++	Records []DecisionRecord
++}
++
++func (t *DecisionTrace) add(record DecisionRecord) {
++	if t != nil {
++		t.Records = append(t.Records, record)
++	}
++}
++
++func (alloc *Action) deterministic() bool {
++	return alloc.deterministicTies || alloc.rankThenVerify
++}
++
++// tieKey orders equally scored candidates. It is a pure function of the
++// deciding scope (Job, SubJob or task UID) and the candidate name: the same
++// input always resolves the same way, while different scopes spread over the
++// tied candidates instead of all favouring the lowest name.
++func tieKey(scope, name string) uint64 {
++	h := fnv.New64a()
++	h.Write([]byte(scope))
++	h.Write([]byte{0})
++	h.Write([]byte(name))
++	return h.Sum64()
++}
++
++// tieLess reports whether candidate a precedes candidate b among equals.
++func tieLess(scope, a, b string) bool {
++	ka, kb := tieKey(scope, a), tieKey(scope, b)
++	if ka != kb {
++		return ka < kb
++	}
++	return a < b
++}
++
++// sortRanked orders records by (score desc, tie key asc) and numbers them.
++func sortRanked(scope string, records []CandidateRecord) {
++	sort.SliceStable(records, func(i, j int) bool {
++		if records[i].Score != records[j].Score {
++			return records[i].Score > records[j].Score
++		}
++		return tieLess(scope, records[i].HyperNode, records[j].HyperNode)
++	})
++	for i := range records {
++		records[i].Rank = i + 1
++	}
++}
++
++// rankHyperNodes scores candidates with the registered HyperNodeOrder plugins
++// and orders them by (score desc, tie key asc). With singleton set, every
++// candidate is scored alone, which reproduces the job-level score of the
++// exhaustive path for a Job without SubGroup policy.
++func (alloc *Action) rankHyperNodes(scope string, subJob *api.SubJobInfo, candidates []*api.HyperNodeInfo, singleton bool) ([]CandidateRecord, error) {
++	ssn := alloc.session
++	records := make([]CandidateRecord, 0, len(candidates))
++	addTerms := func(rec *CandidateRecord, perPlugin map[string]map[string]float64) {
++		plugins := make([]string, 0, len(perPlugin))
++		for plugin := range perPlugin {
++			plugins = append(plugins, plugin)
++		}
++		sort.Strings(plugins)
++		for _, plugin := range plugins {
++			score, found := perPlugin[plugin][rec.HyperNode]
++			if !found {
++				continue
++			}
++			if rec.Terms == nil {
++				rec.Terms = map[string]float64{}
++			}
++			rec.Terms[plugin] = score
++			rec.Score += score
++		}
++	}
++
++	if singleton {
++		for _, hn := range candidates {
++			perPlugin, err := ssn.HyperNodeOrderMapFn(subJob, map[string][]*api.NodeInfo{hn.Name: ssn.RealNodesList[hn.Name]})
++			if err != nil {
++				return nil, err
++			}
++			rec := CandidateRecord{HyperNode: hn.Name, Tier: hn.Tier(), Verdict: VerdictNotEvaluated}
++			addTerms(&rec, perPlugin)
++			records = append(records, rec)
++		}
++	} else {
++		groups := make(map[string][]*api.NodeInfo, len(candidates))
++		for _, hn := range candidates {
++			groups[hn.Name] = ssn.RealNodesList[hn.Name]
++		}
++		perPlugin, err := ssn.HyperNodeOrderMapFn(subJob, groups)
++		if err != nil {
++			return nil, err
++		}
++		for _, hn := range candidates {
++			rec := CandidateRecord{HyperNode: hn.Name, Tier: hn.Tier(), Verdict: VerdictNotEvaluated}
++			addTerms(&rec, perPlugin)
++			records = append(records, rec)
++		}
++	}
++
++	sortRanked(scope, records)
++	return records, nil
++}
++
++// fitUpperBound returns an upper bound on how many pending tasks of the
++// worksheet can be placed in the HyperNode by resources alone, and how many
++// must be placed for the SubJob to become ready or pipelined. placeable <
++// needed proves the candidate infeasible; the converse proves nothing.
++func (alloc *Action) fitUpperBound(job *api.JobInfo, subJob *api.SubJobInfo, worksheet *SubJobWorksheet, hyperNode string) (placeable, needed int) {
++	ssn := alloc.session
++	if job.ContainsSubJobPolicy() {
++		needed = int(subJob.MinAvailable - subJob.ReadyTaskNum() - subJob.WaitingTaskNum() - subJob.PendingBestEffortTaskNum())
++	} else {
++		needed = int(job.MinAvailable - job.ReadyTaskNum() - job.WaitingTaskNum() - job.PendingBestEffortTaskNum())
++	}
++	if needed < 1 {
++		needed = 1
++	}
++
++	type group struct {
++		initReq, req *api.Resource
++		count        int
++	}
++	groups := map[string]*group{}
++	var order []string
++	pending := worksheet.tasks.Clone()
++	for !pending.Empty() {
++		task := pending.Pop().(*api.TaskInfo)
++		key := string(task.TaskRole) + "|" + task.InitResreq.String() + "|" + task.Resreq.String()
++		g, found := groups[key]
++		if !found {
++			g = &group{initReq: task.InitResreq, req: task.Resreq}
++			groups[key] = g
++			order = append(order, key)
++		}
++		g.count++
++	}
++
++	nodes := ssn.RealNodesList[hyperNode]
++	for _, key := range order {
++		g := groups[key]
++		fit := 0
++		for _, node := range nodes {
++			fit += copiesThatFit(g.initReq, g.req, node.FutureIdle())
++			if fit >= g.count {
++				fit = g.count
++				break
++			}
++		}
++		placeable += fit
++	}
++	return placeable, needed
++}
++
++// copiesThatFit returns how many identical tasks fit on a node with the given
++// available resources, rounding in favour of fitting so the result never
++// underestimates. A task is admitted when its InitResreq fits, but the node is
++// only charged its Resreq, so the i-th copy fits when
++// initReq <= available - (i-1)*req in every dimension.
++func copiesThatFit(initReq, req, available *api.Resource) int {
++	const tolerance = 0.1
++	copies := math.MaxInt32
++	for _, name := range initReq.ResourceNames() {
++		first := initReq.Get(name)
++		if first <= tolerance {
++			continue
++		}
++		free := available.Get(name)
++		if free+tolerance < first {
++			return 0
++		}
++		step := req.Get(name)
++		if step <= tolerance {
++			continue // once the first copy fits, this dimension never runs out
++		}
++		if n := int(math.Floor((free-first+tolerance)/step)) + 1; n < copies {
++			copies = n
++		}
++	}
++	return copies
++}
++
++// verifyFailureReason summarises why the last dry-run of the SubJob failed.
++func verifyFailureReason(job *api.JobInfo, subJob *api.SubJobInfo) string {
++	names := make([]string, 0, len(subJob.Tasks))
++	byName := map[string]api.TaskID{}
++	for id, task := range subJob.Tasks {
++		names = append(names, task.Name)
++		byName[task.Name] = id
++	}
++	sort.Strings(names)
++	for _, name := range names {
++		if fitErrors := job.NodesFitErrors[byName[name]]; fitErrors != nil {
++			return fmt.Sprintf("%s: %s", name, fitErrors.Error())
++		}
++	}
++	return "gang minimum not reached"
++}
++
++// verifyRankedForSubJob is the ranked replacement for the per-layer loop of
++// allocateForSubJob. done is false when no candidate of the layer verified.
++func (alloc *Action) verifyRankedForSubJob(
++	subJob *api.SubJobInfo,
++	subJobWorksheet *SubJobWorksheet,
++	hyperNodeForJob *api.HyperNodeInfo,
++	allowedRoots []*api.HyperNodeInfo,
++	layer int,
++	hyperNodes []*api.HyperNodeInfo,
++) (stmt *framework.Statement, score float64, done bool) {
++	ssn := alloc.session
++	job := ssn.Jobs[subJob.Job]
++
++	records, err := alloc.rankHyperNodes(string(subJob.UID), subJob, hyperNodes, false)
++	if err != nil {
++		klog.ErrorS(err, "Cannot rank hyperNodes for subJob", "subJob", subJob.UID, "gradient", layer)
++		return nil, 0, true
++	}
++	byName := make(map[string]*api.HyperNodeInfo, len(hyperNodes))
++	probe := make(map[string]*framework.Statement, len(hyperNodes))
++	for _, hn := range hyperNodes {
++		byName[hn.Name] = hn
++		probe[hn.Name] = nil
++	}
++	// preferJobSoftTopologyCandidates keeps candidates inside the Job's soft
++	// domain when any of them is feasible. Ordering those candidates first
++	// gives the same winner without knowing feasibility in advance.
++	if preferred := alloc.preferJobSoftTopologyCandidates(job, subJob, probe); len(preferred) < len(probe) {
++		sort.SliceStable(records, func(i, j int) bool {
++			_, pi := preferred[records[i].HyperNode]
++			_, pj := preferred[records[j].HyperNode]
++			return pi && !pj
++		})
++		for i := range records {
++			records[i].Rank = i + 1
++		}
++	}
++	decision := DecisionRecord{Scope: "subJob " + string(subJob.UID), Within: hyperNodeForJob.Name, Layer: layer}
++	defer func() {
++		decision.Candidates = records
++		alloc.trace.add(decision)
++	}()
++
++	for i := range records {
++		rec := &records[i]
++		hyperNode := byName[rec.HyperNode]
++		if alloc.fitBound {
++			if placeable, needed := alloc.fitUpperBound(job, subJob, subJobWorksheet, hyperNode.Name); placeable < needed {
++				rec.Verdict = VerdictPruned
++				rec.Reason = fmt.Sprintf("resources fit at most %d of %d required pods", placeable, needed)
++				// Keep the reason visible in the Job's fit errors: a pruned
++				// candidate runs no predicate and would otherwise leave none.
++				if !subJobWorksheet.tasks.Empty() {
++					first := subJobWorksheet.tasks.Clone().Pop().(*api.TaskInfo)
++					fitErrors := api.NewFitErrors()
++					fitErrors.SetError(rec.Reason)
++					fitErrors.SetHyperNode(hyperNode.Name)
++					job.ResetSubJobFitErr(subJob.UID)
++					job.NodesFitErrors[first.UID] = fitErrors
++				}
++				continue
++			}
++		}
++
++		var candidateStmt *framework.Statement
++		var worksheetCopy *SubJobWorksheet
++		placementBeforeTry := captureHyperNodePlacement(job, subJob)
++		job.ResetSubJobFitErr(subJob.UID)
++		worksheetCopy = subJobWorksheet.Clone()
++		candidateStmt = alloc.allocateResourcesForTasks(subJob, worksheetCopy.tasks, hyperNode.Name)
++		restoreHyperNodePlacement(job, subJob, placementBeforeTry)
++
++		if candidateStmt == nil || len(candidateStmt.Operations()) == 0 {
++			rec.Verdict = VerdictFailedVerify
++			rec.Reason = verifyFailureReason(job, subJob)
++			continue
++		}
++
++		// The first candidate that verifies in rank order is the winner. Its
++		// statement stays live: no Discard and no RecoverOperations.
++		newAllocatedHyperNode := ssn.HyperNodes.GetLCAHyperNode(subJob.AllocatedHyperNode, hyperNode.Name)
++		subJob.AllocatedHyperNode = newAllocatedHyperNode
++		updateJobAllocatedHyperNodeFromSubJob(ssn, job, subJob, newAllocatedHyperNode)
++		subJobWorksheet.ShallowCopyFrom(worksheetCopy)
++		if len(allowedRoots) == 0 {
++			alloc.recorder.SaveSubJobDecision(subJob.Job, hyperNodeForJob.Name, subJob.UID, newAllocatedHyperNode)
++		}
++		rec.Verdict = VerdictSelected
++		return candidateStmt, rec.Score, true
++	}
++	return nil, 0, false
++}
++
++// verifyRankedForJob is the ranked replacement for the per-layer loop of
++// allocateForJob. It applies to Jobs without SubGroup policy, where the
++// job-level score of a candidate equals the HyperNode score of the default
++// SubJob and is therefore known before any dry-run.
++func (alloc *Action) verifyRankedForJob(
++	job *api.JobInfo,
++	jobWorksheet *JobWorksheet,
++	layer int,
++	hyperNodes []*api.HyperNodeInfo,
++	jobHyperNodeFitErrorBaseline string,
++) (stmt *framework.Statement, done bool) {
++	ssn := alloc.session
++	subJob := job.SubJobs[job.DefaultSubJobID()]
++
++	records, err := alloc.rankHyperNodes(string(job.UID), subJob, hyperNodes, true)
++	if err != nil {
++		klog.ErrorS(err, "Cannot rank hyperNodes for job", "job", job.UID, "gradient", layer)
++		return nil, true
++	}
++	byName := make(map[string]*api.HyperNodeInfo, len(hyperNodes))
++	for _, hn := range hyperNodes {
++		byName[hn.Name] = hn
++	}
++	decision := DecisionRecord{Scope: "job " + string(job.UID), Within: "", Layer: layer}
++	defer func() {
++		decision.Candidates = records
++		alloc.trace.add(decision)
++	}()
++
++	for i := range records {
++		rec := &records[i]
++		hyperNode := byName[rec.HyperNode]
++		var stmtList []*framework.Statement
++		var jobWorksheetCopy *JobWorksheet
++		operations := 0
++
++		job.JobFitErrors = jobHyperNodeFitErrorBaseline
++		job.ResetFitErr()
++		jobWorksheetCopy = jobWorksheet.Clone()
++		for !jobWorksheetCopy.subJobs.Empty() {
++			sj := jobWorksheetCopy.subJobs.Pop().(*api.SubJobInfo)
++			subJobWorksheet := jobWorksheetCopy.subJobWorksheets[sj.UID]
++			subJobStmt, _ := alloc.allocateForSubJob(sj, subJobWorksheet, hyperNode, jobHyperNodeFitErrorBaseline)
++			if subJobStmt != nil && len(subJobStmt.Operations()) > 0 {
++				stmtList = append(stmtList, subJobStmt)
++				operations += len(subJobStmt.Operations())
++				if !subJobWorksheet.Empty() {
++					jobWorksheetCopy.subJobs.Push(sj)
++				}
++				if ssn.JobReady(job) {
++					break
++				}
++			}
++		}
++		alloc.recorder.RecoverSubJobStatus(job)
++
++		if operations > 0 && (ssn.JobReady(job) || ssn.JobPipelined(job)) {
++			finalStmt := framework.NewStatement(ssn)
++			finalStmt.Merge(stmtList...)
++			jobWorksheet.ShallowCopyFrom(jobWorksheetCopy)
++			alloc.recorder.SaveJobDecision(job.UID, hyperNode.Name)
++			rec.Verdict = VerdictSelected
++			return finalStmt, true
++		}
++
++		rec.Verdict = VerdictFailedVerify
++		if operations == 0 {
++			rec.Reason = verifyFailureReason(job, subJob)
++		} else {
++			rec.Reason = "job neither ready nor pipelined"
++		}
++		for _, s := range stmtList {
++			s.Discard()
++		}
++	}
++	return nil, false
++}
++
++// selectBestNodeDeterministic picks the highest score and breaks ties with
++// the task-scoped tie key.
++func selectBestNodeDeterministic(task *api.TaskInfo, nodeScores map[float64][]*api.NodeInfo) (*api.NodeInfo, float64) {
++	scope := string(task.UID)
++	maxScore := math.Inf(-1)
++	var best *api.NodeInfo
++	for score, nodes := range nodeScores {
++		if len(nodes) == 0 || score < maxScore {
++			continue
++		}
++		for _, node := range nodes {
++			if score > maxScore || best == nil || tieLess(scope, node.Name, best.Name) {
++				best, maxScore = node, score
++			}
++		}
++	}
++	if best == nil {
++		return nil, 0
++	}
++	return best, maxScore
++}
+diff --git a/pkg/scheduler/framework/statement.go b/pkg/scheduler/framework/statement.go
+index 8e161ad29..23e78042a 100644
+--- a/pkg/scheduler/framework/statement.go
++++ b/pkg/scheduler/framework/statement.go
+@@ -439,6 +439,15 @@ func (s *Statement) Commit() {
+ 	}
+ }
+ 
++// Merge moves the operations of live statements of the same session into s.
++// PROTOTYPE (issue 004): backport of the upstream helper.
++func (s *Statement) Merge(stmts ...*Statement) {
++	for _, stmt := range stmts {
++		s.operations = append(s.operations, stmt.operations...)
++		stmt.operations = nil
++	}
++}
++
+ func SaveOperations(stmts ...*Statement) *Statement {
+ 	stmtTmp := &Statement{}
+ 	for _, stmt := range stmts {

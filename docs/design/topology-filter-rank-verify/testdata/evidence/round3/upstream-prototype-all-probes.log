@@ -1,0 +1,370 @@
+=== RUN   TestProbeP6ReplayWithDRA
+    feature_gate.go:170: I1111 18:53:55.451550] Warning: setting GA feature gate. It will be removed in a future release. featureGate="DynamicResourceAllocation" value=true
+    feature_gate.go:170: I1111 18:53:55.451708] Updated featureGates={"DynamicResourceAllocation":true}
+    zz_probe_baseline_dra_test.go:112: winner z0-r00 is dry-run first, z0-r01 last   placed=map[] bindCheck=failed to get Bind request in case 0(dra-replay) counters: taskAttempts=2 predicate=2 nodeOrder=0 allocate=5 deallocate=5 hyperNodeOrderCalls=2
+    zz_probe_baseline_dra_test.go:114:     fitError: pod group is not ready, 1 Pending, 1 minAvailable; Pending: 1 Unschedulable. HyperNode: 2/4 hyperNodes available: tier-3 0/1 (1 networkTopology); tier-2 0/1 (1 networkTopology); tier-1 2/2
+    feature_gate.go:170: I1111 18:53:55.760054] Warning: setting GA feature gate. It will be removed in a future release. featureGate="DynamicResourceAllocation" value=true
+    feature_gate.go:170: I1111 18:53:55.760092] Updated featureGates={"DynamicResourceAllocation":true}
+    zz_probe_baseline_dra_test.go:112: winner z0-r01 is dry-run last                 placed=map[job-p00:z0-r01-n0(Binding)] bindCheck=<nil> counters: taskAttempts=2 predicate=2 nodeOrder=0 allocate=5 deallocate=4 hyperNodeOrderCalls=2
+    feature_gate.go:170: I1111 18:53:56.084399] Warning: setting GA feature gate. It will be removed in a future release. featureGate="DynamicResourceAllocation" value=true
+    feature_gate.go:170: I1111 18:53:56.084505] Updated featureGates={"DynamicResourceAllocation":true}
+    feature_gate.go:170: I1111 18:53:56.084556] Warning: setting GA feature gate. It will be removed in a future release. featureGate="DynamicResourceAllocation" value=true
+    feature_gate.go:170: I1111 18:53:56.084587] Updated featureGates={"DynamicResourceAllocation":true}
+--- PASS: TestProbeP6ReplayWithDRA (0.63s)
+=== RUN   TestProbeP1FanOut
+    zz_probe_baseline_test.go:34: | racks | predicate | nodeOrder | allocate | deallocate | hyperNodeOrder calls | allocate / task |
+    zz_probe_baseline_test.go:35: |---|---|---|---|---|---|---|
+    zz_probe_baseline_test.go:49: | 1 | 10 | 9 | 12 | 8 | 1 | 3.0 |
+    zz_probe_baseline_test.go:49: | 2 | 20 | 18 | 20 | 16 | 2 | 5.0 |
+    zz_probe_baseline_test.go:49: | 4 | 40 | 36 | 36 | 32 | 4 | 9.0 |
+    zz_probe_baseline_test.go:49: | 8 | 80 | 72 | 68 | 64 | 8 | 17.0 |
+    zz_probe_baseline_test.go:49: | 16 | 160 | 144 | 132 | 128 | 16 | 33.0 |
+    zz_probe_baseline_test.go:49: | 32 | 320 | 288 | 260 | 256 | 32 | 65.0 |
+--- PASS: TestProbeP1FanOut (0.04s)
+=== RUN   TestProbeP1cNestedFanOut
+    zz_probe_baseline_test.go:58: | zones x racks | predicate | allocate | deallocate | hyperNodeOrder calls | allocate / task |
+    zz_probe_baseline_test.go:59: |---|---|---|---|---|---|
+    zz_probe_baseline_test.go:79: | 1x2 | 15 | 22 | 18 | 4 | 5.5 |
+    zz_probe_baseline_test.go:79: | 2x2 | 30 | 40 | 36 | 8 | 10.0 |
+    zz_probe_baseline_test.go:79: | 2x4 | 66 | 72 | 68 | 12 | 18.0 |
+    zz_probe_baseline_test.go:79: | 4x4 | 132 | 140 | 136 | 24 | 35.0 |
+    zz_probe_baseline_test.go:79: | 4x8 | 276 | 268 | 264 | 40 | 67.0 |
+--- PASS: TestProbeP1cNestedFanOut (0.04s)
+=== RUN   TestProbeP2ScoreKnownBeforeDryRun
+    zz_probe_baseline_test.go:133: rack=z0-r00 preScore(all-cohort)=50.00 preScore(singleton)=50.00
+    zz_probe_baseline_test.go:133: rack=z0-r01 preScore(all-cohort)=62.50 preScore(singleton)=62.50
+    zz_probe_baseline_test.go:133: rack=z0-r02 preScore(all-cohort)=75.00 preScore(singleton)=75.00
+    zz_probe_baseline_test.go:133: rack=z0-r03 preScore(all-cohort)=87.50 preScore(singleton)=87.50
+    zz_probe_baseline_test.go:133: rack=z0-r04 preScore(all-cohort)=100.00 preScore(singleton)=100.00
+    zz_probe_baseline_test.go:133: rack=z0-r05 preScore(all-cohort)=50.00 preScore(singleton)=50.00
+    zz_probe_baseline_test.go:142: chosen=[z0-r04] argmax(preScore)=z0-r04 counters: taskAttempts=24 predicate=79 nodeOrder=77 allocate=52 deallocate=48 hyperNodeOrderCalls=6
+    zz_probe_baseline_test.go:155: HyperNodeOrderFn cohort sizes (size -> calls): map[1:6]
+--- PASS: TestProbeP2ScoreKnownBeforeDryRun (0.00s)
+=== RUN   TestProbeP3TieBreakDeterminism
+    zz_probe_baseline_test.go:170: identical racks, 40 sessions, chosen rack histogram: map[z0-r00:29 z0-r01:4 z0-r02:2 z0-r03:5] (distinct=4)
+--- PASS: TestProbeP3TieBreakDeterminism (0.09s)
+=== RUN   TestProbeP4NodePreferenceAcrossDomains
+    zz_probe_baseline_test.go:218: all preferred nodes are in z0-r01; nodeorder nodeaffinity.weight=100
+    zz_probe_baseline_test.go:219: (a) racks otherwise identical      -> chosen rack histogram over 40 sessions: map[z0-r00:32 z0-r01:8]
+    zz_probe_baseline_test.go:220: (b) z0-r00 half used (binpack win) -> chosen rack histogram over 40 sessions: map[z0-r00:40]
+--- PASS: TestProbeP4NodePreferenceAcrossDomains (0.17s)
+=== RUN   TestProbeP5FailureExplanation
+    zz_probe_baseline_test.go:257: JobFitErrors: 2/5 hyperNodes available (minResource: cpu 16000.00, memory 2147483648.00): tier-3 0/1 (1 networkTopology); tier-2 0/1 (1 networkTopology); tier-1 2/3 (1 minResource)
+    zz_probe_baseline_test.go:258: FitError():   pod group is not ready, 2 Pending, 2 minAvailable; Pending: 2 Unschedulable. HyperNode: 2/5 hyperNodes available (minResource: cpu 16000.00, memory 2147483648.00): tier-3 0/1 (1 networkTopology); tier-2 0/1 (1 networkTopology); tier-1 2/3 (1 minResource); Node: job-p00: In hyperNode z0-r02: 0/4 nodes are unavailable: 4 Insufficient cpu.
+    zz_probe_baseline_test.go:265: NodesFitErrors[job-p00]: In hyperNode z0-r02: 0/4 nodes are unavailable: 4 Insufficient cpu.
+    zz_probe_baseline_test.go:267: counters: taskAttempts=2 predicate=0 nodeOrder=0 allocate=0 deallocate=0 hyperNodeOrderCalls=0
+--- PASS: TestProbeP5FailureExplanation (0.00s)
+=== RUN   TestProbeHBAllowedUnion
+    zz_probe_history_test.go:183: | variant | legal placement exists | placed | nodes | status |
+    zz_probe_history_test.go:184: |---|---|---|---|---|
+    zz_probe_history_test.go:194: | HB1 reported bug: PAA tier 2 + prefill/decode SubGroups hard tier 1, 4 pods | true | 0/4 |  | FALSE NEGATIVE; pod group is not ready, 4 Pending, 4 minAvailable; Pending: 2 Schedulable, 2 Unschedulable. |
+    zz_probe_history_test.go:194: | HB2 PAA tier 2, no SubGroup policy, 4 pods | true | 0/4 |  | FALSE NEGATIVE; pod group is not ready, 4 Pending, 4 minAvailable; Pending: 4 Unschedulable. |
+    zz_probe_history_test.go:194: | HB3 job hard tier 3 + PAA tier 2 + prefill/decode SubGroups, 4 pods | true | 0/4 |  | FALSE NEGATIVE; pod group is not ready, 4 Pending, 4 minAvailable; Pending: 2 Schedulable, 2 Unschedulable. |
+    zz_probe_history_test.go:194: | HB4 job hard tier 3 + PAA tier 2, no SubGroup policy, 4 pods | true | 0/4 |  | FALSE NEGATIVE; pod group is not ready, 4 Pending, 4 minAvailable; Pending: 4 Unschedulable. |
+    zz_probe_history_test.go:194: | HB5 PAA tier 2 + SubGroups of 2 pods hard tier 2, 4 pods | true | 0/4 |  | FALSE NEGATIVE; pod group is not ready, 4 Pending, 4 minAvailable; Pending: 2 Schedulable, 2 Unschedulable. |
+    zz_probe_history_test.go:194: | HB6 job soft tier 2 + PAA tier 2 + prefill/decode SubGroups, 4 pods | true | 0/4 |  | FALSE NEGATIVE; pod group is not ready, 4 Pending, 4 minAvailable; Pending: 2 Schedulable, 2 Unschedulable. |
+    zz_probe_history_test.go:194: | control: 2 pods fit in B alone | true | 2/2 | z2-r00-n0 z2-r01-n0 | ok; pod group is ready, 2 Binding, 2 minAvailable. |
+    zz_probe_history_test.go:194: | control: no PAA, 4 pods | true | 4/4 | z0-r00-n0 z0-r01-n0 z2-r00-n0 z2-r01-n0 | ok; pod group is ready, 4 Binding, 4 minAvailable. |
+    zz_probe_history_test.go:194: | control: job hard tier 2 + PAA, 4 pods need two tier-2 domains | false | 0/4 |  | ok; pod group is not ready, 4 Pending, 4 minAvailable; Pending: 2 Schedulable, 2 Unschedulable. |
+    zz_probe_history_test.go:194: | control: PAA, 5 pods but only 4 nodes outside A | false | 0/5 |  | ok; pod group is not ready, 5 Pending, 5 minAvailable; Pending: 5 Unschedulable. |
+--- PASS: TestProbeHBAllowedUnion (0.03s)
+=== RUN   TestProbeHCCrossSubJobContention
+    zz_probe_history_test.go:236: flexible SubJob first=true  placed 0/2 map[]; pod group is not ready, 2 Pending, 2 minAvailable; Pending: 1 Schedulable, 1 Unschedulable.
+    zz_probe_history_test.go:236: flexible SubJob first=false placed 2/2 map[job-flexible:z0-r01-n0 job-pinned:z0-r00-n0]; pod group is ready, 2 Binding, 2 minAvailable.
+--- PASS: TestProbeHCCrossSubJobContention (0.00s)
+=== RUN   TestProtoQ8ReplayWithDRA
+    feature_gate.go:170: I1111 18:53:56.466934] Warning: setting GA feature gate. It will be removed in a future release. featureGate="DynamicResourceAllocation" value=true
+    feature_gate.go:170: I1111 18:53:56.466977] Updated featureGates={"DynamicResourceAllocation":true}
+    zz_probe_prototype_dra_test.go:16: winner z0-r00 is dry-run first, z0-r01 last   mode=exhaustive placed=map[] bindCheck=failed to get Bind request in case 0(dra-replay) counters: taskAttempts=2 predicate=2 nodeOrder=0 allocate=5 deallocate=5 hyperNodeOrderCalls=2
+    feature_gate.go:170: I1111 18:53:56.770254] Warning: setting GA feature gate. It will be removed in a future release. featureGate="DynamicResourceAllocation" value=true
+    feature_gate.go:170: I1111 18:53:56.770309] Updated featureGates={"DynamicResourceAllocation":true}
+    zz_probe_prototype_dra_test.go:16: winner z0-r00 is dry-run first, z0-r01 last   mode=ranked     placed=map[job-p00:z0-r00-n0(Binding)] bindCheck=<nil> counters: taskAttempts=1 predicate=1 nodeOrder=0 allocate=1 deallocate=0 hyperNodeOrderCalls=3
+    feature_gate.go:170: I1111 18:53:57.092966] Warning: setting GA feature gate. It will be removed in a future release. featureGate="DynamicResourceAllocation" value=true
+    feature_gate.go:170: I1111 18:53:57.093009] Updated featureGates={"DynamicResourceAllocation":true}
+    zz_probe_prototype_dra_test.go:16: winner z0-r01 is dry-run last                 mode=exhaustive placed=map[job-p00:z0-r01-n0(Binding)] bindCheck=<nil> counters: taskAttempts=2 predicate=2 nodeOrder=0 allocate=5 deallocate=4 hyperNodeOrderCalls=2
+    feature_gate.go:170: I1111 18:53:57.415620] Warning: setting GA feature gate. It will be removed in a future release. featureGate="DynamicResourceAllocation" value=true
+    feature_gate.go:170: I1111 18:53:57.415664] Updated featureGates={"DynamicResourceAllocation":true}
+    zz_probe_prototype_dra_test.go:16: winner z0-r01 is dry-run last                 mode=ranked     placed=map[job-p00:z0-r01-n0(Binding)] bindCheck=<nil> counters: taskAttempts=1 predicate=1 nodeOrder=0 allocate=1 deallocate=0 hyperNodeOrderCalls=3
+    feature_gate.go:170: I1111 18:53:57.738623] Warning: setting GA feature gate. It will be removed in a future release. featureGate="DynamicResourceAllocation" value=true
+    feature_gate.go:170: I1111 18:53:57.738752] Updated featureGates={"DynamicResourceAllocation":true}
+    feature_gate.go:170: I1111 18:53:57.738817] Warning: setting GA feature gate. It will be removed in a future release. featureGate="DynamicResourceAllocation" value=true
+    feature_gate.go:170: I1111 18:53:57.738847] Updated featureGates={"DynamicResourceAllocation":true}
+    feature_gate.go:170: I1111 18:53:57.738906] Warning: setting GA feature gate. It will be removed in a future release. featureGate="DynamicResourceAllocation" value=true
+    feature_gate.go:170: I1111 18:53:57.738927] Updated featureGates={"DynamicResourceAllocation":true}
+    feature_gate.go:170: I1111 18:53:57.738992] Warning: setting GA feature gate. It will be removed in a future release. featureGate="DynamicResourceAllocation" value=true
+    feature_gate.go:170: I1111 18:53:57.739015] Updated featureGates={"DynamicResourceAllocation":true}
+--- PASS: TestProtoQ8ReplayWithDRA (1.27s)
+=== RUN   TestProtoQ5NodePreferenceTerm
+    zz_probe_prototype_ext_test.go:80: identical racks, term off                               -> z0-r00 | #1 z0-r00 total=50.0 terms=map[network-topology-aware:50] selected; #2 z0-r01 total=50.0 terms=map[network-topology-aware:50] notEvaluated
+    zz_probe_prototype_ext_test.go:80: identical racks, term on                                -> z0-r01 | #1 z0-r01 total=550.0 terms=map[network-topology-aware:50 node-preference:500] selected; #2 z0-r00 total=350.0 terms=map[network-topology-aware:50 node-preference:300] notEvaluated
+    zz_probe_prototype_ext_test.go:80: z0-r00 half used (binpack 100 vs 50), term off          -> z0-r00 | #1 z0-r00 total=100.0 terms=map[network-topology-aware:100] selected; #2 z0-r01 total=50.0 terms=map[network-topology-aware:50] notEvaluated
+    zz_probe_prototype_ext_test.go:80: z0-r00 half used (binpack 100 vs 50), term weight 1     -> z0-r01 | #1 z0-r01 total=550.0 terms=map[network-topology-aware:50 node-preference:500] selected; #2 z0-r00 total=400.0 terms=map[network-topology-aware:100 node-preference:300] notEvaluated
+    zz_probe_prototype_ext_test.go:80: z0-r00 half used (binpack 100 vs 50), term weight 0.1   -> z0-r00 | #1 z0-r00 total=130.0 terms=map[network-topology-aware:100 node-preference:30] selected; #2 z0-r01 total=100.0 terms=map[network-topology-aware:50 node-preference:50] notEvaluated
+--- PASS: TestProtoQ5NodePreferenceTerm (0.01s)
+=== RUN   TestProtoQ7SubGroupTopK
+    zz_probe_prototype_ext_test.go:93: | job-level search for SubGroup jobs | scenarios with a different placement | scenarios placing fewer pods | task attempts | allocate events |
+    zz_probe_prototype_ext_test.go:94: |---|---|---|---|---|
+    zz_probe_prototype_ext_test.go:120: | exhaustive (today's rule) | 0 / 400 | 0 | 9937 | 9951 |
+    zz_probe_prototype_ext_test.go:120: | estimate, verify top 1 | 18 / 400 | 1 | 6328 | 6422 |
+    zz_probe_prototype_ext_test.go:120: | estimate, verify top 2 | 3 / 400 | 0 | 7295 | 7343 |
+    zz_probe_prototype_ext_test.go:120: | estimate, verify top 3 | 0 / 400 | 0 | 7979 | 8015 |
+--- PASS: TestProtoQ7SubGroupTopK (7.10s)
+=== RUN   TestProtoQ1FanOut
+    zz_probe_prototype_test.go:51: | racks | mode | predicate | nodeOrder | allocate | deallocate | hyperNodeOrder calls |
+    zz_probe_prototype_test.go:52: |---|---|---|---|---|---|---|
+    zz_probe_prototype_test.go:64: | 1 | exhaustive | 10 | 9 | 12 | 8 | 1 |
+    zz_probe_prototype_test.go:64: | 1 | ranked | 10 | 9 | 4 | 0 | 2 |
+    zz_probe_prototype_test.go:64: | 4 | exhaustive | 40 | 36 | 36 | 32 | 4 |
+    zz_probe_prototype_test.go:64: | 4 | ranked | 10 | 9 | 4 | 0 | 5 |
+    zz_probe_prototype_test.go:64: | 16 | exhaustive | 160 | 144 | 132 | 128 | 16 |
+    zz_probe_prototype_test.go:64: | 16 | ranked | 10 | 9 | 4 | 0 | 17 |
+    zz_probe_prototype_test.go:64: | 32 | exhaustive | 320 | 288 | 260 | 256 | 32 |
+    zz_probe_prototype_test.go:64: | 32 | ranked | 10 | 9 | 4 | 0 | 33 |
+--- PASS: TestProtoQ1FanOut (0.03s)
+=== RUN   TestProtoQ1cNestedFanOut
+    zz_probe_prototype_test.go:75: | zones x racks | mode | predicate | allocate | deallocate | hyperNodeOrder calls |
+    zz_probe_prototype_test.go:76: |---|---|---|---|---|---|
+    zz_probe_prototype_test.go:97: | 2x4 | exhaustive | 66 | 72 | 68 | 12 |
+    zz_probe_prototype_test.go:97: | 2x4 | ranked | 36 | 28 | 24 | 12 |
+    zz_probe_prototype_test.go:97: | 4x8 | exhaustive | 276 | 268 | 264 | 40 |
+    zz_probe_prototype_test.go:97: | 4x8 | ranked | 120 | 84 | 80 | 40 |
+--- PASS: TestProtoQ1cNestedFanOut (0.03s)
+=== RUN   TestProtoQ3Determinism
+    zz_probe_prototype_test.go:119: ranked, identical racks, 40 sessions: map[job-p00@z0-r02-n0,job-p01@z0-r02-n1:40]
+--- PASS: TestProtoQ3Determinism (0.06s)
+=== RUN   TestProtoQ4Trace
+=== RUN   TestProtoQ4Trace/nothing_fits
+    zz_probe_prototype_test.go:193: subJob c1/job within z0-r02 layer 0: #1 z0-r02(tier 1) score=54.69 prunedByFitBound[resources fit at most 0 of 2 required pods];
+    zz_probe_prototype_test.go:193: subJob c1/job within z0-r00 layer 0: #1 z0-r00(tier 1) score=26.56 failedVerify[job-p00: In hyperNode z0-r00: 0/4 nodes are unavailable: 4 node(s) had untolerated taint(s).];
+    zz_probe_prototype_test.go:193: job c1/job within  layer 0: #1 z0-r02(tier 1) score=54.69 failedVerify[job-p00: resources fit at most 0 of 2 required pods]; #2 z0-r00(tier 1) score=26.56 failedVerify[job-p00: In hyperNode z0-r00: 0/4 nodes are unavailable: 4 node(s) had untolerated taint(s).]; #3 z0-r01(tier 1) score=0.00 failedVerify[gang minimum not reached];
+=== RUN   TestProtoQ4Trace/best_ranked_rack_fails_verification
+    zz_probe_prototype_test.go:218: subJob c1/job within z0-r04 layer 0: #1 z0-r04(tier 1) score=100.00 failedVerify[job-p00: In hyperNode z0-r04: 0/4 nodes are unavailable: 4 node(s) had untolerated taint(s).];
+    zz_probe_prototype_test.go:218: subJob c1/job within z0-r03 layer 0: #1 z0-r03(tier 1) score=87.50 selected;
+    zz_probe_prototype_test.go:218: job c1/job within  layer 0: #1 z0-r04(tier 1) score=100.00 failedVerify[job-p00: In hyperNode z0-r04: 0/4 nodes are unavailable: 4 node(s) had untolerated taint(s).]; #2 z0-r03(tier 1) score=87.50 selected; #3 z0-r02(tier 1) score=75.00 notEvaluated; #4 z0-r01(tier 1) score=62.50 notEvaluated; #5 z0-r00(tier 1) score=50.00 notEvaluated; #6 z0-r05(tier 1) score=50.00 notEvaluated;
+    zz_probe_prototype_test.go:224: counters: taskAttempts=5 predicate=11 nodeOrder=11 allocate=4 deallocate=0 hyperNodeOrderCalls=8
+--- PASS: TestProtoQ4Trace (0.00s)
+    --- PASS: TestProtoQ4Trace/nothing_fits (0.00s)
+    --- PASS: TestProtoQ4Trace/best_ranked_rack_fails_verification (0.00s)
+=== RUN   TestProtoQ10FitBoundWithInitContainers
+    zz_probe_prototype_test.go:263: with predicates: largest gang the exhaustive path places on four 3-CPU nodes (init 2 CPU, app 0.5 CPU) is below 5
+    zz_probe_prototype_test.go:263: without predicates: largest gang the exhaustive path places on four 3-CPU nodes (init 2 CPU, app 0.5 CPU) is below 5
+--- PASS: TestProtoQ10FitBoundWithInitContainers (0.03s)
+=== RUN   TestProtoQ11TieKeySpreads
+    zz_probe_prototype_test.go:294: 20 single-pod jobs without topology, 8 identical nodes, no node scoring: pods per node = map[z0-r00-n0:2 z0-r00-n1:2 z0-r00-n2:3 z0-r00-n3:2 z0-r00-n4:3 z0-r00-n5:3 z0-r00-n6:2 z0-r00-n7:3]
+--- PASS: TestProtoQ11TieKeySpreads (0.01s)
+=== RUN   TestProtoQ6FailureAndUpperLayerPaths
+    zz_probe_prototype_test.go:305: | scenario | mode | task attempts | allocate | deallocate | placed |
+    zz_probe_prototype_test.go:306: |---|---|---|---|---|---|
+    zz_probe_prototype_test.go:348: | nothing fits: 16 fragmented racks, job 2x8cpu hard tier 1 | exhaustive+detTies | 16 | 0 | 0 | 0 |
+    zz_probe_prototype_test.go:348: | nothing fits: 16 fragmented racks, job 2x8cpu hard tier 1 | ranked | 16 | 0 | 0 | 0 |
+    zz_probe_prototype_test.go:348: | nothing fits: 16 fragmented racks, job 2x8cpu hard tier 1 | ranked+fitBound | 0 | 0 | 0 | 0 |
+    zz_probe_prototype_test.go:348: | fits only one tier up: 2 zones x 8 racks, job 4x8cpu hard tier 2 | exhaustive+detTies | 8 | 20 | 16 | 4 |
+    zz_probe_prototype_test.go:348: | fits only one tier up: 2 zones x 8 racks, job 4x8cpu hard tier 2 | ranked | 4 | 4 | 0 | 4 |
+    zz_probe_prototype_test.go:348: | fits only one tier up: 2 zones x 8 racks, job 4x8cpu hard tier 2 | ranked+fitBound | 4 | 4 | 0 | 4 |
+--- PASS: TestProtoQ6FailureAndUpperLayerPaths (0.02s)
+=== RUN   TestProtoQ2DifferentialRandom
+    zz_probe_prototype_test.go:535: 400 random scenarios (393 placed at least one pod)
+    zz_probe_prototype_test.go:538:   exhaustive+detTies   taskAttempts=16962 allocate=32793 deallocate=29619 predicate=40402 placement mismatches vs exhaustive=0
+    zz_probe_prototype_test.go:538:   ranked               taskAttempts=9937 allocate=9951 deallocate=6777 predicate=22406 placement mismatches vs exhaustive=0
+    zz_probe_prototype_test.go:538:   ranked+fitBound      taskAttempts=8912 allocate=9447 deallocate=6273 predicate=21694 placement mismatches vs exhaustive=0
+--- PASS: TestProtoQ2DifferentialRandom (7.16s)
+=== RUN   TestProtoQ2bDifferentialRandomWithSoft
+    zz_probe_prototype_test.go:535: 300 random scenarios (297 placed at least one pod)
+    zz_probe_prototype_test.go:538:   exhaustive+detTies   taskAttempts=12327 allocate=24208 deallocate=21806 predicate=30024 placement mismatches vs exhaustive=0
+    zz_probe_prototype_test.go:538:   ranked               taskAttempts=6343 allocate=6240 deallocate=3838 predicate=14199 placement mismatches vs exhaustive=0
+    zz_probe_prototype_test.go:538:   ranked+fitBound      taskAttempts=5526 allocate=5792 deallocate=3390 predicate=13507 placement mismatches vs exhaustive=0
+--- PASS: TestProtoQ2bDifferentialRandomWithSoft (5.03s)
+=== RUN   TestProto2R4OracleGap
+    zz_probe_round2_oracle_test.go:332: 1200 single-job scenarios; oracle: 982 have a legal placement (479 of them with Job-level hard topology)
+    zz_probe_round2_oracle_test.go:333: | configuration | scheduled | missed (of them: mixed task sizes) | wider tier than needed | lost vs current | placed differently vs current | repair attempts | budget exhausted | task attempts, current schedules | task attempts, current fails |
+    zz_probe_round2_oracle_test.go:334: |---|---|---|---|---|---|---|---|---|---|
+    zz_probe_round2_oracle_test.go:337: | current search | 943 | 39 (4) | 12 | 0 | 0 | 0 | 0 | 17900 | 6287 |
+    zz_probe_round2_oracle_test.go:337: | ranked (round 1) | 943 | 39 (4) | 12 | 0 | 0 | 0 | 0 | 13966 | 4675 |
+    zz_probe_round2_oracle_test.go:337: | ranked + region | 957 | 25 (4) | 12 | 0 | 0 | 0 | 0 | 13966 | 5296 |
+    zz_probe_round2_oracle_test.go:337: | ranked + region + repair(1) | 974 | 8 (4) | 12 | 0 | 0 | 203 | 63 | 13966 | 5986 |
+    zz_probe_round2_oracle_test.go:337: | ranked + region + repair(1, widest first) | 976 | 6 (4) | 12 | 0 | 0 | 186 | 61 | 13966 | 6041 |
+    zz_probe_round2_oracle_test.go:337: | ranked + region + repair(2) | 976 | 6 (4) | 12 | 0 | 0 | 268 | 58 | 13966 | 6357 |
+    zz_probe_round2_oracle_test.go:337: | ranked + region + repair(2, reserve) | 977 | 5 (4) | 12 | 0 | 0 | 266 | 57 | 13966 | 6411 |
+    zz_probe_round2_oracle_test.go:337: | ranked + region + repair(4) | 976 | 6 (4) | 12 | 0 | 0 | 364 | 36 | 13966 | 6912 |
+    zz_probe_round2_oracle_test.go:337: | ranked + region + repair(4, reserve) | 978 | 4 (4) | 12 | 0 | 0 | 363 | 34 | 13966 | 6937 |
+    zz_probe_round2_oracle_test.go:337: | ranked + region + repair(8) | 978 | 4 (4) | 12 | 0 | 0 | 448 | 5 | 13966 | 7526 |
+    zz_probe_round2_oracle_test.go:337: | ranked + region + repair(8, reserve) | 978 | 4 (4) | 12 | 0 | 0 | 448 | 5 | 13966 | 7526 |
+    zz_probe_round2_oracle_test.go:337: | ranked + region + repair(32) | 978 | 4 (4) | 12 | 0 | 0 | 457 | 0 | 13966 | 7587 |
+    zz_probe_round2_oracle_test.go:337: | ranked + region + repair(8, per layer) | 978 | 4 (4) | 2 | 0 | 17 | 725 | 30 | 14492 | 8227 |
+    zz_probe_round2_oracle_test.go:341: still missed with budget 32: seed 709 (topo 3x2x1; anchor in z2; job hard tier 2; plain 4 x 4cpu; mixed sizes=true): pod group is not ready, 4 Pending, 4 minAvailable; Pending: 1 Unschedulable, 3 Schedulable.
+    zz_probe_round2_oracle_test.go:341: still missed with budget 32: seed 836 (topo 2x2x2; plain 5 x 8cpu; mixed sizes=true): pod group is not ready, 5 Pending, 5 minAvailable; Pending: 1 Unschedulable, 4 Schedulable. Node: job-plain-p4: 0/8 nodes are unavailable: 8 Insufficient cpu.
+    zz_probe_round2_oracle_test.go:341: still missed with budget 32: seed 924 (topo 2x3x1; anchor in z1; required PAA tier 2; job hard tier 2; plain 3 x 2cpu; mixed sizes=true): pod group is not ready, 3 Pending, 3 minAvailable; Pending: 1 Unschedulable, 2 Schedulable.
+    zz_probe_round2_oracle_test.go:341: still missed with budget 32: seed 1054 (topo 2x2x1; anchor in z1; required PAA tier 2; job hard tier 2; plain 4 x 4cpu; mixed sizes=true): pod group is not ready, 4 Pending, 4 minAvailable; Pending: 1 Unschedulable, 3 Schedulable.
+--- PASS: TestProto2R4OracleGap (49.60s)
+=== RUN   TestProto2R5ContentionOracleGap
+    zz_probe_round2_oracle_test.go:476: 1000 contention scenarios; oracle: 410 have a legal placement
+    zz_probe_round2_oracle_test.go:477: | configuration | scheduled | missed | wider tier than needed | lost vs current | placed differently vs current | repair attempts | budget exhausted | task attempts, current schedules | task attempts, current fails |
+    zz_probe_round2_oracle_test.go:478: |---|---|---|---|---|---|---|---|---|---|
+    zz_probe_round2_oracle_test.go:481: | current search | 390 | 20 | 2 | 0 | 0 | 0 | 0 | 23211 | 31959 |
+    zz_probe_round2_oracle_test.go:481: | ranked (round 1) | 390 | 20 | 2 | 0 | 0 | 0 | 0 | 13613 | 16790 |
+    zz_probe_round2_oracle_test.go:481: | ranked + repair(1) | 401 | 9 | 2 | 0 | 0 | 445 | 141 | 13613 | 18214 |
+    zz_probe_round2_oracle_test.go:481: | ranked + repair(1, widest first) | 403 | 7 | 2 | 0 | 0 | 438 | 139 | 13613 | 18322 |
+    zz_probe_round2_oracle_test.go:481: | ranked + repair(2) | 405 | 5 | 2 | 0 | 0 | 592 | 121 | 13613 | 19245 |
+    zz_probe_round2_oracle_test.go:481: | ranked + repair(2, reserve) | 408 | 2 | 2 | 0 | 0 | 586 | 120 | 13613 | 19286 |
+    zz_probe_round2_oracle_test.go:481: | ranked + repair(4, reserve) | 409 | 1 | 2 | 0 | 0 | 805 | 70 | 13613 | 20940 |
+    zz_probe_round2_oracle_test.go:481: | ranked + repair(8, reserve) | 409 | 1 | 2 | 0 | 0 | 1004 | 22 | 13613 | 22679 |
+    zz_probe_round2_oracle_test.go:481: | ranked + region | 390 | 20 | 2 | 0 | 0 | 0 | 0 | 13613 | 16790 |
+    zz_probe_round2_oracle_test.go:481: | ranked + region + repair(4, reserve) | 409 | 1 | 2 | 0 | 0 | 805 | 70 | 13613 | 20940 |
+    zz_probe_round2_oracle_test.go:481: | ranked + region + repair(8, reserve) | 409 | 1 | 2 | 0 | 0 | 1004 | 22 | 13613 | 22679 |
+    zz_probe_round2_oracle_test.go:481: | ranked + repair(64) | 410 | 0 | 2 | 0 | 0 | 1104 | 0 | 13613 | 23760 |
+    zz_probe_round2_oracle_test.go:481: | ranked + repair(8, per layer) | 409 | 1 | 0 | 0 | 16 | 1537 | 73 | 15541 | 23624 |
+--- PASS: TestProto2R5ContentionOracleGap (64.19s)
+=== RUN   TestProto2R6MultiJobSession
+    zz_probe_round2_oracle_test.go:642: 600 sessions with 1496 pending Jobs in total
+    zz_probe_round2_oracle_test.go:643: | configuration | Jobs scheduled | pods scheduled | Jobs gained vs current | Jobs displaced vs current | sessions with more Jobs | sessions with fewer Jobs | sessions with a swap |
+    zz_probe_round2_oracle_test.go:644: |---|---|---|---|---|---|---|---|
+    zz_probe_round2_oracle_test.go:647: | current search | 1049 | 4066 | 0 | 0 | 0 | 0 | 0 |
+    zz_probe_round2_oracle_test.go:647: | ranked (round 1) | 1049 | 4066 | 0 | 0 | 0 | 0 | 0 |
+    zz_probe_round2_oracle_test.go:647: | ranked + region | 1068 | 4156 | 19 | 0 | 19 | 0 | 0 |
+    zz_probe_round2_oracle_test.go:647: | ranked + region + repair(4, reserve) | 1078 | 4209 | 36 | 7 | 29 | 0 | 7 |
+    zz_probe_round2_oracle_test.go:650: displacement example: seed 52 ranked + region + repair(4, reserve): displaced 1, gained 1 (topo 2x3x1; anchor in z0; ja: PAA, p0: 1x1x8cpu tier 2 pinned=false, p1: 1x2x4cpu tier 2 pinned=false | jb: PAA, hard tier 3, p0: 1x1x8cpu tier 1 pinned=true, p1: 2x2x8cpu tier 1 pinned=false | jc: PAA, hard tier 2, plain 5 x 2cpu)
+    zz_probe_round2_oracle_test.go:650: displacement example: seed 200 ranked + region + repair(4, reserve): displaced 1, gained 1 (topo 2x2x1; anchor in z0; ja: p0: 1x2x2cpu tier 1 pinned=true, p1: 2x2x8cpu tier 1 pinned=false | jb: hard tier 3, p0: 1x2x8cpu tier 2 pinned=false, p1: 2x1x2cpu tier 1 pinned=false)
+    zz_probe_round2_oracle_test.go:650: displacement example: seed 332 ranked + region + repair(4, reserve): displaced 1, gained 1 (topo 3x3x1; anchor in z1; ja: hard tier 2, p0: 2x1x4cpu tier 1 pinned=false, p1: 2x2x2cpu tier 2 pinned=true | jb: hard tier 3, p0: 1x1x2cpu tier 1 pinned=false, p1: 1x2x4cpu tier 1 pinned=true | jc: PAA, hard tier 3, plain 5 x 2cpu)
+--- PASS: TestProto2R6MultiJobSession (12.68s)
+=== RUN   TestProto2R1ScopeUnion
+    zz_probe_round2_test.go:54: | variant | legal placement exists | exhaustive + scope | ranked + scope | nodes | task attempts: ranked without scope -> ranked + scope |
+    zz_probe_round2_test.go:55: |---|---|---|---|---|---|
+    zz_probe_round2_test.go:85:     usable region of c1/pg-myq: [z1 z2]
+    zz_probe_round2_test.go:88:     subJob c1/pg-myq/prefill-0 within z1-r00 layer 0: #1 z1-r00(tier 1) score=2.34 selected;
+    zz_probe_round2_test.go:88:     subJob c1/pg-myq/prefill-0 within z1-r01 layer 0: #1 z1-r01(tier 1) score=2.34 selected;
+    zz_probe_round2_test.go:88:     subJob c1/pg-myq/prefill-0 within z2-r00 layer 0: #1 z2-r00(tier 1) score=2.34 selected;
+    zz_probe_round2_test.go:88:     subJob c1/pg-myq/prefill-0 within z2-r01 layer 0: #1 z2-r01(tier 1) score=2.34 selected;
+    zz_probe_round2_test.go:88:     subJob c1/pg-myq/prefill-0 within z1 layer 0: #1 z1-r01(tier 1) score=2.34 selected; #2 z1-r00(tier 1) score=2.34 notEvaluated;
+    zz_probe_round2_test.go:88:     subJob c1/pg-myq/prefill-1 within z1 layer 0: #1 z1-r00(tier 1) score=2.34 selected;
+    zz_probe_round2_test.go:88:     subJob c1/pg-myq/prefill-0 within z2 layer 0: #1 z2-r00(tier 1) score=2.34 selected; #2 z2-r01(tier 1) score=2.34 notEvaluated;
+    zz_probe_round2_test.go:88:     subJob c1/pg-myq/prefill-1 within z2 layer 0: #1 z2-r01(tier 1) score=2.34 selected;
+    zz_probe_round2_test.go:88:     subJob c1/pg-myq/prefill-0 within dc layer 0: #1 z1-r01(tier 1) score=2.34 selected; #2 z1-r00(tier 1) score=2.34 notEvaluated; #3 z2-r00(tier 1) score=2.34 notEvaluated; #4 z2-r01(tier 1) score=2.34 notEvaluated;
+    zz_probe_round2_test.go:88:     subJob c1/pg-myq/prefill-1 within dc layer 0: #1 z1-r00(tier 1) score=2.34 selected; #2 z2-r01(tier 1) score=2.34 notEvaluated; #3 z2-r00(tier 1) score=2.34 notEvaluated;
+    zz_probe_round2_test.go:88:     subJob c1/pg-myq/decode-2 within dc layer 0: #1 z2-r00(tier 1) score=2.34 selected; #2 z2-r01(tier 1) score=2.34 notEvaluated;
+    zz_probe_round2_test.go:88:     subJob c1/pg-myq/decode-3 within dc layer 0: #1 z2-r01(tier 1) score=2.34 selected;
+    zz_probe_round2_test.go:99: | HB1 reported bug: PAA tier 2 + prefill/decode SubGroups hard tier 1, 4 pods | true | 4/4 | 4/4 | z1-r00-n0 z1-r01-n0 z2-r00-n0 z2-r01-n0 | 8 -> 12 |
+    zz_probe_round2_test.go:99: | HB2 PAA tier 2, no SubGroup policy, 4 pods | true | 4/4 | 4/4 | z1-r00-n0 z1-r01-n0 z2-r00-n0 z2-r01-n0 | 0 -> 4 |
+    zz_probe_round2_test.go:99: | HB3 job hard tier 3 + PAA tier 2 + prefill/decode SubGroups, 4 pods | true | 4/4 | 4/4 | z1-r00-n0 z1-r01-n0 z2-r00-n0 z2-r01-n0 | 8 -> 12 |
+    zz_probe_round2_test.go:99: | HB4 job hard tier 3 + PAA tier 2, no SubGroup policy, 4 pods | true | 4/4 | 4/4 | z1-r00-n0 z1-r01-n0 z2-r00-n0 z2-r01-n0 | 0 -> 4 |
+    zz_probe_round2_test.go:99: | HB5 PAA tier 2 + SubGroups of 2 pods hard tier 2, 4 pods | true | 4/4 | 4/4 | z1-r00-n0 z1-r01-n0 z2-r00-n0 z2-r01-n0 | 4 -> 8 |
+    zz_probe_round2_test.go:99: | HB6 job soft tier 2 + PAA tier 2 + prefill/decode SubGroups, 4 pods | true | 4/4 | 4/4 | z1-r00-n0 z1-r01-n0 z2-r00-n0 z2-r01-n0 | 8 -> 12 |
+    zz_probe_round2_test.go:99: | control: 2 pods fit in B alone | true | 2/2 | 2/2 | z1-r00-n0 z1-r01-n0 | 8 -> 8 |
+    zz_probe_round2_test.go:99: | control: no PAA, 4 pods | true | 4/4 | 4/4 | z0-r00-n0 z0-r01-n0 z1-r00-n0 z2-r00-n0 | 16 -> 16 |
+    zz_probe_round2_test.go:99: | control: job hard tier 2 + PAA, 4 pods need two tier-2 domains | false | 0/4 | 0/4 |  | 8 -> 8 |
+    zz_probe_round2_test.go:99: | control: PAA, 5 pods but only 4 nodes outside A | false | 0/5 | 0/5 |  | 0 -> 0 |
+--- PASS: TestProto2R1ScopeUnion (0.08s)
+=== RUN   TestProto2R2ContentionRepair
+    zz_probe_round2_test.go:108: exhaustive+detTies   repairBudget=0 placed 0/2 map[]
+    zz_probe_round2_test.go:108: exhaustive+detTies   repairBudget=4 placed 2/2 map[job-flexible:z0-r01-n0 job-pinned:z0-r00-n0]
+    zz_probe_round2_test.go:110:     job c1/job in z0-r01: retry 1 with [c1/job/worker-1] first failed
+    zz_probe_round2_test.go:110:     job c1/job in z0: retry 1 with [c1/job/worker-1] first succeeded
+    zz_probe_round2_test.go:108: ranked+fitBound      repairBudget=0 placed 0/2 map[]
+    zz_probe_round2_test.go:108: ranked+fitBound      repairBudget=4 placed 2/2 map[job-flexible:z0-r01-n0 job-pinned:z0-r00-n0]
+    zz_probe_round2_test.go:110:     job c1/job in z0-r01: retry 1 with [c1/job/worker-1] first failed
+    zz_probe_round2_test.go:110:     job c1/job in z0: retry 1 with [c1/job/worker-1] first succeeded
+--- PASS: TestProto2R2ContentionRepair (0.01s)
+=== RUN   TestProto2R3SingleJobMonotonic
+    zz_probe_round2_test.go:437: seed 39 ranked + scope + repair(8): newly scheduled (topo 3x2x1; job hard tier 3; p0: 1 groups x 1 x 4cpu tier 2 pinned=true; p1: 2 groups x 1 x 8cpu tier 1 pinned=false) map[job-p0-g7-p0:z1-r00-n0 job-p1-g2-p0:z1-r01-n0 job-p1-g4-p0:z2-r00-n0]
+    zz_probe_round2_test.go:439:     job c1/job in dc: retry 1 with [c1/job/p0-7] first succeeded
+    zz_probe_round2_test.go:437: seed 39 exhaustive + scope + repair(8): newly scheduled (topo 3x2x1; job hard tier 3; p0: 1 groups x 1 x 4cpu tier 2 pinned=true; p1: 2 groups x 1 x 8cpu tier 1 pinned=false) map[job-p0-g7-p0:z1-r00-n0 job-p1-g2-p0:z1-r01-n0 job-p1-g4-p0:z2-r00-n0]
+    zz_probe_round2_test.go:439:     job c1/job in dc: retry 1 with [c1/job/p0-7] first succeeded
+    zz_probe_round2_test.go:437: seed 49 ranked + scope + repair(8): newly scheduled (topo 3x2x1; anchor in z0; required PAA tier 2; plain 5 x 8cpu) map[job-plain-p0:z1-r00-n0 job-plain-p1:z1-r01-n0 job-plain-p2:z2-r01-n0 job-plain-p3:z2-r00-n0 job-plain-p4:z2-r00-n0]
+    zz_probe_round2_test.go:437: seed 49 exhaustive + scope + repair(8): newly scheduled (topo 3x2x1; anchor in z0; required PAA tier 2; plain 5 x 8cpu) map[job-plain-p0:z1-r00-n0 job-plain-p1:z1-r01-n0 job-plain-p2:z2-r01-n0 job-plain-p3:z2-r00-n0 job-plain-p4:z2-r00-n0]
+    zz_probe_round2_test.go:445: 600 single-job scenarios; current search (exhaustive + deterministic ties) schedules 459
+    zz_probe_round2_test.go:446: | configuration | scheduled | newly scheduled | lost | placed differently | illegal |
+    zz_probe_round2_test.go:447: |---|---|---|---|---|---|
+    zz_probe_round2_test.go:450: | ranked (round 1) | 459 | 0 | 0 | 0 | 0 |
+    zz_probe_round2_test.go:450: | ranked + scope | 467 | 8 | 0 | 0 | 0 |
+    zz_probe_round2_test.go:450: | ranked + scope + repair(8) | 475 | 16 | 0 | 0 | 0 |
+    zz_probe_round2_test.go:450: | exhaustive + scope + repair(8) | 475 | 16 | 0 | 0 | 0 |
+--- PASS: TestProto2R3SingleJobMonotonic (12.23s)
+=== RUN   TestProto3RK1FirstHit
+    zz_probe_round3_rank_test.go:81: | workload | mode | decisions with a winner | candidates per decision | won by rank 1 | dry-runs per decision | pruned by resource bound per decision | layers without a winner | dry-runs in those layers |
+    zz_probe_round3_rank_test.go:82: |---|---|---|---|---|---|---|---|---|
+    zz_probe_round3_rank_test.go:91: | 400 mixed sessions (round-1 generator) | ranked | 4093 | 1.9 | 95.2% | 1.06 | 0.00 | 944 | 1430 |
+    zz_probe_round3_rank_test.go:91: | 400 mixed sessions (round-1 generator) | ranked+fitBound | 4093 | 1.9 | 95.2% | 1.05 | 0.01 | 944 | 973 |
+    zz_probe_round3_rank_test.go:100: | 300 job streams (tight cluster) | ranked | 8988 | 5.9 | 87.7% | 1.20 | 0.00 | 4271 | 24462 |
+    zz_probe_round3_rank_test.go:100: | 300 job streams (tight cluster) | ranked+fitBound | 8988 | 5.9 | 87.7% | 1.20 | 0.00 | 4271 | 22312 |
+--- PASS: TestProto3RK1FirstHit (9.66s)
+=== RUN   TestProto3RK2RankBasis
+    zz_probe_round3_rank_test.go:245: 300 job streams, 5760 jobs; free capacity 91962 CPU, demand 114406 CPU
+    zz_probe_round3_rank_test.go:246: | order inside a tier layer | jobs scheduled | CPU scheduled | share of free capacity | streams with more / same / less CPU than the design order | task attempts | won by rank 1 | dry-runs per decision |
+    zz_probe_round3_rank_test.go:247: |---|---|---|---|---|---|---|---|
+    zz_probe_round3_rank_test.go:250: | score: fullest domain that still fits first (design) | 4494 | 78510 | 85.4% | 0 / 300 / 0 | 16945 | 87.7% | 1.20 |
+    zz_probe_round3_rank_test.go:250: | emptiest domain first | 4034 | 65476 | 71.2% | 3 / 13 / 284 | 15273 | 98.2% | 1.03 |
+    zz_probe_round3_rank_test.go:250: | name order | 4391 | 75958 | 82.6% | 43 / 100 / 157 | 16671 | 61.3% | 2.64 |
+    zz_probe_round3_rank_test.go:250: | pseudo-random order | 4259 | 71268 | 77.5% | 21 / 39 / 240 | 16055 | 80.5% | 1.66 |
+    zz_probe_round3_rank_test.go:254: | hindsight: best of design order and 24 pseudo-random orders per stream | 4546 | 80106 | 87.1% | random order beat design in 107 streams; design beat every random order in 99 | - | - | - |
+--- PASS: TestProto3RK2RankBasis (103.00s)
+=== RUN   TestProto3RK3SubGroupJobLevel
+    zz_probe_round3_rank_test.go:284: mixed single-job scenarios: 600
+    zz_probe_round3_rank_test.go:285: | Job-level search | scheduled | lost vs today | newly scheduled | placed differently | wider tier than needed | task attempts |
+    zz_probe_round3_rank_test.go:286: |---|---|---|---|---|---|---|
+    zz_probe_round3_rank_test.go:335: | exhaustive at Job level (today's rule) | 459 | 0 | 0 | 0 | 4 | 9393 |
+    zz_probe_round3_rank_test.go:335: | ranked at Job level, first that verifies | 459 | 0 | 0 | 24 | 4 | 7431 |
+    zz_probe_round3_rank_test.go:335: | ranked at Job level, best of first 3 that verify | 459 | 0 | 0 | 2 | 4 | 8865 |
+    zz_probe_round3_rank_test.go:335: | ranked at Job level, first that verifies + region + retry(4) | 474 | 0 | 15 | 24 | 4 | 8670 |
+    zz_probe_round3_rank_test.go:284: contention scenarios (three SubGroup policies): 600
+    zz_probe_round3_rank_test.go:285: | Job-level search | scheduled | lost vs today | newly scheduled | placed differently | wider tier than needed | task attempts |
+    zz_probe_round3_rank_test.go:286: |---|---|---|---|---|---|---|
+    zz_probe_round3_rank_test.go:335: | exhaustive at Job level (today's rule) | 225 | 0 | 0 | 0 | 1 | 18337 |
+    zz_probe_round3_rank_test.go:335: | ranked at Job level, first that verifies | 225 | 0 | 0 | 21 | 1 | 17647 |
+    zz_probe_round3_rank_test.go:335: | ranked at Job level, best of first 3 that verify | 225 | 0 | 0 | 0 | 1 | 18327 |
+    zz_probe_round3_rank_test.go:335: | ranked at Job level, first that verifies + region + retry(4) | 236 | 0 | 11 | 21 | 1 | 20260 |
+--- PASS: TestProto3RK3SubGroupJobLevel (23.74s)
+=== RUN   TestProto3RK4SubGroupStream
+    zz_probe_round3_rank_test.go:459: 200 streams of SubGroup Jobs, 3760 jobs; free capacity 81702 CPU
+    zz_probe_round3_rank_test.go:460: | Job-level search | jobs scheduled | CPU scheduled | share of free capacity | streams with more / same / less CPU than exhaustive | task attempts | Allocate events |
+    zz_probe_round3_rank_test.go:461: |---|---|---|---|---|---|---|
+    zz_probe_round3_rank_test.go:468: | today: every candidate dry-run, random ties | 3081 | 68440 | 83.8% | - | 206190 | 351353 |
+    zz_probe_round3_rank_test.go:468: | exhaustive at Job level, deterministic ties | 3072 | 68328 | 83.6% | - | 145876 | 162316 |
+    zz_probe_round3_rank_test.go:468: | ranked at Job level, first that verifies | 3069 | 68524 | 83.9% | 42 / 114 / 44 | 83424 | 99903 |
+    zz_probe_round3_rank_test.go:468: | ranked at Job level, best of first 3 that verify | 3072 | 68248 | 83.5% | 4 / 191 / 5 | 106606 | 123046 |
+--- PASS: TestProto3RK4SubGroupStream (61.12s)
+=== RUN   TestProto3RT1TieRound
+    zz_probe_round3_review_test.go:157: SubJob-level tie: 16 job names, 12 scheduling cycles each
+    zz_probe_round3_review_test.go:158: | configuration | jobs scheduled in the first cycle | jobs scheduled within 12 cycles | jobs never scheduled | cycles until scheduled (mean / max) |
+    zz_probe_round3_review_test.go:159: |---|---|---|---|---|
+    zz_probe_round3_review_test.go:198: | today: random ties | 13 | 16 | 0 | 1.2 / 2 |
+    zz_probe_round3_review_test.go:198: | ranked, tie key without round | 8 | 8 | 8 | 1.0 / 1 |
+    zz_probe_round3_review_test.go:198: | ranked, tie key with round | 8 | 16 | 0 | 2.6 / 9 |
+    zz_probe_round3_review_test.go:198: | ranked, tie key with round, retry(4) | 16 | 16 | 0 | 1.0 / 1 |
+    zz_probe_round3_review_test.go:157: node-level tie inside one unit: 16 job names, 12 scheduling cycles each
+    zz_probe_round3_review_test.go:158: | configuration | jobs scheduled in the first cycle | jobs scheduled within 12 cycles | jobs never scheduled | cycles until scheduled (mean / max) |
+    zz_probe_round3_review_test.go:159: |---|---|---|---|---|
+    zz_probe_round3_review_test.go:198: | today: random ties | 4 | 16 | 0 | 2.9 / 9 |
+    zz_probe_round3_review_test.go:198: | ranked, tie key without round | 8 | 8 | 8 | 1.0 / 1 |
+    zz_probe_round3_review_test.go:198: | ranked, tie key with round | 8 | 16 | 0 | 2.1 / 6 |
+    zz_probe_round3_review_test.go:198: | ranked, tie key with round, retry(4) | 8 | 16 | 0 | 2.1 / 6 |
+--- PASS: TestProto3RT1TieRound (0.62s)
+=== RUN   TestProto3RT2FailureReportAfterRetry
+    zz_probe_round3_review_test.go:239: retry budget 0: placed 0/3; retries=0; flagged search-incomplete=[]
+    zz_probe_round3_review_test.go:240:     fitError: pod group is not ready, 3 Pending, 3 minAvailable; Pending: 1 Schedulable, 2 Unschedulable.
+    zz_probe_round3_review_test.go:247:     task fit error: job-pinned1: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_probe_round3_review_test.go:247:     task fit error: job-pinned2: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_probe_round3_review_test.go:239: retry budget 4: placed 0/3; retries=2; flagged search-incomplete=[]
+    zz_probe_round3_review_test.go:240:     fitError: pod group is not ready, 3 Pending, 3 minAvailable; Pending: 1 Schedulable, 2 Unschedulable.
+    zz_probe_round3_review_test.go:247:     task fit error: job-pinned1: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_probe_round3_review_test.go:247:     task fit error: job-pinned2: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_probe_round3_review_test.go:251:     job c1/job in z0: retry 1 with [c1/job/worker-1, c1/job/worker-2] first failed; still blocked: [c1/job/worker-2]
+    zz_probe_round3_review_test.go:251:     job c1/job in z0: retry 2 with [c1/job/worker-2, c1/job/worker-1] first failed; still blocked: [c1/job/worker-1]
+    zz_probe_round3_review_test.go:239: retry budget 16: placed 0/3; retries=2; flagged search-incomplete=[]
+    zz_probe_round3_review_test.go:240:     fitError: pod group is not ready, 3 Pending, 3 minAvailable; Pending: 1 Schedulable, 2 Unschedulable.
+    zz_probe_round3_review_test.go:247:     task fit error: job-pinned1: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_probe_round3_review_test.go:247:     task fit error: job-pinned2: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_probe_round3_review_test.go:251:     job c1/job in z0: retry 1 with [c1/job/worker-1, c1/job/worker-2] first failed; still blocked: [c1/job/worker-2]
+    zz_probe_round3_review_test.go:251:     job c1/job in z0: retry 2 with [c1/job/worker-2, c1/job/worker-1] first failed; still blocked: [c1/job/worker-1]
+--- PASS: TestProto3RT2FailureReportAfterRetry (0.01s)
+=== RUN   TestProto3RT3NoStaleSubJobDecision
+    zz_probe_round3_review_test.go:323: retry budget 0: placed 0/3 map[]
+    zz_probe_round3_review_test.go:328:     c1/job/worker-0 AllocatedHyperNode="" placed=0
+    zz_probe_round3_review_test.go:328:     c1/job/worker-1 AllocatedHyperNode="" placed=0
+    zz_probe_round3_review_test.go:328:     c1/job/worker-2 AllocatedHyperNode="" placed=0
+    zz_probe_round3_review_test.go:323: retry budget 4: placed 3/3 map[job-flexible:z0-r01-n0 job-pinned1:z0-r00-n0 job-pinned2:z0-r00-n0]
+    zz_probe_round3_review_test.go:325:     job c1/job in z0-r00: retry 1 with [c1/job/worker-1, c1/job/worker-2] first succeeded
+    zz_probe_round3_review_test.go:328:     c1/job/worker-0 AllocatedHyperNode="z0-r01" placed=1
+    zz_probe_round3_review_test.go:328:     c1/job/worker-1 AllocatedHyperNode="z0-r00" placed=1
+    zz_probe_round3_review_test.go:328:     c1/job/worker-2 AllocatedHyperNode="z0-r00" placed=1
+--- PASS: TestProto3RT3NoStaleSubJobDecision (0.00s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	365.731s

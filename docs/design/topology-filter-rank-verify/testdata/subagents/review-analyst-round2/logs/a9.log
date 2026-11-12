@@ -1,0 +1,18 @@
+=== RUN   TestReviewA9NodeTieIsAnImplicitRestart
+    zz_review_analyst_alternatives_test.go:244: job network topology: hard tier 0 (0 = none)
+    zz_review_analyst_alternatives_test.go:245: | configuration | job names always scheduled | never scheduled | sometimes | sessions scheduled / total |
+    zz_review_analyst_alternatives_test.go:246: |---|---|---|---|---|
+    zz_review_analyst_alternatives_test.go:272: | unmodified (random ties) | 0 | 0 | 16 | 79/160 |
+    zz_review_analyst_alternatives_test.go:272: | exhaustive + deterministic ties | 8 | 8 | 0 | 80/160 |
+    zz_review_analyst_alternatives_test.go:272: | ranked + fitBound (round 1) | 8 | 8 | 0 | 80/160 |
+    zz_review_analyst_alternatives_test.go:272: | ranked + fitBound + repair(8) | 8 | 8 | 0 | 80/160 |
+    zz_review_analyst_alternatives_test.go:244: job network topology: hard tier 1 (0 = none)
+    zz_review_analyst_alternatives_test.go:245: | configuration | job names always scheduled | never scheduled | sometimes | sessions scheduled / total |
+    zz_review_analyst_alternatives_test.go:246: |---|---|---|---|---|
+    zz_review_analyst_alternatives_test.go:272: | unmodified (random ties) | 0 | 0 | 16 | 83/160 |
+    zz_review_analyst_alternatives_test.go:272: | exhaustive + deterministic ties | 8 | 8 | 0 | 80/160 |
+    zz_review_analyst_alternatives_test.go:272: | ranked + fitBound (round 1) | 8 | 8 | 0 | 80/160 |
+    zz_review_analyst_alternatives_test.go:272: | ranked + fitBound + repair(8) | 8 | 8 | 0 | 80/160 |
+--- PASS: TestReviewA9NodeTieIsAnImplicitRestart (2.25s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	2.366s

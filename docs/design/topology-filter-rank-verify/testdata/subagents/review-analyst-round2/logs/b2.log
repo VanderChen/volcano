@@ -1,0 +1,9 @@
+=== RUN   TestReviewB2ReportedBugWithoutRealRoot
+    zz_review_analyst_wide_fuzz_test.go:677: current search: placed 0/4 map[]; job.AllocatedHyperNode=""; illegal="" incomplete=""; pod group is not ready, 4 Pending, 4 minAvailable; Pending: 1 Unschedulable, 3 Schedulable.
+    zz_review_analyst_wide_fuzz_test.go:677: ranked + region + repair(4, reserve): placed 4/4 map[job-decode-g2-p0:z1-r01-n0 job-decode-g3-p0:z2-r00-n0 job-prefill-g0-p0:z2-r02-n0 job-prefill-g1-p0:z2-r01-n0]; job.AllocatedHyperNode="<cluster-top-hypernode>"; illegal="" incomplete=""; pod group is ready, 4 Binding, 4 minAvailable.
+    zz_review_analyst_wide_fuzz_test.go:680:     usable region of c1/job: [z1 z2]
+    zz_review_analyst_wide_fuzz_test.go:692:     scale-up by one SubGroup, current search: newly placed map[job-decode-g23-p0:z1-r02-n0]; illegal="" incomplete="" (topo 3x3x1 root=false; anchor0-0(team=false)@z0-r00-n0; PAA tier 2 team=false; prefill: 2(min 2) groups x 1 x 6cpu tier 1 pinned=false; decode: 3(min 2) groups x 1 x 6cpu tier 1 pinned=false; minMember 4 of 5 pods (4 running))
+    zz_review_analyst_wide_fuzz_test.go:692:     scale-up by one SubGroup, ranked + region + repair(4, reserve): newly placed map[job-decode-g23-p0:z1-r02-n0]; illegal="" incomplete="" (topo 3x3x1 root=false; anchor0-0(team=false)@z0-r00-n0; PAA tier 2 team=false; prefill: 2(min 2) groups x 1 x 6cpu tier 1 pinned=false; decode: 3(min 2) groups x 1 x 6cpu tier 1 pinned=false; minMember 4 of 5 pods (4 running))
+--- PASS: TestReviewB2ReportedBugWithoutRealRoot (0.02s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	0.055s

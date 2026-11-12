@@ -1,0 +1,39 @@
+=== RUN   TestProto2R1ScopeUnion
+    zz_probe_round2_test.go:54: | variant | legal placement exists | exhaustive + scope | ranked + scope | nodes |
+    zz_probe_round2_test.go:55: |---|---|---|---|---|
+    zz_probe_round2_test.go:83:     usable region of c1/pg-myq: [z1 z2]
+    zz_probe_round2_test.go:86:     subJob c1/pg-myq/prefill-0 within z1-r00 layer 0: #1 z1-r00(tier 1) score=2.34 selected;
+    zz_probe_round2_test.go:86:     subJob c1/pg-myq/prefill-0 within z1-r01 layer 0: #1 z1-r01(tier 1) score=2.34 selected;
+    zz_probe_round2_test.go:86:     subJob c1/pg-myq/prefill-0 within z2-r00 layer 0: #1 z2-r00(tier 1) score=2.34 selected;
+    zz_probe_round2_test.go:86:     subJob c1/pg-myq/prefill-0 within z2-r01 layer 0: #1 z2-r01(tier 1) score=2.34 selected;
+    zz_probe_round2_test.go:86:     subJob c1/pg-myq/prefill-0 within z1 layer 0: #1 z1-r01(tier 1) score=2.34 selected; #2 z1-r00(tier 1) score=2.34 notEvaluated;
+    zz_probe_round2_test.go:86:     subJob c1/pg-myq/prefill-1 within z1 layer 0: #1 z1-r00(tier 1) score=2.34 selected;
+    zz_probe_round2_test.go:86:     subJob c1/pg-myq/prefill-0 within z2 layer 0: #1 z2-r00(tier 1) score=2.34 selected; #2 z2-r01(tier 1) score=2.34 notEvaluated;
+    zz_probe_round2_test.go:86:     subJob c1/pg-myq/prefill-1 within z2 layer 0: #1 z2-r01(tier 1) score=2.34 selected;
+    zz_probe_round2_test.go:86:     subJob c1/pg-myq/prefill-0 within dc layer 0: #1 z1-r01(tier 1) score=2.34 selected; #2 z1-r00(tier 1) score=2.34 notEvaluated; #3 z2-r00(tier 1) score=2.34 notEvaluated; #4 z2-r01(tier 1) score=2.34 notEvaluated;
+    zz_probe_round2_test.go:86:     subJob c1/pg-myq/prefill-1 within dc layer 0: #1 z1-r00(tier 1) score=2.34 selected; #2 z2-r01(tier 1) score=2.34 notEvaluated; #3 z2-r00(tier 1) score=2.34 notEvaluated;
+    zz_probe_round2_test.go:86:     subJob c1/pg-myq/decode-2 within dc layer 0: #1 z2-r00(tier 1) score=2.34 selected; #2 z2-r01(tier 1) score=2.34 notEvaluated;
+    zz_probe_round2_test.go:86:     subJob c1/pg-myq/decode-3 within dc layer 0: #1 z2-r01(tier 1) score=2.34 selected;
+    zz_probe_round2_test.go:90: | HB1 reported bug: PAA tier 2 + prefill/decode SubGroups hard tier 1, 4 pods | true | 4/4 | 4/4 | z1-r00-n0 z1-r01-n0 z2-r00-n0 z2-r01-n0 |
+    zz_probe_round2_test.go:90: | HB2 PAA tier 2, no SubGroup policy, 4 pods | true | 4/4 | 4/4 | z1-r00-n0 z1-r01-n0 z2-r00-n0 z2-r01-n0 |
+    zz_probe_round2_test.go:90: | HB3 job hard tier 3 + PAA tier 2 + prefill/decode SubGroups, 4 pods | true | 4/4 | 4/4 | z1-r00-n0 z1-r01-n0 z2-r00-n0 z2-r01-n0 |
+    zz_probe_round2_test.go:90: | HB4 job hard tier 3 + PAA tier 2, no SubGroup policy, 4 pods | true | 4/4 | 4/4 | z1-r00-n0 z1-r01-n0 z2-r00-n0 z2-r01-n0 |
+    zz_probe_round2_test.go:90: | HB5 PAA tier 2 + SubGroups of 2 pods hard tier 2, 4 pods | true | 4/4 | 4/4 | z1-r00-n0 z1-r01-n0 z2-r00-n0 z2-r01-n0 |
+    zz_probe_round2_test.go:90: | HB6 job soft tier 2 + PAA tier 2 + prefill/decode SubGroups, 4 pods | true | 4/4 | 4/4 | z1-r00-n0 z1-r01-n0 z2-r00-n0 z2-r01-n0 |
+    zz_probe_round2_test.go:90: | control: 2 pods fit in B alone | true | 2/2 | 2/2 | z1-r00-n0 z1-r01-n0 |
+    zz_probe_round2_test.go:90: | control: no PAA, 4 pods | true | 4/4 | 4/4 | z0-r00-n0 z0-r01-n0 z1-r00-n0 z2-r00-n0 |
+    zz_probe_round2_test.go:90: | control: job hard tier 2 + PAA, 4 pods need two tier-2 domains | false | 0/4 | 0/4 |  |
+    zz_probe_round2_test.go:90: | control: PAA, 5 pods but only 4 nodes outside A | false | 0/5 | 0/5 |  |
+--- PASS: TestProto2R1ScopeUnion (0.08s)
+=== RUN   TestProto2R2ContentionRepair
+    zz_probe_round2_test.go:99: exhaustive+detTies   repairBudget=0 placed 0/2 map[]
+    zz_probe_round2_test.go:99: exhaustive+detTies   repairBudget=4 placed 2/2 map[job-flexible:z0-r01-n0 job-pinned:z0-r00-n0]
+    zz_probe_round2_test.go:101:     job c1/job in z0-r01: retry 1 with [c1/job/worker-1] first failed
+    zz_probe_round2_test.go:101:     job c1/job in z0: retry 2 with [c1/job/worker-1] first succeeded
+    zz_probe_round2_test.go:99: ranked+fitBound      repairBudget=0 placed 0/2 map[]
+    zz_probe_round2_test.go:99: ranked+fitBound      repairBudget=4 placed 2/2 map[job-flexible:z0-r01-n0 job-pinned:z0-r00-n0]
+    zz_probe_round2_test.go:101:     job c1/job in z0-r01: retry 1 with [c1/job/worker-1] first failed
+    zz_probe_round2_test.go:101:     job c1/job in z0: retry 2 with [c1/job/worker-1] first succeeded
+--- PASS: TestProto2R2ContentionRepair (0.01s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	0.120s

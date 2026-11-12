@@ -1,0 +1,64 @@
+=== RUN   TestReviewB1WideMonotonicFuzz
+E1111 18:28:29.856176 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z1-r00 and hyperNodeHighestAllowed z1-r01" subJob="c1/job/p2-13" hyperNode="z1-r00" highestAllowedTier=1 allocatedHyperNode="z1-r01"
+E1111 18:28:29.856430 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z1-r02 and hyperNodeHighestAllowed z1-r01" subJob="c1/job/p2-13" hyperNode="z1-r02" highestAllowedTier=1 allocatedHyperNode="z1-r01"
+E1111 18:28:29.868491 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z1-r00 and hyperNodeHighestAllowed z1-r01" subJob="c1/job/p2-13" hyperNode="z1-r00" highestAllowedTier=1 allocatedHyperNode="z1-r01"
+E1111 18:28:29.868781 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z1-r02 and hyperNodeHighestAllowed z1-r01" subJob="c1/job/p2-13" hyperNode="z1-r02" highestAllowedTier=1 allocatedHyperNode="z1-r01"
+E1111 18:28:29.883466 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z1-r00 and hyperNodeHighestAllowed z1-r01" subJob="c1/job/p2-13" hyperNode="z1-r00" highestAllowedTier=1 allocatedHyperNode="z1-r01"
+E1111 18:28:29.883710 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z1-r02 and hyperNodeHighestAllowed z1-r01" subJob="c1/job/p2-13" hyperNode="z1-r02" highestAllowedTier=1 allocatedHyperNode="z1-r01"
+E1111 18:28:29.894753 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z1-r00 and hyperNodeHighestAllowed z1-r01" subJob="c1/job/p2-13" hyperNode="z1-r00" highestAllowedTier=1 allocatedHyperNode="z1-r01"
+E1111 18:28:29.895036 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z1-r02 and hyperNodeHighestAllowed z1-r01" subJob="c1/job/p2-13" hyperNode="z1-r02" highestAllowedTier=1 allocatedHyperNode="z1-r01"
+E1111 18:28:31.157270 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z1-r00 and hyperNodeHighestAllowed z0" subJob="c1/job/p0-8" hyperNode="z1-r00" highestAllowedTier=2 allocatedHyperNode="z0-r00"
+E1111 18:28:31.157300 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z1-r01 and hyperNodeHighestAllowed z0" subJob="c1/job/p0-8" hyperNode="z1-r01" highestAllowedTier=2 allocatedHyperNode="z0-r00"
+E1111 18:28:31.157317 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z2-r00 and hyperNodeHighestAllowed z0" subJob="c1/job/p0-8" hyperNode="z2-r00" highestAllowedTier=2 allocatedHyperNode="z0-r00"
+E1111 18:28:31.157328 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z2-r01 and hyperNodeHighestAllowed z0" subJob="c1/job/p0-8" hyperNode="z2-r01" highestAllowedTier=2 allocatedHyperNode="z0-r00"
+E1111 18:28:31.168997 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z1-r00 and hyperNodeHighestAllowed z0" subJob="c1/job/p0-8" hyperNode="z1-r00" highestAllowedTier=2 allocatedHyperNode="z0-r00"
+E1111 18:28:31.169027 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z1-r01 and hyperNodeHighestAllowed z0" subJob="c1/job/p0-8" hyperNode="z1-r01" highestAllowedTier=2 allocatedHyperNode="z0-r00"
+E1111 18:28:31.169039 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z2-r00 and hyperNodeHighestAllowed z0" subJob="c1/job/p0-8" hyperNode="z2-r00" highestAllowedTier=2 allocatedHyperNode="z0-r00"
+E1111 18:28:31.169055 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z2-r01 and hyperNodeHighestAllowed z0" subJob="c1/job/p0-8" hyperNode="z2-r01" highestAllowedTier=2 allocatedHyperNode="z0-r00"
+E1111 18:28:33.675602 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z0-r00 and hyperNodeHighestAllowed z1-r01" subJob="c1/job/p1-9" hyperNode="z0-r00" highestAllowedTier=1 allocatedHyperNode="z1-r01"
+E1111 18:28:33.675650 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z0-r01 and hyperNodeHighestAllowed z1-r01" subJob="c1/job/p1-9" hyperNode="z0-r01" highestAllowedTier=1 allocatedHyperNode="z1-r01"
+E1111 18:28:33.675663 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z0-r01 and hyperNodeHighestAllowed z0-r00" subJob="c1/job/p2-15" hyperNode="z0-r01" highestAllowedTier=1 allocatedHyperNode="z0-r00"
+E1111 18:28:33.675679 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z1-r00 and hyperNodeHighestAllowed z1-r01" subJob="c1/job/p1-9" hyperNode="z1-r00" highestAllowedTier=1 allocatedHyperNode="z1-r01"
+E1111 18:28:33.675697 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z1-r00 and hyperNodeHighestAllowed z0-r00" subJob="c1/job/p2-15" hyperNode="z1-r00" highestAllowedTier=1 allocatedHyperNode="z0-r00"
+E1111 18:28:33.675730 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z1-r01 and hyperNodeHighestAllowed z0-r00" subJob="c1/job/p2-15" hyperNode="z1-r01" highestAllowedTier=1 allocatedHyperNode="z0-r00"
+E1111 18:28:33.675751 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z0 and hyperNodeHighestAllowed z1-r01" subJob="c1/job/p1-9" hyperNode="z0" highestAllowedTier=1 allocatedHyperNode="z1-r01"
+E1111 18:28:33.675800 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z1 and hyperNodeHighestAllowed z0-r00" subJob="c1/job/p2-15" hyperNode="z1" highestAllowedTier=1 allocatedHyperNode="z0-r00"
+E1111 18:28:33.687806 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z0-r00 and hyperNodeHighestAllowed z1-r01" subJob="c1/job/p1-9" hyperNode="z0-r00" highestAllowedTier=1 allocatedHyperNode="z1-r01"
+E1111 18:28:33.687875 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z0-r01 and hyperNodeHighestAllowed z1-r01" subJob="c1/job/p1-9" hyperNode="z0-r01" highestAllowedTier=1 allocatedHyperNode="z1-r01"
+E1111 18:28:33.687891 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z0-r01 and hyperNodeHighestAllowed z0-r00" subJob="c1/job/p2-15" hyperNode="z0-r01" highestAllowedTier=1 allocatedHyperNode="z0-r00"
+E1111 18:28:33.687912 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z1-r00 and hyperNodeHighestAllowed z1-r01" subJob="c1/job/p1-9" hyperNode="z1-r00" highestAllowedTier=1 allocatedHyperNode="z1-r01"
+E1111 18:28:33.687926 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z1-r00 and hyperNodeHighestAllowed z0-r00" subJob="c1/job/p2-15" hyperNode="z1-r00" highestAllowedTier=1 allocatedHyperNode="z0-r00"
+E1111 18:28:33.687988 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z1-r01 and hyperNodeHighestAllowed z0-r00" subJob="c1/job/p2-15" hyperNode="z1-r01" highestAllowedTier=1 allocatedHyperNode="z0-r00"
+E1111 18:28:33.688010 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z0 and hyperNodeHighestAllowed z1-r01" subJob="c1/job/p1-9" hyperNode="z0" highestAllowedTier=1 allocatedHyperNode="z1-r01"
+E1111 18:28:33.688070 1447438 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z1 and hyperNodeHighestAllowed z0-r00" subJob="c1/job/p2-15" hyperNode="z1" highestAllowedTier=1 allocatedHyperNode="z0-r00"
+    zz_review_analyst_wide_fuzz_test.go:619: coverage: PAA term tier 1 = 286
+    zz_review_analyst_wide_fuzz_test.go:619: coverage: PAA term tier 2 = 795
+    zz_review_analyst_wide_fuzz_test.go:619: coverage: PAA term tier 3 = 178
+    zz_review_analyst_wide_fuzz_test.go:619: coverage: elastic gang = 664
+    zz_review_analyst_wide_fuzz_test.go:619: coverage: job hard tier 1 = 208
+    zz_review_analyst_wide_fuzz_test.go:619: coverage: job hard tier 2 = 511
+    zz_review_analyst_wide_fuzz_test.go:619: coverage: job hard tier 3 = 186
+    zz_review_analyst_wide_fuzz_test.go:619: coverage: job soft tier 2 = 317
+    zz_review_analyst_wide_fuzz_test.go:619: coverage: no real root = 678
+    zz_review_analyst_wide_fuzz_test.go:619: coverage: required PAA = 972
+    zz_review_analyst_wide_fuzz_test.go:619: coverage: three SubGroup policies = 496
+    zz_review_analyst_wide_fuzz_test.go:619: coverage: two PAA terms = 287
+    zz_review_analyst_wide_fuzz_test.go:622: phase 1: pending Job: 2000 scenarios; current search places pods in 1135 (illegal 0, incomplete 0)
+    zz_review_analyst_wide_fuzz_test.go:624: | configuration | places pods | newly | lost | moved | fewer pods | more pods | illegal | incomplete |
+    zz_review_analyst_wide_fuzz_test.go:625: |---|---|---|---|---|---|---|---|---|
+    zz_review_analyst_wide_fuzz_test.go:628: | ranked + fitBound (round 1) | 1135 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+    zz_review_analyst_wide_fuzz_test.go:628: | ranked + region | 1187 | 52 | 0 | 0 | 0 | 0 | 0 | 0 |
+    zz_review_analyst_wide_fuzz_test.go:628: | ranked + region + repair(4, reserve) | 1199 | 64 | 0 | 0 | 0 | 0 | 0 | 0 |
+    zz_review_analyst_wide_fuzz_test.go:628: | exhaustive + region + repair(4, reserve) | 1199 | 64 | 0 | 0 | 0 | 0 | 0 | 0 |
+    zz_review_analyst_wide_fuzz_test.go:628: | ranked + region + repair(8) | 1198 | 63 | 0 | 0 | 0 | 0 | 0 | 0 |
+    zz_review_analyst_wide_fuzz_test.go:622: phase 2: the Job placed by the current search is running and scaled up: 593 scenarios; current search places pods in 504 (illegal 0, incomplete 0)
+    zz_review_analyst_wide_fuzz_test.go:624: | configuration | places pods | newly | lost | moved | fewer pods | more pods | illegal | incomplete |
+    zz_review_analyst_wide_fuzz_test.go:625: |---|---|---|---|---|---|---|---|---|
+    zz_review_analyst_wide_fuzz_test.go:628: | ranked + fitBound (round 1) | 504 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+    zz_review_analyst_wide_fuzz_test.go:628: | ranked + region | 504 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+    zz_review_analyst_wide_fuzz_test.go:628: | ranked + region + repair(4, reserve) | 504 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+    zz_review_analyst_wide_fuzz_test.go:628: | exhaustive + region + repair(4, reserve) | 504 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+    zz_review_analyst_wide_fuzz_test.go:628: | ranked + region + repair(8) | 504 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+--- PASS: TestReviewB1WideMonotonicFuzz (56.15s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	57.644s

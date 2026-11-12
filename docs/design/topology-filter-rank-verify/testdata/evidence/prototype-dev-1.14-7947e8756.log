@@ -1,0 +1,61 @@
+    zz_probe_prototype_dra_test.go:16: winner z0-r00 is dry-run first, z0-r01 last   mode=exhaustive placed=map[] bindCheck=failed to get Bind request in case 0(dra-replay) counters: taskAttempts=2 predicate=2 nodeOrder=0 allocate=5 deallocate=5 hyperNodeOrderCalls=2
+    zz_probe_prototype_dra_test.go:16: winner z0-r00 is dry-run first, z0-r01 last   mode=ranked     placed=map[job-p00:z0-r00-n0(Binding)] bindCheck=<nil> counters: taskAttempts=1 predicate=1 nodeOrder=0 allocate=1 deallocate=0 hyperNodeOrderCalls=3
+    zz_probe_prototype_dra_test.go:16: winner z0-r01 is dry-run last                 mode=exhaustive placed=map[job-p00:z0-r01-n0(Binding)] bindCheck=<nil> counters: taskAttempts=2 predicate=2 nodeOrder=0 allocate=5 deallocate=4 hyperNodeOrderCalls=2
+    zz_probe_prototype_dra_test.go:16: winner z0-r01 is dry-run last                 mode=ranked     placed=map[job-p00:z0-r01-n0(Binding)] bindCheck=<nil> counters: taskAttempts=1 predicate=1 nodeOrder=0 allocate=1 deallocate=0 hyperNodeOrderCalls=3
+--- PASS: TestProtoQ8ReplayWithDRA (1.68s)
+    zz_probe_prototype_test.go:51: | racks | mode | predicate | nodeOrder | allocate | deallocate | hyperNodeOrder calls |
+    zz_probe_prototype_test.go:52: |---|---|---|---|---|---|---|
+    zz_probe_prototype_test.go:64: | 1 | exhaustive | 10 | 9 | 12 | 8 | 1 |
+    zz_probe_prototype_test.go:64: | 1 | ranked | 10 | 9 | 4 | 0 | 2 |
+    zz_probe_prototype_test.go:64: | 4 | exhaustive | 40 | 36 | 36 | 32 | 4 |
+    zz_probe_prototype_test.go:64: | 4 | ranked | 10 | 9 | 4 | 0 | 5 |
+    zz_probe_prototype_test.go:64: | 16 | exhaustive | 160 | 144 | 132 | 128 | 16 |
+    zz_probe_prototype_test.go:64: | 16 | ranked | 10 | 9 | 4 | 0 | 17 |
+    zz_probe_prototype_test.go:64: | 32 | exhaustive | 320 | 288 | 260 | 256 | 32 |
+    zz_probe_prototype_test.go:64: | 32 | ranked | 10 | 9 | 4 | 0 | 33 |
+--- PASS: TestProtoQ1FanOut (0.84s)
+    zz_probe_prototype_test.go:75: | zones x racks | mode | predicate | allocate | deallocate | hyperNodeOrder calls |
+    zz_probe_prototype_test.go:76: |---|---|---|---|---|---|
+    zz_probe_prototype_test.go:97: | 2x4 | exhaustive | 66 | 72 | 68 | 12 |
+    zz_probe_prototype_test.go:97: | 2x4 | ranked | 36 | 28 | 24 | 12 |
+    zz_probe_prototype_test.go:97: | 4x8 | exhaustive | 276 | 268 | 264 | 40 |
+    zz_probe_prototype_test.go:97: | 4x8 | ranked | 120 | 84 | 80 | 40 |
+--- PASS: TestProtoQ1cNestedFanOut (0.43s)
+    zz_probe_prototype_test.go:119: ranked, identical racks, 40 sessions: map[job-p00@z0-r02-n0,job-p01@z0-r02-n1:40]
+--- PASS: TestProtoQ3Determinism (4.07s)
+    zz_probe_prototype_test.go:193: subJob c1/job within z0-r02 layer 0: #1 z0-r02(tier 1) score=54.69 prunedByFitBound[resources fit at most 0 of 2 required pods];
+    zz_probe_prototype_test.go:193: subJob c1/job within z0-r00 layer 0: #1 z0-r00(tier 1) score=26.56 failedVerify[job-p00: In hyperNode z0-r00: 0/4 nodes are unavailable: 4 node(s) had untolerated taint {dedicated: other}.];
+    zz_probe_prototype_test.go:193: job c1/job within  layer 0: #1 z0-r02(tier 1) score=54.69 failedVerify[job-p00: resources fit at most 0 of 2 required pods]; #2 z0-r00(tier 1) score=26.56 failedVerify[job-p00: In hyperNode z0-r00: 0/4 nodes are unavailable: 4 node(s) had untolerated taint {dedicated: other}.]; #3 z0-r01(tier 1) score=0.00 failedVerify[gang minimum not reached];
+    zz_probe_prototype_test.go:218: subJob c1/job within z0-r04 layer 0: #1 z0-r04(tier 1) score=100.00 failedVerify[job-p00: In hyperNode z0-r04: 0/4 nodes are unavailable: 4 node(s) had untolerated taint {maintenance: true}.];
+    zz_probe_prototype_test.go:218: subJob c1/job within z0-r03 layer 0: #1 z0-r03(tier 1) score=87.50 selected;
+    zz_probe_prototype_test.go:218: job c1/job within  layer 0: #1 z0-r04(tier 1) score=100.00 failedVerify[job-p00: In hyperNode z0-r04: 0/4 nodes are unavailable: 4 node(s) had untolerated taint {maintenance: true}.]; #2 z0-r03(tier 1) score=87.50 selected; #3 z0-r02(tier 1) score=75.00 notEvaluated; #4 z0-r01(tier 1) score=62.50 notEvaluated; #5 z0-r00(tier 1) score=50.00 notEvaluated; #6 z0-r05(tier 1) score=50.00 notEvaluated;
+    zz_probe_prototype_test.go:224: counters: taskAttempts=5 predicate=11 nodeOrder=11 allocate=4 deallocate=0 hyperNodeOrderCalls=8
+--- PASS: TestProtoQ4Trace (0.21s)
+    --- PASS: TestProtoQ4Trace/nothing_fits (0.10s)
+    --- PASS: TestProtoQ4Trace/best_ranked_rack_fails_verification (0.10s)
+    zz_probe_prototype_test.go:263: with predicates: largest gang the exhaustive path places on four 3-CPU nodes (init 2 CPU, app 0.5 CPU) is below 5
+    zz_probe_prototype_test.go:263: without predicates: largest gang the exhaustive path places on four 3-CPU nodes (init 2 CPU, app 0.5 CPU) is below 5
+--- PASS: TestProtoQ10FitBoundWithInitContainers (2.04s)
+    zz_probe_prototype_test.go:294: 20 single-pod jobs without topology, 8 identical nodes, no node scoring: pods per node = map[z0-r00-n0:2 z0-r00-n1:2 z0-r00-n2:3 z0-r00-n3:2 z0-r00-n4:3 z0-r00-n5:3 z0-r00-n6:2 z0-r00-n7:3]
+--- PASS: TestProtoQ11TieKeySpreads (0.21s)
+    zz_probe_prototype_test.go:305: | scenario | mode | task attempts | allocate | deallocate | placed |
+    zz_probe_prototype_test.go:306: |---|---|---|---|---|---|
+    zz_probe_prototype_test.go:348: | nothing fits: 16 fragmented racks, job 2x8cpu hard tier 1 | exhaustive+detTies | 16 | 0 | 0 | 0 |
+    zz_probe_prototype_test.go:348: | nothing fits: 16 fragmented racks, job 2x8cpu hard tier 1 | ranked | 16 | 0 | 0 | 0 |
+    zz_probe_prototype_test.go:348: | nothing fits: 16 fragmented racks, job 2x8cpu hard tier 1 | ranked+fitBound | 0 | 0 | 0 | 0 |
+    zz_probe_prototype_test.go:348: | fits only one tier up: 2 zones x 8 racks, job 4x8cpu hard tier 2 | exhaustive+detTies | 8 | 20 | 16 | 4 |
+    zz_probe_prototype_test.go:348: | fits only one tier up: 2 zones x 8 racks, job 4x8cpu hard tier 2 | ranked | 4 | 4 | 0 | 4 |
+    zz_probe_prototype_test.go:348: | fits only one tier up: 2 zones x 8 racks, job 4x8cpu hard tier 2 | ranked+fitBound | 4 | 4 | 0 | 4 |
+--- PASS: TestProtoQ6FailureAndUpperLayerPaths (0.63s)
+    zz_probe_prototype_test.go:535: 400 random scenarios (392 placed at least one pod)
+    zz_probe_prototype_test.go:538:   exhaustive+detTies   taskAttempts=17184 allocate=32895 deallocate=29731 predicate=40070 placement mismatches vs exhaustive=0
+    zz_probe_prototype_test.go:538:   ranked               taskAttempts=10092 allocate=10044 deallocate=6880 predicate=21882 placement mismatches vs exhaustive=0
+    zz_probe_prototype_test.go:538:   ranked+fitBound      taskAttempts=8995 allocate=9497 deallocate=6333 predicate=21115 placement mismatches vs exhaustive=0
+--- PASS: TestProtoQ2DifferentialRandom (126.89s)
+    zz_probe_prototype_test.go:535: 300 random scenarios (297 placed at least one pod)
+    zz_probe_prototype_test.go:538:   exhaustive+detTies   taskAttempts=12422 allocate=24187 deallocate=21785 predicate=29706 placement mismatches vs exhaustive=0
+    zz_probe_prototype_test.go:538:   ranked               taskAttempts=6396 allocate=6262 deallocate=3860 predicate=13809 placement mismatches vs exhaustive=0
+    zz_probe_prototype_test.go:538:   ranked+fitBound      taskAttempts=5549 allocate=5799 deallocate=3397 predicate=13103 placement mismatches vs exhaustive=0
+--- PASS: TestProtoQ2bDifferentialRandomWithSoft (94.68s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	231.852s

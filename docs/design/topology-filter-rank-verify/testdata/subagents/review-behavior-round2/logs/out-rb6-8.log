@@ -1,0 +1,115 @@
+=== RUN   TestReviewRB6MutualAntiAffinityInOneSession
+    zz_review_behavior_avail_test.go:31: ### J1=pg-myq (4 pods, HB2), J2=pg-small (2 pods)
+    zz_review_behavior_avail_test.go:36:   [off+detTies] J1 placed=0 [] | J2 placed=2 [small-0@z2-r01-n0 small-1@z2-r00-n0]
+    zz_review_behavior_avail_test.go:37:       J2 FitError: pod group is ready, 2 Binding, 2 minAvailable.
+    zz_review_behavior_avail_test.go:36:   [S7a forest-first] J1 placed=4 [myq-worker-0@z2-r01-n0 myq-worker-1@z2-r00-n0 myq-worker-2@z1-r01-n0 myq-worker-3@z1-r00-n0] | J2 placed=0 []
+    zz_review_behavior_avail_test.go:37:       J2 FitError: pod group is not ready, 2 Pending, 2 minAvailable; Pending: 2 Unschedulable.
+    zz_review_behavior_avail_test.go:36:   [S7b region-replaces-forest] J1 placed=4 [myq-worker-0@z2-r01-n0 myq-worker-1@z2-r00-n0 myq-worker-2@z1-r01-n0 myq-worker-3@z1-r00-n0] | J2 placed=0 []
+    zz_review_behavior_avail_test.go:37:       J2 FitError: pod group is not ready, 2 Pending, 2 minAvailable; Pending: 2 Unschedulable.
+    zz_review_behavior_avail_test.go:31: ### J1=pg-myq (4 pods, HB2), J2=pg-a-small (2 pods)
+    zz_review_behavior_avail_test.go:36:   [off+detTies] J1 placed=0 [] | J2 placed=2 [small-0@z1-r01-n0 small-1@z1-r00-n0]
+    zz_review_behavior_avail_test.go:37:       J2 FitError: pod group is ready, 2 Binding, 2 minAvailable.
+    zz_review_behavior_avail_test.go:36:   [S7a forest-first] J1 placed=0 [] | J2 placed=2 [small-0@z1-r01-n0 small-1@z1-r00-n0]
+    zz_review_behavior_avail_test.go:37:       J2 FitError: pod group is ready, 2 Binding, 2 minAvailable.
+    zz_review_behavior_avail_test.go:36:   [S7b region-replaces-forest] J1 placed=0 [] | J2 placed=2 [small-0@z1-r01-n0 small-1@z1-r00-n0]
+    zz_review_behavior_avail_test.go:37:       J2 FitError: pod group is ready, 2 Binding, 2 minAvailable.
+--- PASS: TestReviewRB6MutualAntiAffinityInOneSession (0.62s)
+=== RUN   TestReviewRB7UncoveredClasses
+    zz_review_behavior_avail_test.go:82: ### elastic HB2: 4 pods, minMember 2
+    zz_review_behavior_avail_test.go:85:   [off+detTies] placed=0 []
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="" annotation="" subJobs=[] | taskAttempts=0 predicate=0 nodeOrder=0 allocate=0 deallocate=0 hyperNodeOrderCalls=0
+    zz_review_behavior_avail_test.go:85:   [S7a forest-first] placed=4 [myq-worker-0@z2-r01-n0 myq-worker-1@z2-r00-n0 myq-worker-2@z1-r01-n0 myq-worker-3@z1-r00-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq=dc] | taskAttempts=10 predicate=10 nodeOrder=7 allocate=13 deallocate=9 hyperNodeOrderCalls=3
+    zz_review_behavior_avail_test.go:85:   [S7b region-replaces-forest] placed=4 [myq-worker-0@z2-r01-n0 myq-worker-1@z2-r00-n0 myq-worker-2@z1-r01-n0 myq-worker-3@z1-r00-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq=dc] | taskAttempts=10 predicate=10 nodeOrder=7 allocate=14 deallocate=10 hyperNodeOrderCalls=4
+    zz_review_behavior_avail_test.go:85:   [S7b region-replaces-forest+repair(4)] placed=4 [myq-worker-0@z2-r01-n0 myq-worker-1@z2-r00-n0 myq-worker-2@z1-r01-n0 myq-worker-3@z1-r00-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq=dc] | taskAttempts=10 predicate=10 nodeOrder=7 allocate=14 deallocate=10 hyperNodeOrderCalls=4
+    zz_review_behavior_avail_test.go:82: ### elastic HB1: 4 pods, minMember 2, minSubGroups 1 per policy
+    zz_review_behavior_avail_test.go:85:   [off+detTies] placed=4 [myq-decode-2@z2-r00-n0 myq-decode-3@z2-r01-n0 myq-prefill-0@z1-r01-n0 myq-prefill-1@z1-r00-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq/decode-2=z2-r00 c1/pg-myq/decode-3=z2-r01 c1/pg-myq/prefill-0=z1-r01 c1/pg-myq/prefill-1=z1-r00] | taskAttempts=10 predicate=10 nodeOrder=0 allocate=18 deallocate=14 hyperNodeOrderCalls=4
+    zz_review_behavior_avail_test.go:85:   [S7a forest-first] placed=4 [myq-decode-2@z2-r00-n0 myq-decode-3@z2-r01-n0 myq-prefill-0@z1-r01-n0 myq-prefill-1@z1-r00-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq/decode-2=z2-r00 c1/pg-myq/decode-3=z2-r01 c1/pg-myq/prefill-0=z1-r01 c1/pg-myq/prefill-1=z1-r00] | taskAttempts=10 predicate=10 nodeOrder=0 allocate=18 deallocate=14 hyperNodeOrderCalls=4
+    zz_review_behavior_avail_test.go:85:   [S7b region-replaces-forest] placed=4 [myq-decode-2@z1-r00-n0 myq-decode-3@z2-r01-n0 myq-prefill-0@z1-r01-n0 myq-prefill-1@z2-r00-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq/decode-2=z1-r00 c1/pg-myq/decode-3=z2-r01 c1/pg-myq/prefill-0=dc c1/pg-myq/prefill-1=z2] | taskAttempts=13 predicate=13 nodeOrder=0 allocate=28 deallocate=24 hyperNodeOrderCalls=11
+    zz_review_behavior_avail_test.go:85:   [S7b region-replaces-forest+repair(4)] placed=4 [myq-decode-2@z1-r00-n0 myq-decode-3@z2-r01-n0 myq-prefill-0@z1-r01-n0 myq-prefill-1@z2-r00-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq/decode-2=z1-r00 c1/pg-myq/decode-3=z2-r01 c1/pg-myq/prefill-0=dc c1/pg-myq/prefill-1=z2] | taskAttempts=13 predicate=13 nodeOrder=0 allocate=28 deallocate=24 hyperNodeOrderCalls=11
+    zz_review_behavior_avail_test.go:82: ### soft job tier 2 + PAA, no SubGroups, 4 pods
+    zz_review_behavior_avail_test.go:85:   [off+detTies] placed=0 []
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="" annotation="" subJobs=[] | taskAttempts=0 predicate=0 nodeOrder=0 allocate=0 deallocate=0 hyperNodeOrderCalls=0
+    zz_review_behavior_avail_test.go:85:   [S7a forest-first] placed=4 [myq-worker-0@z2-r01-n0 myq-worker-1@z2-r00-n0 myq-worker-2@z1-r01-n0 myq-worker-3@z1-r00-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq=dc] | taskAttempts=4 predicate=10 nodeOrder=9 allocate=12 deallocate=8 hyperNodeOrderCalls=1
+    zz_review_behavior_avail_test.go:85:   [S7b region-replaces-forest] placed=4 [myq-worker-0@z2-r01-n0 myq-worker-1@z2-r00-n0 myq-worker-2@z1-r01-n0 myq-worker-3@z1-r00-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq=dc] | taskAttempts=4 predicate=10 nodeOrder=9 allocate=12 deallocate=8 hyperNodeOrderCalls=1
+    zz_review_behavior_avail_test.go:85:   [S7b region-replaces-forest+repair(4)] placed=4 [myq-worker-0@z2-r01-n0 myq-worker-1@z2-r00-n0 myq-worker-2@z1-r01-n0 myq-worker-3@z1-r00-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq=dc] | taskAttempts=4 predicate=10 nodeOrder=9 allocate=12 deallocate=8 hyperNodeOrderCalls=1
+    zz_review_behavior_avail_test.go:82: ### soft job tier 2 + PAA, no SubGroups, 2 pods
+    zz_review_behavior_avail_test.go:85:   [off+detTies] placed=2 [myq-worker-0@z1-r00-n0 myq-worker-1@z1-r01-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="z1" annotation="z1" subJobs=[c1/pg-myq=z1] | taskAttempts=4 predicate=6 nodeOrder=4 allocate=8 deallocate=6 hyperNodeOrderCalls=1
+    zz_review_behavior_avail_test.go:85:   [S7a forest-first] placed=2 [myq-worker-0@z1-r00-n0 myq-worker-1@z1-r01-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="z1" annotation="z1" subJobs=[c1/pg-myq=z1] | taskAttempts=4 predicate=6 nodeOrder=4 allocate=8 deallocate=6 hyperNodeOrderCalls=1
+    zz_review_behavior_avail_test.go:85:   [S7b region-replaces-forest] placed=2 [myq-worker-0@z1-r00-n0 myq-worker-1@z1-r01-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="z1" annotation="z1" subJobs=[c1/pg-myq=z1] | taskAttempts=4 predicate=6 nodeOrder=4 allocate=10 deallocate=8 hyperNodeOrderCalls=2
+    zz_review_behavior_avail_test.go:85:   [S7b region-replaces-forest+repair(4)] placed=2 [myq-worker-0@z1-r00-n0 myq-worker-1@z1-r01-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="z1" annotation="z1" subJobs=[c1/pg-myq=z1] | taskAttempts=4 predicate=6 nodeOrder=4 allocate=10 deallocate=8 hyperNodeOrderCalls=2
+    zz_review_behavior_avail_test.go:82: ### soft job tier 1 + PAA, no SubGroups, 2 pods
+    zz_review_behavior_avail_test.go:85:   [off+detTies] placed=2 [myq-worker-0@z1-r00-n0 myq-worker-1@z1-r01-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="z1" annotation="z1" subJobs=[c1/pg-myq=z1] | taskAttempts=4 predicate=6 nodeOrder=4 allocate=8 deallocate=6 hyperNodeOrderCalls=1
+    zz_review_behavior_avail_test.go:85:   [S7a forest-first] placed=2 [myq-worker-0@z1-r00-n0 myq-worker-1@z1-r01-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="z1" annotation="z1" subJobs=[c1/pg-myq=z1] | taskAttempts=4 predicate=6 nodeOrder=4 allocate=8 deallocate=6 hyperNodeOrderCalls=1
+    zz_review_behavior_avail_test.go:85:   [S7b region-replaces-forest] placed=2 [myq-worker-0@z1-r00-n0 myq-worker-1@z1-r01-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="z1" annotation="z1" subJobs=[c1/pg-myq=z1] | taskAttempts=4 predicate=6 nodeOrder=4 allocate=10 deallocate=8 hyperNodeOrderCalls=2
+    zz_review_behavior_avail_test.go:85:   [S7b region-replaces-forest+repair(4)] placed=2 [myq-worker-0@z1-r00-n0 myq-worker-1@z1-r01-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="z1" annotation="z1" subJobs=[c1/pg-myq=z1] | taskAttempts=4 predicate=6 nodeOrder=4 allocate=10 deallocate=8 hyperNodeOrderCalls=2
+    zz_review_behavior_avail_test.go:82: ### no real common root (dc removed): HB1
+    zz_review_behavior_avail_test.go:85:   [off+detTies] placed=4 [myq-decode-2@z2-r00-n0 myq-decode-3@z2-r01-n0 myq-prefill-0@z1-r01-n0 myq-prefill-1@z1-r00-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="<cluster-top-hypernode>" annotation="<cluster-top-hypernode>" subJobs=[c1/pg-myq/decode-2=z2-r00 c1/pg-myq/decode-3=z2-r01 c1/pg-myq/prefill-0=z1-r01 c1/pg-myq/prefill-1=z1-r00] | taskAttempts=10 predicate=10 nodeOrder=0 allocate=18 deallocate=14 hyperNodeOrderCalls=4
+    zz_review_behavior_avail_test.go:85:   [S7a forest-first] placed=4 [myq-decode-2@z2-r00-n0 myq-decode-3@z2-r01-n0 myq-prefill-0@z1-r01-n0 myq-prefill-1@z1-r00-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="<cluster-top-hypernode>" annotation="<cluster-top-hypernode>" subJobs=[c1/pg-myq/decode-2=z2-r00 c1/pg-myq/decode-3=z2-r01 c1/pg-myq/prefill-0=z1-r01 c1/pg-myq/prefill-1=z1-r00] | taskAttempts=10 predicate=10 nodeOrder=0 allocate=18 deallocate=14 hyperNodeOrderCalls=4
+    zz_review_behavior_avail_test.go:85:   [S7b region-replaces-forest] placed=4 [myq-decode-2@z2-r00-n0 myq-decode-3@z2-r01-n0 myq-prefill-0@z1-r01-n0 myq-prefill-1@z1-r00-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="<cluster-top-hypernode>" annotation="<cluster-top-hypernode>" subJobs=[c1/pg-myq/decode-2=z2-r00 c1/pg-myq/decode-3=z2-r01 c1/pg-myq/prefill-0=z1-r01 c1/pg-myq/prefill-1=z1-r00] | taskAttempts=20 predicate=20 nodeOrder=0 allocate=36 deallocate=32 hyperNodeOrderCalls=12
+    zz_review_behavior_avail_test.go:85:   [S7b region-replaces-forest+repair(4)] placed=4 [myq-decode-2@z2-r00-n0 myq-decode-3@z2-r01-n0 myq-prefill-0@z1-r01-n0 myq-prefill-1@z1-r00-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="<cluster-top-hypernode>" annotation="<cluster-top-hypernode>" subJobs=[c1/pg-myq/decode-2=z2-r00 c1/pg-myq/decode-3=z2-r01 c1/pg-myq/prefill-0=z1-r01 c1/pg-myq/prefill-1=z1-r00] | taskAttempts=20 predicate=20 nodeOrder=0 allocate=36 deallocate=32 hyperNodeOrderCalls=12
+    zz_review_behavior_avail_test.go:82: ### no real common root (dc removed): HB2
+    zz_review_behavior_avail_test.go:85:   [off+detTies] placed=0 []
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="" annotation="" subJobs=[] | taskAttempts=0 predicate=0 nodeOrder=0 allocate=0 deallocate=0 hyperNodeOrderCalls=0
+    zz_review_behavior_avail_test.go:85:   [S7a forest-first] placed=4 [myq-worker-0@z2-r01-n0 myq-worker-1@z2-r00-n0 myq-worker-2@z1-r01-n0 myq-worker-3@z1-r00-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="<cluster-top-hypernode>" annotation="<cluster-top-hypernode>" subJobs=[c1/pg-myq=<cluster-top-hypernode>] | taskAttempts=4 predicate=10 nodeOrder=9 allocate=12 deallocate=8 hyperNodeOrderCalls=1
+    zz_review_behavior_avail_test.go:85:   [S7b region-replaces-forest] placed=4 [myq-worker-0@z2-r01-n0 myq-worker-1@z2-r00-n0 myq-worker-2@z1-r01-n0 myq-worker-3@z1-r00-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="<cluster-top-hypernode>" annotation="<cluster-top-hypernode>" subJobs=[c1/pg-myq=<cluster-top-hypernode>] | taskAttempts=4 predicate=10 nodeOrder=9 allocate=12 deallocate=8 hyperNodeOrderCalls=1
+    zz_review_behavior_avail_test.go:85:   [S7b region-replaces-forest+repair(4)] placed=4 [myq-worker-0@z2-r01-n0 myq-worker-1@z2-r00-n0 myq-worker-2@z1-r01-n0 myq-worker-3@z1-r00-n0]
+    zz_review_behavior_avail_test.go:86:       job.AllocatedHyperNode="<cluster-top-hypernode>" annotation="<cluster-top-hypernode>" subJobs=[c1/pg-myq=<cluster-top-hypernode>] | taskAttempts=4 predicate=10 nodeOrder=9 allocate=12 deallocate=8 hyperNodeOrderCalls=1
+--- PASS: TestReviewRB7UncoveredClasses (2.88s)
+=== RUN   TestReviewRB8Counters
+    zz_review_behavior_avail_test.go:109: | scenario | config | placed | taskAttempts | predicate | allocate | deallocate | hyperNodeOrder |
+    zz_review_behavior_avail_test.go:110: |---|---|---|---|---|---|---|---|
+    zz_review_behavior_avail_test.go:116: | HB1 reported bug: PAA tier 2 + prefill/decode SubGroups hard tier 1, 4 pods | off+detTies | 4/4 | 10 | 10 | 18 | 14 | 4 |
+    zz_review_behavior_avail_test.go:116: | HB1 reported bug: PAA tier 2 + prefill/decode SubGroups hard tier 1, 4 pods | S7a forest-first | 4/4 | 10 | 10 | 18 | 14 | 4 |
+    zz_review_behavior_avail_test.go:116: | HB1 reported bug: PAA tier 2 + prefill/decode SubGroups hard tier 1, 4 pods | S7b region-replaces-forest | 4/4 | 20 | 20 | 36 | 32 | 12 |
+    zz_review_behavior_avail_test.go:116: | HB1 reported bug: PAA tier 2 + prefill/decode SubGroups hard tier 1, 4 pods | S7b region-replaces-forest+repair(4) | 4/4 | 20 | 20 | 36 | 32 | 12 |
+    zz_review_behavior_avail_test.go:116: | HB5 PAA tier 2 + SubGroups of 2 pods hard tier 2, 4 pods | off+detTies | 4/4 | 6 | 9 | 14 | 10 | 2 |
+    zz_review_behavior_avail_test.go:116: | HB5 PAA tier 2 + SubGroups of 2 pods hard tier 2, 4 pods | S7a forest-first | 4/4 | 6 | 9 | 14 | 10 | 2 |
+    zz_review_behavior_avail_test.go:116: | HB5 PAA tier 2 + SubGroups of 2 pods hard tier 2, 4 pods | S7b region-replaces-forest | 4/4 | 10 | 15 | 22 | 18 | 4 |
+    zz_review_behavior_avail_test.go:116: | HB5 PAA tier 2 + SubGroups of 2 pods hard tier 2, 4 pods | S7b region-replaces-forest+repair(4) | 4/4 | 10 | 15 | 22 | 18 | 4 |
+    zz_review_behavior_avail_test.go:116: | HB6 job soft tier 2 + PAA tier 2 + prefill/decode SubGroups, 4 pods | off+detTies | 4/4 | 10 | 10 | 18 | 14 | 4 |
+    zz_review_behavior_avail_test.go:116: | HB6 job soft tier 2 + PAA tier 2 + prefill/decode SubGroups, 4 pods | S7a forest-first | 4/4 | 10 | 10 | 18 | 14 | 4 |
+    zz_review_behavior_avail_test.go:116: | HB6 job soft tier 2 + PAA tier 2 + prefill/decode SubGroups, 4 pods | S7b region-replaces-forest | 4/4 | 20 | 20 | 36 | 32 | 12 |
+    zz_review_behavior_avail_test.go:116: | HB6 job soft tier 2 + PAA tier 2 + prefill/decode SubGroups, 4 pods | S7b region-replaces-forest+repair(4) | 4/4 | 20 | 20 | 36 | 32 | 12 |
+    zz_review_behavior_avail_test.go:116: | control: 2 pods fit in B alone | off+detTies | 2/2 | 7 | 7 | 11 | 9 | 2 |
+    zz_review_behavior_avail_test.go:116: | control: 2 pods fit in B alone | S7a forest-first | 2/2 | 7 | 7 | 11 | 9 | 2 |
+    zz_review_behavior_avail_test.go:116: | control: 2 pods fit in B alone | S7b region-replaces-forest | 2/2 | 10 | 10 | 20 | 18 | 8 |
+    zz_review_behavior_avail_test.go:116: | control: 2 pods fit in B alone | S7b region-replaces-forest+repair(4) | 2/2 | 10 | 10 | 20 | 18 | 8 |
+    zz_review_behavior_avail_test.go:116: | control: no PAA, 4 pods | off+detTies | 4/4 | 33 | 33 | 53 | 49 | 16 |
+    zz_review_behavior_avail_test.go:116: | control: no PAA, 4 pods | S7a forest-first | 4/4 | 33 | 33 | 53 | 49 | 16 |
+    zz_review_behavior_avail_test.go:116: | control: no PAA, 4 pods | S7b region-replaces-forest | 4/4 | 33 | 33 | 53 | 49 | 16 |
+    zz_review_behavior_avail_test.go:116: | control: no PAA, 4 pods | S7b region-replaces-forest+repair(4) | 4/4 | 33 | 33 | 53 | 49 | 16 |
+    zz_review_behavior_avail_test.go:116: | control: job hard tier 2 + PAA, 4 pods need two tier-2 domains | off+detTies | 0/4 | 10 | 10 | 18 | 18 | 8 |
+    zz_review_behavior_avail_test.go:116: | control: job hard tier 2 + PAA, 4 pods need two tier-2 domains | S7a forest-first | 0/4 | 10 | 10 | 18 | 18 | 8 |
+    zz_review_behavior_avail_test.go:116: | control: job hard tier 2 + PAA, 4 pods need two tier-2 domains | S7b region-replaces-forest | 0/4 | 10 | 10 | 18 | 18 | 8 |
+    zz_review_behavior_avail_test.go:116: | control: job hard tier 2 + PAA, 4 pods need two tier-2 domains | S7b region-replaces-forest+repair(4) | 0/4 | 10 | 10 | 18 | 18 | 8 |
+    zz_review_behavior_avail_test.go:116: | control: PAA, 5 pods but only 4 nodes outside A | off+detTies | 0/5 | 0 | 0 | 0 | 0 | 0 |
+    zz_review_behavior_avail_test.go:116: | control: PAA, 5 pods but only 4 nodes outside A | S7a forest-first | 0/5 | 15 | 30 | 12 | 12 | 0 |
+    zz_review_behavior_avail_test.go:116: | control: PAA, 5 pods but only 4 nodes outside A | S7b region-replaces-forest | 0/5 | 15 | 30 | 12 | 12 | 0 |
+    zz_review_behavior_avail_test.go:116: | control: PAA, 5 pods but only 4 nodes outside A | S7b region-replaces-forest+repair(4) | 0/5 | 15 | 30 | 12 | 12 | 0 |
+--- PASS: TestReviewRB8Counters (2.90s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	6.425s

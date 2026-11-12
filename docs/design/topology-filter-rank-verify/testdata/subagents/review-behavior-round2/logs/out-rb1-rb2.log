@@ -1,0 +1,163 @@
+=== RUN   TestReviewRB1StatusAfterFailedRepair
+    zz_review_behavior_status_test.go:23: ### 017 as archived (a:1 free, b idle, 1 pinned) - repair can succeed
+    zz_review_behavior_status_test.go:30:   budget=0 placed=0 []
+    zz_review_behavior_status_test.go:31:     FitError      : pod group is not ready, 2 Pending, 2 minAvailable; Pending: 1 Schedulable, 1 Unschedulable. HyperNode: 4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2; Node: job-pinned: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:32:     JobFitErrors  : "4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2"
+    zz_review_behavior_status_test.go:33:     NodesFitErrors: job-pinned: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:34:     counters      : taskAttempts=9 predicate=6 nodeOrder=0 allocate=10 deallocate=10 hyperNodeOrderCalls=4
+    zz_review_behavior_status_test.go:38:     budgetExhausted(trace only): []
+    zz_review_behavior_status_test.go:30:   budget=1 placed=0 []
+    zz_review_behavior_status_test.go:31:     FitError      : pod group is not ready, 2 Pending, 2 minAvailable; Pending: 1 Schedulable, 1 Unschedulable. HyperNode: 4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2; Node: job-pinned: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:32:     JobFitErrors  : "4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2"
+    zz_review_behavior_status_test.go:33:     NodesFitErrors: job-pinned: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:34:     counters      : taskAttempts=10 predicate=6 nodeOrder=0 allocate=10 deallocate=10 hyperNodeOrderCalls=4
+    zz_review_behavior_status_test.go:36:     repair        : job c1/job in z0-r01: retry 1 with [c1/job/worker-1] first failed
+    zz_review_behavior_status_test.go:38:     budgetExhausted(trace only): [c1/job]
+    zz_review_behavior_status_test.go:30:   budget=4 placed=2 [job-flexible@z0-r01-n0 job-pinned@z0-r00-n0]
+    zz_review_behavior_status_test.go:31:     FitError      : pod group is ready, 2 Binding, 2 minAvailable. HyperNode: 4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2
+    zz_review_behavior_status_test.go:32:     JobFitErrors  : "4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2"
+    zz_review_behavior_status_test.go:33:     NodesFitErrors: (none)
+    zz_review_behavior_status_test.go:34:     counters      : taskAttempts=13 predicate=8 nodeOrder=0 allocate=14 deallocate=12 hyperNodeOrderCalls=6
+    zz_review_behavior_status_test.go:36:     repair        : job c1/job in z0-r01: retry 1 with [c1/job/worker-1] first failed
+    zz_review_behavior_status_test.go:36:     repair        : job c1/job in z0: retry 2 with [c1/job/worker-1] first succeeded
+    zz_review_behavior_status_test.go:38:     budgetExhausted(trace only): []
+    zz_review_behavior_status_test.go:23: ### a full, b idle, 1 pinned - infeasible
+    zz_review_behavior_status_test.go:30:   budget=0 placed=0 []
+    zz_review_behavior_status_test.go:31:     FitError      : pod group is not ready, 2 Pending, 2 minAvailable; Pending: 1 Schedulable, 1 Unschedulable. HyperNode: 4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2; Node: job-pinned0: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:32:     JobFitErrors  : "4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2"
+    zz_review_behavior_status_test.go:33:     NodesFitErrors: job-pinned0: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:34:     counters      : taskAttempts=6 predicate=3 nodeOrder=0 allocate=6 deallocate=6 hyperNodeOrderCalls=3
+    zz_review_behavior_status_test.go:38:     budgetExhausted(trace only): []
+    zz_review_behavior_status_test.go:30:   budget=1 placed=0 []
+    zz_review_behavior_status_test.go:31:     FitError      : pod group is not ready, 2 Pending, 2 minAvailable; Pending: 1 Schedulable, 1 Unschedulable. HyperNode: 4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2; Node: job-pinned0: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:32:     JobFitErrors  : "4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2"
+    zz_review_behavior_status_test.go:33:     NodesFitErrors: job-pinned0: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:34:     counters      : taskAttempts=7 predicate=3 nodeOrder=0 allocate=6 deallocate=6 hyperNodeOrderCalls=3
+    zz_review_behavior_status_test.go:36:     repair        : job c1/job in z0-r01: retry 1 with [c1/job/worker-1] first failed
+    zz_review_behavior_status_test.go:38:     budgetExhausted(trace only): [c1/job]
+    zz_review_behavior_status_test.go:30:   budget=4 placed=0 []
+    zz_review_behavior_status_test.go:31:     FitError      : pod group is not ready, 2 Pending, 2 minAvailable; Pending: 1 Schedulable, 1 Unschedulable. HyperNode: 4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2; Node: job-pinned0: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:32:     JobFitErrors  : "4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2"
+    zz_review_behavior_status_test.go:33:     NodesFitErrors: job-pinned0: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:34:     counters      : taskAttempts=9 predicate=3 nodeOrder=0 allocate=6 deallocate=6 hyperNodeOrderCalls=3
+    zz_review_behavior_status_test.go:36:     repair        : job c1/job in z0-r01: retry 1 with [c1/job/worker-1] first failed
+    zz_review_behavior_status_test.go:36:     repair        : job c1/job in z0: retry 2 with [c1/job/worker-1] first failed
+    zz_review_behavior_status_test.go:36:     repair        : job c1/job in <cluster-top-hypernode>: retry 3 with [c1/job/worker-1] first failed
+    zz_review_behavior_status_test.go:38:     budgetExhausted(trace only): []
+    zz_review_behavior_status_test.go:23: ### a full, b idle, 2 pinned - infeasible
+    zz_review_behavior_status_test.go:30:   budget=0 placed=0 []
+    zz_review_behavior_status_test.go:31:     FitError      : pod group is not ready, 3 Pending, 3 minAvailable; Pending: 1 Schedulable, 2 Unschedulable. HyperNode: 4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2; Node: job-pinned0: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:32:     JobFitErrors  : "4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2"
+    zz_review_behavior_status_test.go:33:     NodesFitErrors: job-pinned0: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector. || job-pinned1: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:34:     counters      : taskAttempts=9 predicate=3 nodeOrder=0 allocate=6 deallocate=6 hyperNodeOrderCalls=3
+    zz_review_behavior_status_test.go:38:     budgetExhausted(trace only): []
+    zz_review_behavior_status_test.go:30:   budget=1 placed=0 []
+    zz_review_behavior_status_test.go:31:     FitError      : pod group is not ready, 3 Pending, 3 minAvailable; Pending: 1 Schedulable, 2 Unschedulable. HyperNode: 4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2; Node: job-pinned0: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:32:     JobFitErrors  : "4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2"
+    zz_review_behavior_status_test.go:33:     NodesFitErrors: job-pinned0: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:34:     counters      : taskAttempts=10 predicate=3 nodeOrder=0 allocate=6 deallocate=6 hyperNodeOrderCalls=3
+    zz_review_behavior_status_test.go:36:     repair        : job c1/job in z0-r01: retry 1 with [c1/job/worker-1, c1/job/worker-2] first failed
+    zz_review_behavior_status_test.go:38:     budgetExhausted(trace only): [c1/job]
+    zz_review_behavior_status_test.go:30:   budget=4 placed=0 []
+    zz_review_behavior_status_test.go:31:     FitError      : pod group is not ready, 3 Pending, 3 minAvailable; Pending: 1 Schedulable, 2 Unschedulable. HyperNode: 4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2; Node: job-pinned0: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:32:     JobFitErrors  : "4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2"
+    zz_review_behavior_status_test.go:33:     NodesFitErrors: job-pinned0: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:34:     counters      : taskAttempts=12 predicate=3 nodeOrder=0 allocate=6 deallocate=6 hyperNodeOrderCalls=3
+    zz_review_behavior_status_test.go:36:     repair        : job c1/job in z0-r01: retry 1 with [c1/job/worker-1, c1/job/worker-2] first failed
+    zz_review_behavior_status_test.go:36:     repair        : job c1/job in z0: retry 2 with [c1/job/worker-1, c1/job/worker-2] first failed
+    zz_review_behavior_status_test.go:36:     repair        : job c1/job in <cluster-top-hypernode>: retry 3 with [c1/job/worker-1, c1/job/worker-2] first failed
+    zz_review_behavior_status_test.go:38:     budgetExhausted(trace only): []
+    zz_review_behavior_status_test.go:23: ### a:1 free, b:2 free, 2 pinned - infeasible, gate passes
+    zz_review_behavior_status_test.go:30:   budget=0 placed=0 []
+    zz_review_behavior_status_test.go:31:     FitError      : pod group is not ready, 3 Pending, 3 minAvailable; Pending: 1 Schedulable, 2 Unschedulable. HyperNode: 4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2; Node: job-pinned1: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:32:     JobFitErrors  : "4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2"
+    zz_review_behavior_status_test.go:33:     NodesFitErrors: job-pinned0: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector. || job-pinned1: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:34:     counters      : taskAttempts=12 predicate=6 nodeOrder=0 allocate=10 deallocate=10 hyperNodeOrderCalls=4
+    zz_review_behavior_status_test.go:38:     budgetExhausted(trace only): []
+    zz_review_behavior_status_test.go:30:   budget=1 placed=0 []
+    zz_review_behavior_status_test.go:31:     FitError      : pod group is not ready, 3 Pending, 3 minAvailable; Pending: 1 Unschedulable, 2 Schedulable. HyperNode: 4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2; Node: job-pinned0: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:32:     JobFitErrors  : "4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2"
+    zz_review_behavior_status_test.go:33:     NodesFitErrors: job-pinned0: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector. || job-pinned1: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:34:     counters      : taskAttempts=16 predicate=8 nodeOrder=0 allocate=14 deallocate=14 hyperNodeOrderCalls=6
+    zz_review_behavior_status_test.go:36:     repair        : job c1/job in z0: retry 1 with [c1/job/worker-1, c1/job/worker-2] first failed; still blocked: [c1/job/worker-2]
+    zz_review_behavior_status_test.go:38:     budgetExhausted(trace only): [c1/job]
+    zz_review_behavior_status_test.go:30:   budget=4 placed=0 []
+    zz_review_behavior_status_test.go:31:     FitError      : pod group is not ready, 3 Pending, 3 minAvailable; Pending: 3 Schedulable. HyperNode: 4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2; Node: job-pinned0: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:32:     JobFitErrors  : "4/4 hyperNodes available: tier-3 1/1; tier-2 1/1; tier-1 2/2"
+    zz_review_behavior_status_test.go:33:     NodesFitErrors: job-pinned0: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_behavior_status_test.go:34:     counters      : taskAttempts=28 predicate=14 nodeOrder=0 allocate=26 deallocate=26 hyperNodeOrderCalls=12
+    zz_review_behavior_status_test.go:36:     repair        : job c1/job in z0: retry 1 with [c1/job/worker-1, c1/job/worker-2] first failed; still blocked: [c1/job/worker-2]
+    zz_review_behavior_status_test.go:36:     repair        : job c1/job in z0: retry 2 with [c1/job/worker-2, c1/job/worker-1] first failed; still blocked: [c1/job/worker-1]
+    zz_review_behavior_status_test.go:36:     repair        : job c1/job in <cluster-top-hypernode>: retry 3 with [c1/job/worker-1, c1/job/worker-2] first failed; still blocked: [c1/job/worker-2]
+    zz_review_behavior_status_test.go:36:     repair        : job c1/job in <cluster-top-hypernode>: retry 4 with [c1/job/worker-2, c1/job/worker-1] first failed; still blocked: [c1/job/worker-1]
+    zz_review_behavior_status_test.go:38:     budgetExhausted(trace only): [c1/job]
+--- PASS: TestReviewRB1StatusAfterFailedRepair (1.23s)
+=== RUN   TestReviewRB2StatusRegion
+    zz_review_behavior_status_test.go:67: ### (i) HB2 becomes schedulable through the region
+    zz_review_behavior_status_test.go:70:   [off+detTies] placed=0 []
+    zz_review_behavior_status_test.go:71:     FitError      : pod group is not ready, 4 Pending, 4 minAvailable; Pending: 4 Unschedulable. HyperNode: 6/11 hyperNodes available: tier-4 0/1 (1 podGroupAntiAffinity); tier-3 0/1 (1 podGroupAntiAffinity); tier-2 2/3 (1 podGroupAntiAffinity); tier-1 4/6 (2 podGroupAntiAffinity); subJob c1/pg-myq: 0/11 hyperNodes available (minResource: cpu 4000.00, memory 4294967296.00, huawei.com/ascend-1980 24000.00, pods 4.00): tier-4 0/1 (1 podGroupAntiAffinity); tier-3 0/1 (1 podGroupAntiAffinity); tier-2 0/3 (1 podGroupAntiAffinity, 2 minResource); tier-1 0/6 (2 podGroupAntiAffinity, 4 minResource)
+    zz_review_behavior_status_test.go:72:     NodesFitErrors: (none)
+    zz_review_behavior_status_test.go:73:     counters      : taskAttempts=0 predicate=0 nodeOrder=0 allocate=0 deallocate=0 hyperNodeOrderCalls=0
+    zz_review_behavior_status_test.go:70:   [S7a forest-first] placed=4 [myq-worker-0@z2-r01-n0 myq-worker-1@z2-r00-n0 myq-worker-2@z1-r01-n0 myq-worker-3@z1-r00-n0]
+    zz_review_behavior_status_test.go:71:     FitError      : pod group is ready, 4 Binding, 4 minAvailable. HyperNode: 8/11 hyperNodes available: tier-4 1/1 (1 podGroupAntiAffinity); tier-3 1/1 (1 podGroupAntiAffinity); tier-2 2/3 (1 podGroupAntiAffinity); tier-1 4/6 (2 podGroupAntiAffinity)
+    zz_review_behavior_status_test.go:72:     NodesFitErrors: (none)
+    zz_review_behavior_status_test.go:73:     counters      : taskAttempts=4 predicate=10 nodeOrder=9 allocate=12 deallocate=8 hyperNodeOrderCalls=1
+    zz_review_behavior_status_test.go:70:   [S7b region-replaces-forest] placed=4 [myq-worker-0@z2-r01-n0 myq-worker-1@z2-r00-n0 myq-worker-2@z1-r01-n0 myq-worker-3@z1-r00-n0]
+    zz_review_behavior_status_test.go:71:     FitError      : pod group is ready, 4 Binding, 4 minAvailable. HyperNode: 8/11 hyperNodes available: tier-4 1/1 (1 podGroupAntiAffinity); tier-3 1/1 (1 podGroupAntiAffinity); tier-2 2/3 (1 podGroupAntiAffinity); tier-1 4/6 (2 podGroupAntiAffinity)
+    zz_review_behavior_status_test.go:72:     NodesFitErrors: (none)
+    zz_review_behavior_status_test.go:73:     counters      : taskAttempts=4 predicate=10 nodeOrder=9 allocate=12 deallocate=8 hyperNodeOrderCalls=1
+    zz_review_behavior_status_test.go:67: ### (iii) control: job hard tier 2 + PAA, needs two tier-2 domains
+    zz_review_behavior_status_test.go:70:   [off+detTies] placed=0 []
+    zz_review_behavior_status_test.go:71:     FitError      : pod group is not ready, 4 Pending, 4 minAvailable; Pending: 2 Schedulable, 2 Unschedulable. HyperNode: 6/11 hyperNodes available: tier-4 0/1 (1 podGroupAntiAffinity, 1 networkTopology); tier-3 0/1 (1 podGroupAntiAffinity, 1 networkTopology); tier-2 2/3 (1 podGroupAntiAffinity); tier-1 4/6 (2 podGroupAntiAffinity); subJob c1/pg-myq/decode-3: 0/11 hyperNodes available (minResource: cpu 1000.00, memory 1073741824.00, huawei.com/ascend-1980 6000.00, pods 1.00): tier-4 0/1 (1 podGroupAntiAffinity, 1 networkTopology); tier-3 0/1 (1 podGroupAntiAffinity, 1 networkTopology); tier-2 0/3 (2 podGroupAntiAffinity, 3 networkTopology); tier-1 0/6 (4 podGroupAntiAffinity, 4 networkTopology, 2 minResource)
+    zz_review_behavior_status_test.go:72:     NodesFitErrors: (none)
+    zz_review_behavior_status_test.go:73:     counters      : taskAttempts=10 predicate=10 nodeOrder=0 allocate=18 deallocate=18 hyperNodeOrderCalls=8
+    zz_review_behavior_status_test.go:70:   [S7b region-replaces-forest] placed=0 []
+    zz_review_behavior_status_test.go:71:     FitError      : pod group is not ready, 4 Pending, 4 minAvailable; Pending: 2 Schedulable, 2 Unschedulable. HyperNode: 6/11 hyperNodes available: tier-4 0/1 (1 podGroupAntiAffinity, 1 networkTopology); tier-3 0/1 (1 podGroupAntiAffinity, 1 networkTopology); tier-2 2/3 (1 podGroupAntiAffinity); tier-1 4/6 (2 podGroupAntiAffinity); subJob c1/pg-myq/decode-3: 0/11 hyperNodes available (minResource: cpu 1000.00, memory 1073741824.00, huawei.com/ascend-1980 6000.00, pods 1.00): tier-4 0/1 (1 networkTopology); tier-3 0/1 (1 networkTopology); tier-2 0/3 (3 networkTopology); tier-1 0/6 (4 networkTopology, 2 minResource)
+    zz_review_behavior_status_test.go:72:     NodesFitErrors: (none)
+    zz_review_behavior_status_test.go:73:     counters      : taskAttempts=10 predicate=10 nodeOrder=0 allocate=18 deallocate=18 hyperNodeOrderCalls=8
+    zz_review_behavior_status_test.go:70:   [S7b region-replaces-forest+repair(4)] placed=0 []
+    zz_review_behavior_status_test.go:71:     FitError      : pod group is not ready, 4 Pending, 4 minAvailable; Pending: 2 Schedulable, 2 Unschedulable. HyperNode: 6/11 hyperNodes available: tier-4 0/1 (1 podGroupAntiAffinity, 1 networkTopology); tier-3 0/1 (1 podGroupAntiAffinity, 1 networkTopology); tier-2 2/3 (1 podGroupAntiAffinity); tier-1 4/6 (2 podGroupAntiAffinity); subJob c1/pg-myq/decode-3: 0/11 hyperNodes available (minResource: cpu 1000.00, memory 1073741824.00, huawei.com/ascend-1980 6000.00, pods 1.00): tier-4 0/1 (1 networkTopology); tier-3 0/1 (1 networkTopology); tier-2 0/3 (3 networkTopology); tier-1 0/6 (4 networkTopology, 2 minResource)
+    zz_review_behavior_status_test.go:72:     NodesFitErrors: (none)
+    zz_review_behavior_status_test.go:73:     counters      : taskAttempts=10 predicate=10 nodeOrder=0 allocate=18 deallocate=18 hyperNodeOrderCalls=8
+    zz_review_behavior_status_test.go:67: ### (iii) control: PAA, 5 pods, 4 nodes outside A
+    zz_review_behavior_status_test.go:70:   [off+detTies] placed=0 []
+    zz_review_behavior_status_test.go:71:     FitError      : pod group is not ready, 5 Pending, 5 minAvailable; Pending: 5 Unschedulable. HyperNode: 6/11 hyperNodes available: tier-4 0/1 (1 podGroupAntiAffinity); tier-3 0/1 (1 podGroupAntiAffinity); tier-2 2/3 (1 podGroupAntiAffinity); tier-1 4/6 (2 podGroupAntiAffinity); subJob c1/pg-myq: 0/11 hyperNodes available (minResource: cpu 5000.00, memory 5368709120.00, huawei.com/ascend-1980 30000.00, pods 5.00): tier-4 0/1 (1 podGroupAntiAffinity); tier-3 0/1 (1 podGroupAntiAffinity); tier-2 0/3 (1 podGroupAntiAffinity, 2 minResource); tier-1 0/6 (2 podGroupAntiAffinity, 4 minResource)
+    zz_review_behavior_status_test.go:72:     NodesFitErrors: (none)
+    zz_review_behavior_status_test.go:73:     counters      : taskAttempts=0 predicate=0 nodeOrder=0 allocate=0 deallocate=0 hyperNodeOrderCalls=0
+    zz_review_behavior_status_test.go:70:   [S7a forest-first] placed=0 []
+    zz_review_behavior_status_test.go:71:     FitError      : pod group is not ready, 5 Pending, 5 minAvailable; Pending: 1 Unschedulable, 4 Schedulable. HyperNode: 8/11 hyperNodes available: tier-4 1/1 (1 podGroupAntiAffinity); tier-3 1/1 (1 podGroupAntiAffinity); tier-2 2/3 (1 podGroupAntiAffinity); tier-1 4/6 (2 podGroupAntiAffinity); Node: myq-worker-4: 0/4 nodes are unavailable: 4 Insufficient huawei.com/ascend-1980.
+    zz_review_behavior_status_test.go:72:     NodesFitErrors: myq-worker-4: 0/4 nodes are unavailable: 4 Insufficient huawei.com/ascend-1980.
+    zz_review_behavior_status_test.go:73:     counters      : taskAttempts=15 predicate=30 nodeOrder=27 allocate=12 deallocate=12 hyperNodeOrderCalls=0
+    zz_review_behavior_status_test.go:70:   [S7b region-replaces-forest] placed=0 []
+    zz_review_behavior_status_test.go:71:     FitError      : pod group is not ready, 5 Pending, 5 minAvailable; Pending: 1 Unschedulable, 4 Schedulable. HyperNode: 8/11 hyperNodes available: tier-4 1/1 (1 podGroupAntiAffinity); tier-3 1/1 (1 podGroupAntiAffinity); tier-2 2/3 (1 podGroupAntiAffinity); tier-1 4/6 (2 podGroupAntiAffinity); Node: myq-worker-4: 0/4 nodes are unavailable: 4 Insufficient huawei.com/ascend-1980.
+    zz_review_behavior_status_test.go:72:     NodesFitErrors: myq-worker-4: 0/4 nodes are unavailable: 4 Insufficient huawei.com/ascend-1980.
+    zz_review_behavior_status_test.go:73:     counters      : taskAttempts=15 predicate=30 nodeOrder=27 allocate=12 deallocate=12 hyperNodeOrderCalls=0
+    zz_review_behavior_status_test.go:70:   [S7b region-replaces-forest+repair(4)] placed=0 []
+    zz_review_behavior_status_test.go:71:     FitError      : pod group is not ready, 5 Pending, 5 minAvailable; Pending: 1 Unschedulable, 4 Schedulable. HyperNode: 8/11 hyperNodes available: tier-4 1/1 (1 podGroupAntiAffinity); tier-3 1/1 (1 podGroupAntiAffinity); tier-2 2/3 (1 podGroupAntiAffinity); tier-1 4/6 (2 podGroupAntiAffinity); Node: myq-worker-4: 0/4 nodes are unavailable: 4 Insufficient huawei.com/ascend-1980.
+    zz_review_behavior_status_test.go:72:     NodesFitErrors: myq-worker-4: 0/4 nodes are unavailable: 4 Insufficient huawei.com/ascend-1980.
+    zz_review_behavior_status_test.go:73:     counters      : taskAttempts=15 predicate=30 nodeOrder=27 allocate=12 deallocate=12 hyperNodeOrderCalls=0
+    zz_review_behavior_status_test.go:67: ### (iv-a) region empty: peers in A, B and C
+    zz_review_behavior_status_test.go:70:   [off+detTies] placed=0 []
+    zz_review_behavior_status_test.go:71:     FitError      : pod group is not ready, 4 Pending, 4 minAvailable; Pending: 4 Unschedulable. HyperNode: 0/11 hyperNodes available: tier-4 0/1 (1 podGroupAntiAffinity); tier-3 0/1 (1 podGroupAntiAffinity); tier-2 0/3 (3 podGroupAntiAffinity); tier-1 0/6 (6 podGroupAntiAffinity)
+    zz_review_behavior_status_test.go:72:     NodesFitErrors: (none)
+    zz_review_behavior_status_test.go:73:     counters      : taskAttempts=0 predicate=0 nodeOrder=0 allocate=0 deallocate=0 hyperNodeOrderCalls=0
+    zz_review_behavior_status_test.go:70:   [S7a forest-first] placed=0 []
+    zz_review_behavior_status_test.go:71:     FitError      : pod group is not ready, 4 Pending, 4 minAvailable; Pending: 4 Unschedulable. HyperNode: 0/11 hyperNodes available: tier-4 0/1 (1 podGroupAntiAffinity); tier-3 0/1 (1 podGroupAntiAffinity); tier-2 0/3 (3 podGroupAntiAffinity); tier-1 0/6 (6 podGroupAntiAffinity)
+    zz_review_behavior_status_test.go:72:     NodesFitErrors: (none)
+    zz_review_behavior_status_test.go:73:     counters      : taskAttempts=0 predicate=0 nodeOrder=0 allocate=0 deallocate=0 hyperNodeOrderCalls=0
+    zz_review_behavior_status_test.go:70:   [S7b region-replaces-forest] placed=0 []
+    zz_review_behavior_status_test.go:71:     FitError      : pod group is not ready, 4 Pending, 4 minAvailable; Pending: 4 Unschedulable. HyperNode: 0/11 hyperNodes available: tier-4 0/1 (1 podGroupAntiAffinity); tier-3 0/1 (1 podGroupAntiAffinity); tier-2 0/3 (3 podGroupAntiAffinity); tier-1 0/6 (6 podGroupAntiAffinity)
+    zz_review_behavior_status_test.go:72:     NodesFitErrors: (none)
+    zz_review_behavior_status_test.go:73:     counters      : taskAttempts=0 predicate=0 nodeOrder=0 allocate=0 deallocate=0 hyperNodeOrderCalls=0
+    zz_review_behavior_status_test.go:67: ### (iv-b) region misses the container: job hard tier 2 already runs in A, peer in A
+    zz_review_behavior_status_test.go:70:   [off+detTies] placed=0 []
+    zz_review_behavior_status_test.go:71:     FitError      : pod group is not ready, 1 Pending, 1 Running, 2 minAvailable; Pending: 1 Unschedulable. HyperNode: 0/11 hyperNodes available: tier-4 0/1 (1 podGroupAntiAffinity, 1 networkTopology); tier-3 0/1 (1 podGroupAntiAffinity, 1 networkTopology); tier-2 0/3 (1 podGroupAntiAffinity, 2 networkTopology); tier-1 0/6 (2 podGroupAntiAffinity, 4 networkTopology)
+    zz_review_behavior_status_test.go:72:     NodesFitErrors: (none)
+    zz_review_behavior_status_test.go:73:     counters      : taskAttempts=0 predicate=0 nodeOrder=0 allocate=0 deallocate=0 hyperNodeOrderCalls=0
+    zz_review_behavior_status_test.go:70:   [S7b region-replaces-forest] placed=0 []
+    zz_review_behavior_status_test.go:71:     FitError      : pod group is not ready, 1 Pending, 1 Running, 2 minAvailable; Pending: 1 Unschedulable. HyperNode: 0/11 hyperNodes available: tier-4 0/1 (1 podGroupAntiAffinity, 1 networkTopology); tier-3 0/1 (1 podGroupAntiAffinity, 1 networkTopology); tier-2 0/3 (1 podGroupAntiAffinity, 2 networkTopology); tier-1 0/6 (2 podGroupAntiAffinity, 4 networkTopology)
+    zz_review_behavior_status_test.go:72:     NodesFitErrors: (none)
+    zz_review_behavior_status_test.go:73:     counters      : taskAttempts=0 predicate=0 nodeOrder=0 allocate=0 deallocate=0 hyperNodeOrderCalls=0
+--- PASS: TestReviewRB2StatusRegion (1.54s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	2.801s

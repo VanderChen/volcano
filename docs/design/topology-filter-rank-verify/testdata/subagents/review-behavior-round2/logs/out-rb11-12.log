@@ -1,0 +1,46 @@
+=== RUN   TestReviewRB11ElasticSubJobRecords
+    zz_review_behavior_forest_test.go:43: noPAA=false [off+detTies] placed=4 [myq-decode-2@z2-r00-n0 myq-decode-3@z2-r01-n0 myq-prefill-0@z1-r01-n0 myq-prefill-1@z1-r00-n0]
+    zz_review_behavior_forest_test.go:44:     job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq/decode-2=z2-r00 c1/pg-myq/decode-3=z2-r01 c1/pg-myq/prefill-0=z1-r01 c1/pg-myq/prefill-1=z1-r00]
+    zz_review_behavior_forest_test.go:43: noPAA=false [S7a forest-first] placed=4 [myq-decode-2@z2-r00-n0 myq-decode-3@z2-r01-n0 myq-prefill-0@z1-r01-n0 myq-prefill-1@z1-r00-n0]
+    zz_review_behavior_forest_test.go:44:     job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq/decode-2=z2-r00 c1/pg-myq/decode-3=z2-r01 c1/pg-myq/prefill-0=z1-r01 c1/pg-myq/prefill-1=z1-r00]
+    zz_review_behavior_forest_test.go:43: noPAA=false [S7b region-replaces-forest] placed=4 [myq-decode-2@z1-r00-n0 myq-decode-3@z2-r01-n0 myq-prefill-0@z1-r01-n0 myq-prefill-1@z2-r00-n0]
+    zz_review_behavior_forest_test.go:44:     job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq/decode-2=z1-r00 c1/pg-myq/decode-3=z2-r01 c1/pg-myq/prefill-0=dc c1/pg-myq/prefill-1=z2]
+    zz_review_behavior_forest_test.go:51:     MISMATCH subJob c1/pg-myq/prefill-0 (hard tier 1): pod on z1-r01-n0, recorded AllocatedHyperNode="dc"
+    zz_review_behavior_forest_test.go:51:     MISMATCH subJob c1/pg-myq/prefill-1 (hard tier 1): pod on z2-r00-n0, recorded AllocatedHyperNode="z2"
+    zz_review_behavior_forest_test.go:43: noPAA=true [off+detTies] placed=4 [myq-decode-2@z0-r01-n0 myq-decode-3@z1-r00-n0 myq-prefill-0@z0-r00-n0 myq-prefill-1@z1-r01-n0]
+    zz_review_behavior_forest_test.go:44:     job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq/decode-2=z0-r01 c1/pg-myq/decode-3=z1-r00 c1/pg-myq/prefill-0=dc c1/pg-myq/prefill-1=z1]
+    zz_review_behavior_forest_test.go:51:     MISMATCH subJob c1/pg-myq/prefill-0 (hard tier 1): pod on z0-r00-n0, recorded AllocatedHyperNode="dc"
+    zz_review_behavior_forest_test.go:51:     MISMATCH subJob c1/pg-myq/prefill-1 (hard tier 1): pod on z1-r01-n0, recorded AllocatedHyperNode="z1"
+    zz_review_behavior_forest_test.go:43: noPAA=true [S7a forest-first] placed=4 [myq-decode-2@z0-r01-n0 myq-decode-3@z1-r00-n0 myq-prefill-0@z0-r00-n0 myq-prefill-1@z1-r01-n0]
+    zz_review_behavior_forest_test.go:44:     job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq/decode-2=z0-r01 c1/pg-myq/decode-3=z1-r00 c1/pg-myq/prefill-0=dc c1/pg-myq/prefill-1=z1]
+    zz_review_behavior_forest_test.go:51:     MISMATCH subJob c1/pg-myq/prefill-0 (hard tier 1): pod on z0-r00-n0, recorded AllocatedHyperNode="dc"
+    zz_review_behavior_forest_test.go:51:     MISMATCH subJob c1/pg-myq/prefill-1 (hard tier 1): pod on z1-r01-n0, recorded AllocatedHyperNode="z1"
+    zz_review_behavior_forest_test.go:43: noPAA=true [S7b region-replaces-forest] placed=4 [myq-decode-2@z0-r01-n0 myq-decode-3@z1-r00-n0 myq-prefill-0@z0-r00-n0 myq-prefill-1@z1-r01-n0]
+    zz_review_behavior_forest_test.go:44:     job.AllocatedHyperNode="dc" annotation="dc" subJobs=[c1/pg-myq/decode-2=z0-r01 c1/pg-myq/decode-3=z1-r00 c1/pg-myq/prefill-0=dc c1/pg-myq/prefill-1=z1]
+    zz_review_behavior_forest_test.go:51:     MISMATCH subJob c1/pg-myq/prefill-0 (hard tier 1): pod on z0-r00-n0, recorded AllocatedHyperNode="dc"
+    zz_review_behavior_forest_test.go:51:     MISMATCH subJob c1/pg-myq/prefill-1 (hard tier 1): pod on z1-r01-n0, recorded AllocatedHyperNode="z1"
+--- PASS: TestReviewRB11ElasticSubJobRecords (0.62s)
+=== RUN   TestReviewRB12ForestTestsUnderRegion
+    zz_review_behavior_forest_test.go:191: ### TestAllocatePodGroupAntiAffinityAcrossCandidateForest
+    zz_review_behavior_forest_test.go:201:   [forest (as committed)] all assertions hold | nodes=[b-node-0 b-node-1 c-node-0 c-node-1] AllocatedHyperNode="shared-t3" subJobDecisionKeys=[shared-t3]
+    zz_review_behavior_forest_test.go:201:   [plugin declares region, switch off] all assertions hold | nodes=[b-node-0 b-node-1 c-node-0 c-node-1] AllocatedHyperNode="shared-t3" subJobDecisionKeys=[shared-t3]
+    zz_review_behavior_forest_test.go:201:   [option a: forest first] all assertions hold | nodes=[b-node-0 b-node-1 c-node-0 c-node-1] AllocatedHyperNode="shared-t3" subJobDecisionKeys=[shared-t3]
+    zz_review_behavior_forest_test.go:201:   [option b: region replaces forest] FAILS: recorded SubJob decision keys=[b-t2 c-t2 shared-t3] want only "shared-t3" | nodes=[b-node-0 b-node-1 c-node-0 c-node-1] AllocatedHyperNode="shared-t3" subJobDecisionKeys=[b-t2 c-t2 shared-t3]
+    zz_review_behavior_forest_test.go:191: ### TestCandidateForestUsesActualPlacementInsteadOfEnvelope
+    zz_review_behavior_forest_test.go:201:   [forest (as committed)] all assertions hold | nodes=[b-node-0 b-node-1] AllocatedHyperNode="b-t2" subJobDecisionKeys=[b-t2]
+    zz_review_behavior_forest_test.go:201:   [plugin declares region, switch off] all assertions hold | nodes=[b-node-0 b-node-1] AllocatedHyperNode="b-t2" subJobDecisionKeys=[b-t2]
+    zz_review_behavior_forest_test.go:201:   [option a: forest first] all assertions hold | nodes=[b-node-0 b-node-1] AllocatedHyperNode="b-t2" subJobDecisionKeys=[b-t2]
+    zz_review_behavior_forest_test.go:201:   [option b: region replaces forest] FAILS: recorded SubJob decision keys=[b-t2 c-t2] want only "b-t2" | nodes=[b-node-0 b-node-1] AllocatedHyperNode="b-t2" subJobDecisionKeys=[b-t2 c-t2]
+    zz_review_behavior_forest_test.go:191: ### TestCandidateForestPreservesNativeSoftJobTopologyFallback
+    zz_review_behavior_forest_test.go:201:   [forest (as committed)] all assertions hold | nodes=[b-node-0 b-node-1 c-node-0 c-node-1] AllocatedHyperNode="shared-t3" subJobDecisionKeys=[shared-t3]
+    zz_review_behavior_forest_test.go:201:   [plugin declares region, switch off] all assertions hold | nodes=[b-node-0 b-node-1 c-node-0 c-node-1] AllocatedHyperNode="shared-t3" subJobDecisionKeys=[shared-t3]
+    zz_review_behavior_forest_test.go:201:   [option a: forest first] all assertions hold | nodes=[b-node-0 b-node-1 c-node-0 c-node-1] AllocatedHyperNode="shared-t3" subJobDecisionKeys=[shared-t3]
+    zz_review_behavior_forest_test.go:201:   [option b: region replaces forest] FAILS: recorded SubJob decision keys=[b-t2 c-t2 shared-t3] want only "shared-t3" | nodes=[b-node-0 b-node-1 c-node-0 c-node-1] AllocatedHyperNode="shared-t3" subJobDecisionKeys=[b-t2 c-t2 shared-t3]
+    zz_review_behavior_forest_test.go:191: ### TestCandidateForestSupportsNativeSoftSubGroups
+    zz_review_behavior_forest_test.go:201:   [forest (as committed)] all assertions hold | nodes=[b-node-0 b-node-1 c-node-0 c-node-1] AllocatedHyperNode="shared-t3" subJobDecisionKeys=[shared-t3]
+    zz_review_behavior_forest_test.go:201:   [plugin declares region, switch off] all assertions hold | nodes=[b-node-0 b-node-1 c-node-0 c-node-1] AllocatedHyperNode="shared-t3" subJobDecisionKeys=[shared-t3]
+    zz_review_behavior_forest_test.go:201:   [option a: forest first] all assertions hold | nodes=[b-node-0 b-node-1 c-node-0 c-node-1] AllocatedHyperNode="shared-t3" subJobDecisionKeys=[shared-t3]
+    zz_review_behavior_forest_test.go:201:   [option b: region replaces forest] FAILS: recorded SubJob decision keys=[b-t2 c-t2 shared-t3] want only "shared-t3" | nodes=[b-node-0 b-node-1 c-node-0 c-node-1] AllocatedHyperNode="shared-t3" subJobDecisionKeys=[b-t2 c-t2 shared-t3]
+--- PASS: TestReviewRB12ForestTestsUnderRegion (7.57s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	8.213s

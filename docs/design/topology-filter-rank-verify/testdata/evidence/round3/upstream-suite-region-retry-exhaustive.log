@@ -1,0 +1,105 @@
+# worktree: upstream master d423e427c + prototype-round3-upstream-master-d423e427c.patch
+# env: VC_PROBE_SCOPE_UNION=1 VC_PROBE_REPAIR_BUDGET=4 VC_PROBE_REPAIR_ORDER=reserve
+# command: go test ./pkg/scheduler/... -count=1
+# started: 2026-11-12T01:41:11Z
+ok  	volcano.sh/volcano/pkg/scheduler	0.062s
+?   	volcano.sh/volcano/pkg/scheduler/actions	[no test files]
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	33.404s
+ok  	volcano.sh/volcano/pkg/scheduler/actions/backfill	1.507s
+ok  	volcano.sh/volcano/pkg/scheduler/actions/enqueue	1.825s
+ok  	volcano.sh/volcano/pkg/scheduler/actions/gangpreempt	0.036s
+ok  	volcano.sh/volcano/pkg/scheduler/actions/gangreclaim	0.050s
+ok  	volcano.sh/volcano/pkg/scheduler/actions/preempt	12.137s
+ok  	volcano.sh/volcano/pkg/scheduler/actions/reclaim	4.294s
+ok  	volcano.sh/volcano/pkg/scheduler/actions/shuffle	0.393s
+ok  	volcano.sh/volcano/pkg/scheduler/actions/utils	1.469s
+ok  	volcano.sh/volcano/pkg/scheduler/api	0.143s
+?   	volcano.sh/volcano/pkg/scheduler/api/devices	[no test files]
+ok  	volcano.sh/volcano/pkg/scheduler/api/devices/ascend/hami	0.025s
+?   	volcano.sh/volcano/pkg/scheduler/api/devices/ascend/mindcluster/ascend310p/vnpu	[no test files]
+ok  	volcano.sh/volcano/pkg/scheduler/api/devices/config	0.020s
+ok  	volcano.sh/volcano/pkg/scheduler/api/devices/nvidia/gpushare	0.020s
+ok  	volcano.sh/volcano/pkg/scheduler/api/devices/nvidia/vgpu	0.021s
+ok  	volcano.sh/volcano/pkg/scheduler/api/helpers	0.031s
+ok  	volcano.sh/volcano/pkg/scheduler/cache	2.475s
+?   	volcano.sh/volcano/pkg/scheduler/conf	[no test files]
+ok  	volcano.sh/volcano/pkg/scheduler/framework	0.094s
+?   	volcano.sh/volcano/pkg/scheduler/framework/mock_gen	[no test files]
+?   	volcano.sh/volcano/pkg/scheduler/gate	[no test files]
+ok  	volcano.sh/volcano/pkg/scheduler/metrics	0.061s
+ok  	volcano.sh/volcano/pkg/scheduler/metrics/source	0.033s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins	0.037s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/binpack	0.050s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/capacity	17.730s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/capacity/hintprovider	0.033s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/cdp	0.054s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/conformance	0.056s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/deviceshare	0.037s
+?   	volcano.sh/volcano/pkg/scheduler/plugins/deviceshare/devices/ascend/310p/vnpu	[no test files]
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/drf	0.082s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/extender	0.152s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/fairshare	0.774s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/gang	0.039s
+--- FAIL: TestNominationFastPathMatchesPluginGradients (0.02s)
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=false/job=false/subJob=false/placed=false (0.00s)
+        constraints_test.go:357: root root pinned root sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=false/job=false/subJob=false/placed=true (0.00s)
+        constraints_test.go:357: root root pinned sn-a sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=false/job=false/subJob=true/placed=false (0.00s)
+        constraints_test.go:357: root root pinned root sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=false/job=false/subJob=true/placed=true (0.00s)
+        constraints_test.go:357: root root pinned cab-a sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=false/job=true/subJob=false/placed=false (0.00s)
+        constraints_test.go:357: root root pinned cab-a sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=false/job=true/subJob=false/placed=true (0.00s)
+        constraints_test.go:357: root root pinned root sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=false/job=true/subJob=true/placed=false (0.00s)
+        constraints_test.go:357: root root pinned root sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=false/job=true/subJob=true/placed=true (0.00s)
+        constraints_test.go:357: root root pinned sn-a sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=true/job=false/subJob=false/placed=false (0.00s)
+        constraints_test.go:357: root root pinned root sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=true/job=false/subJob=false/placed=true (0.00s)
+        constraints_test.go:357: root root pinned cab-a sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=true/job=false/subJob=true/placed=false (0.00s)
+        constraints_test.go:357: root root pinned root sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=true/job=false/subJob=true/placed=true (0.00s)
+        constraints_test.go:357: root root pinned cab-a sub=false: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=true/job=true/subJob=false/placed=false (0.00s)
+        constraints_test.go:357: root root pinned sn-a sub=true: fast=false full=true
+    --- FAIL: TestNominationFastPathMatchesPluginGradients/network=true/job=true/subJob=false/placed=true (0.00s)
+        constraints_test.go:357: root root pinned cab-b sub=true: fast=false full=true
+FAIL
+FAIL	volcano.sh/volcano/pkg/scheduler/plugins/group-topology-affinity	0.078s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/network-topology-aware	0.210s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/nodegroup	0.131s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/nodeorder	3.039s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/numaaware	0.042s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/numaaware/policy	0.037s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/numaaware/provider/cpumanager	0.030s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/overcommit	0.069s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/pdb	0.042s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/predicates	2.254s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/predicates/hintprovider	0.023s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/priority	0.743s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/proportion	11.624s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/proportion/hintprovider	0.022s
+?   	volcano.sh/volcano/pkg/scheduler/plugins/rescheduling	[no test files]
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/resource-strategy-fit	0.793s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/resourcequota	0.393s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/sla	0.037s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/task-topology	0.026s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/tdm	7.263s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/usage	0.050s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/util	0.021s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/util/hintutil	0.024s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/util/k8s	0.031s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/util/nodelock	0.011s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/util/nodescore	0.022s
+?   	volcano.sh/volcano/pkg/scheduler/plugins/util/resourcefit	[no test files]
+ok  	volcano.sh/volcano/pkg/scheduler/unschedulable	0.024s
+?   	volcano.sh/volcano/pkg/scheduler/uthelper	[no test files]
+ok  	volcano.sh/volcano/pkg/scheduler/util	0.027s
+?   	volcano.sh/volcano/pkg/scheduler/util/assert	[no test files]
+FAIL
+# go test exit status: 1

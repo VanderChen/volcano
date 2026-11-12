@@ -1,0 +1,39 @@
+=== RUN   TestProto2R3SingleJobMonotonic
+    zz_probe_round2_test.go:404: seed 8 ranked + scope: placement differs from today (topo 2x2x2; anchor in z0; required PAA tier 2; p0: 1 groups x 2 x 4cpu tier 1 pinned=true; p1: 2 groups x 1 x 4cpu tier 2 pinned=false)
+          today: map[job-p0-g6-p0:z1-r01-n1 job-p0-g6-p1:z1-r01-n0 job-p1-g2-p0:z1-r00-n1 job-p1-g5-p0:z1-r01-n1]
+          now:   map[job-p0-g6-p0:z1-r01-n1 job-p0-g6-p1:z1-r01-n1 job-p1-g2-p0:z1-r01-n0 job-p1-g5-p0:z1-r01-n1]
+    zz_probe_round2_test.go:404: seed 8 ranked + scope + repair(8): placement differs from today (topo 2x2x2; anchor in z0; required PAA tier 2; p0: 1 groups x 2 x 4cpu tier 1 pinned=true; p1: 2 groups x 1 x 4cpu tier 2 pinned=false)
+          today: map[job-p0-g6-p0:z1-r01-n1 job-p0-g6-p1:z1-r01-n0 job-p1-g2-p0:z1-r00-n1 job-p1-g5-p0:z1-r01-n1]
+          now:   map[job-p0-g6-p0:z1-r01-n1 job-p0-g6-p1:z1-r01-n1 job-p1-g2-p0:z1-r01-n0 job-p1-g5-p0:z1-r01-n1]
+    zz_probe_round2_test.go:404: seed 8 exhaustive + scope + repair(8): placement differs from today (topo 2x2x2; anchor in z0; required PAA tier 2; p0: 1 groups x 2 x 4cpu tier 1 pinned=true; p1: 2 groups x 1 x 4cpu tier 2 pinned=false)
+          today: map[job-p0-g6-p0:z1-r01-n1 job-p0-g6-p1:z1-r01-n0 job-p1-g2-p0:z1-r00-n1 job-p1-g5-p0:z1-r01-n1]
+          now:   map[job-p0-g6-p0:z1-r01-n1 job-p0-g6-p1:z1-r01-n1 job-p1-g2-p0:z1-r01-n0 job-p1-g5-p0:z1-r01-n1]
+    zz_probe_round2_test.go:409: seed 39 ranked + scope + repair(8): newly scheduled (topo 3x2x1; job hard tier 3; p0: 1 groups x 1 x 4cpu tier 2 pinned=true; p1: 2 groups x 1 x 8cpu tier 1 pinned=false) map[job-p0-g7-p0:z1-r00-n0 job-p1-g2-p0:z1-r01-n0 job-p1-g4-p0:z2-r00-n0]
+    zz_probe_round2_test.go:411:     job c1/job in dc: retry 1 with [c1/job/p0-7] first succeeded
+    zz_probe_round2_test.go:409: seed 39 exhaustive + scope + repair(8): newly scheduled (topo 3x2x1; job hard tier 3; p0: 1 groups x 1 x 4cpu tier 2 pinned=true; p1: 2 groups x 1 x 8cpu tier 1 pinned=false) map[job-p0-g7-p0:z1-r00-n0 job-p1-g2-p0:z1-r01-n0 job-p1-g4-p0:z2-r00-n0]
+    zz_probe_round2_test.go:411:     job c1/job in dc: retry 1 with [c1/job/p0-7] first succeeded
+    zz_probe_round2_test.go:404: seed 48 ranked + scope: placement differs from today (topo 3x3x2; anchor in z1; required PAA tier 2; p0: 2 groups x 2 x 6cpu tier 1 pinned=false; p1: 1 groups x 1 x 2cpu tier 2 pinned=false)
+          today: map[job-p0-g2-p0:z0-r02-n0 job-p0-g2-p1:z0-r02-n0 job-p0-g6-p0:z0-r01-n1 job-p0-g6-p1:z0-r01-n1 job-p1-g1-p0:z0-r00-n1]
+          now:   map[job-p0-g2-p0:z2-r00-n1 job-p0-g2-p1:z2-r00-n0 job-p0-g6-p0:z2-r00-n1 job-p0-g6-p1:z2-r00-n0 job-p1-g1-p0:z2-r00-n1]
+    zz_probe_round2_test.go:404: seed 48 ranked + scope + repair(8): placement differs from today (topo 3x3x2; anchor in z1; required PAA tier 2; p0: 2 groups x 2 x 6cpu tier 1 pinned=false; p1: 1 groups x 1 x 2cpu tier 2 pinned=false)
+          today: map[job-p0-g2-p0:z0-r02-n0 job-p0-g2-p1:z0-r02-n0 job-p0-g6-p0:z0-r01-n1 job-p0-g6-p1:z0-r01-n1 job-p1-g1-p0:z0-r00-n1]
+          now:   map[job-p0-g2-p0:z2-r00-n1 job-p0-g2-p1:z2-r00-n0 job-p0-g6-p0:z2-r00-n1 job-p0-g6-p1:z2-r00-n0 job-p1-g1-p0:z2-r00-n1]
+    zz_probe_round2_test.go:404: seed 48 exhaustive + scope + repair(8): placement differs from today (topo 3x3x2; anchor in z1; required PAA tier 2; p0: 2 groups x 2 x 6cpu tier 1 pinned=false; p1: 1 groups x 1 x 2cpu tier 2 pinned=false)
+          today: map[job-p0-g2-p0:z0-r02-n0 job-p0-g2-p1:z0-r02-n0 job-p0-g6-p0:z0-r01-n1 job-p0-g6-p1:z0-r01-n1 job-p1-g1-p0:z0-r00-n1]
+          now:   map[job-p0-g2-p0:z2-r00-n1 job-p0-g2-p1:z2-r00-n0 job-p0-g6-p0:z2-r00-n1 job-p0-g6-p1:z2-r00-n0 job-p1-g1-p0:z2-r00-n1]
+    zz_probe_round2_test.go:409: seed 49 ranked + scope + repair(8): newly scheduled (topo 3x2x1; anchor in z0; required PAA tier 2; plain 5 x 8cpu) map[job-plain-p0:z1-r00-n0 job-plain-p1:z1-r01-n0 job-plain-p2:z2-r01-n0 job-plain-p3:z2-r00-n0 job-plain-p4:z2-r00-n0]
+    zz_probe_round2_test.go:409: seed 49 exhaustive + scope + repair(8): newly scheduled (topo 3x2x1; anchor in z0; required PAA tier 2; plain 5 x 8cpu) map[job-plain-p0:z1-r00-n0 job-plain-p1:z1-r01-n0 job-plain-p2:z2-r01-n0 job-plain-p3:z2-r00-n0 job-plain-p4:z2-r00-n0]
+    zz_probe_round2_test.go:417: 600 single-job scenarios; current search (exhaustive + deterministic ties) schedules 464
+    zz_probe_round2_test.go:418: | configuration | scheduled | newly scheduled | lost | placed differently | illegal |
+    zz_probe_round2_test.go:419: |---|---|---|---|---|---|
+    zz_probe_round2_test.go:422: | ranked (round 1) | 464 | 0 | 0 | 0 | 0 |
+    zz_probe_round2_test.go:422: | ranked + scope | 467 | 3 | 0 | 26 | 0 |
+    zz_probe_round2_test.go:424: ranked + scope: 26 jobs schedulable today were placed differently
+    zz_probe_round2_test.go:422: | ranked + scope + repair(8) | 475 | 11 | 0 | 26 | 0 |
+    zz_probe_round2_test.go:424: ranked + scope + repair(8): 26 jobs schedulable today were placed differently
+    zz_probe_round2_test.go:422: | exhaustive + scope + repair(8) | 475 | 11 | 0 | 26 | 0 |
+    zz_probe_round2_test.go:424: exhaustive + scope + repair(8): 26 jobs schedulable today were placed differently
+--- FAIL: TestProto2R3SingleJobMonotonic (310.13s)
+FAIL
+FAIL	volcano.sh/volcano/pkg/scheduler/actions/allocate	310.361s
+FAIL

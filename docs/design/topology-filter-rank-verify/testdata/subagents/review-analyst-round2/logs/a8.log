@@ -1,0 +1,8 @@
+=== RUN   TestReviewA8DuplicateContainerAttempts
+    zz_review_analyst_alternatives_test.go:199: R5, budget 4 order "": 327 jobs entered repair; 918 attempts; 128 in <cluster-top-hypernode>, of which 128 repeat an order already tried in dc; successes: 0 in <cluster-top-hypernode>, 17 elsewhere
+    zz_review_analyst_alternatives_test.go:199: R5, budget 4 order "reserve": 327 jobs entered repair; 918 attempts; 181 in <cluster-top-hypernode>, of which 159 repeat an order already tried in dc; successes: 2 in <cluster-top-hypernode>, 17 elsewhere
+    zz_review_analyst_alternatives_test.go:199: R5, budget 8 order "": 327 jobs entered repair; 1235 attempts; 234 in <cluster-top-hypernode>, of which 234 repeat an order already tried in dc; successes: 0 in <cluster-top-hypernode>, 19 elsewhere
+    zz_review_analyst_alternatives_test.go:199: R5, budget 8 order "reserve": 327 jobs entered repair; 1235 attempts; 249 in <cluster-top-hypernode>, of which 249 repeat an order already tried in dc; successes: 0 in <cluster-top-hypernode>, 19 elsewhere
+--- PASS: TestReviewA8DuplicateContainerAttempts (20.81s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	21.346s

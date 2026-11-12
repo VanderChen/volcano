@@ -1,0 +1,74 @@
+=== RUN   TestReviewA1RandomTieIsAnImplicitRestart
+    zz_review_analyst_targeted_test.go:128: | configuration | job names always scheduled | never scheduled | sometimes | sessions scheduled / total |
+    zz_review_analyst_targeted_test.go:129: |---|---|---|---|---|
+    zz_review_analyst_targeted_test.go:157: | unmodified (random ties) | 1 | 0 | 15 | 123/160 |
+    zz_review_analyst_targeted_test.go:157: | exhaustive + deterministic ties | 8 | 8 | 0 | 80/160 |
+    zz_review_analyst_targeted_test.go:159:     never scheduled: job00 job02 job04 job06 job08 job11 job13 job15
+    zz_review_analyst_targeted_test.go:157: | ranked + fitBound (round 1) | 8 | 8 | 0 | 80/160 |
+    zz_review_analyst_targeted_test.go:159:     never scheduled: job00 job02 job04 job06 job08 job11 job13 job15
+    zz_review_analyst_targeted_test.go:157: | ranked + fitBound + repair(4) | 16 | 0 | 0 | 160/160 |
+--- PASS: TestReviewA1RandomTieIsAnImplicitRestart (1.20s)
+=== RUN   TestReviewA2StaleSubJobDecisionAfterRepair
+    zz_review_analyst_targeted_test.go:231: flexible first, repair off / exhaustive+detTies: placed 0/3 map[]
+    zz_review_analyst_targeted_test.go:236:     job.AllocatedHyperNode=""
+    zz_review_analyst_targeted_test.go:236:     c1/job/worker-0 AllocatedHyperNode="" tasks=[job-flexible:Pending@]
+    zz_review_analyst_targeted_test.go:236:     c1/job/worker-1 AllocatedHyperNode="" tasks=[job-pinned1:Pending@]
+    zz_review_analyst_targeted_test.go:236:     c1/job/worker-2 AllocatedHyperNode="" tasks=[job-pinned2:Pending@]
+    zz_review_analyst_targeted_test.go:238:     fitError: pod group is not ready, 2 minAvailable, 3 Pending; Pending: 1 Schedulable, 2 Unschedulable.
+    zz_review_analyst_targeted_test.go:231: flexible first, repair off / ranked+fitBound: placed 0/3 map[]
+    zz_review_analyst_targeted_test.go:236:     job.AllocatedHyperNode=""
+    zz_review_analyst_targeted_test.go:236:     c1/job/worker-0 AllocatedHyperNode="" tasks=[job-flexible:Pending@]
+    zz_review_analyst_targeted_test.go:236:     c1/job/worker-1 AllocatedHyperNode="" tasks=[job-pinned1:Pending@]
+    zz_review_analyst_targeted_test.go:236:     c1/job/worker-2 AllocatedHyperNode="" tasks=[job-pinned2:Pending@]
+    zz_review_analyst_targeted_test.go:238:     fitError: pod group is not ready, 2 minAvailable, 3 Pending; Pending: 1 Schedulable, 2 Unschedulable.
+E1111 18:22:10.303716 1302781 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z0-r01 and hyperNodeHighestAllowed z0-r00" subJob="c1/job/worker-0" hyperNode="z0-r01" highestAllowedTier=1 allocatedHyperNode="z0-r00"
+    zz_review_analyst_targeted_test.go:231: flexible first, repair(4) / exhaustive+detTies: placed 2/3 map[job-pinned1:z0-r00-n0 job-pinned2:z0-r00-n0]
+    zz_review_analyst_targeted_test.go:233:     job c1/job in z0-r00: retry 1 with [c1/job/worker-1, c1/job/worker-2] first succeeded
+    zz_review_analyst_targeted_test.go:236:     job.AllocatedHyperNode="z0-r00"
+    zz_review_analyst_targeted_test.go:236:     c1/job/worker-0 AllocatedHyperNode="z0-r00" tasks=[job-flexible:Pending@]
+    zz_review_analyst_targeted_test.go:236:     c1/job/worker-1 AllocatedHyperNode="z0-r00" tasks=[job-pinned1:Binding@z0-r00-n0]
+    zz_review_analyst_targeted_test.go:236:     c1/job/worker-2 AllocatedHyperNode="z0-r00" tasks=[job-pinned2:Binding@z0-r00-n0]
+    zz_review_analyst_targeted_test.go:238:     fitError: pod group is ready, 1 Pending, 2 Binding, 2 minAvailable; Pending: 1 Schedulable.
+E1111 18:22:10.305851 1302781 network_topology_aware.go:342] "build HyperNode gradient failed" err="getSearchRoot failed: there is no intersection between hyperNodeAvailable z0-r01 and hyperNodeHighestAllowed z0-r00" subJob="c1/job/worker-0" hyperNode="z0-r01" highestAllowedTier=1 allocatedHyperNode="z0-r00"
+    zz_review_analyst_targeted_test.go:231: flexible first, repair(4) / ranked+fitBound: placed 2/3 map[job-pinned1:z0-r00-n0 job-pinned2:z0-r00-n0]
+    zz_review_analyst_targeted_test.go:233:     job c1/job in z0-r00: retry 1 with [c1/job/worker-1, c1/job/worker-2] first succeeded
+    zz_review_analyst_targeted_test.go:236:     job.AllocatedHyperNode="z0-r00"
+    zz_review_analyst_targeted_test.go:236:     c1/job/worker-0 AllocatedHyperNode="z0-r00" tasks=[job-flexible:Pending@]
+    zz_review_analyst_targeted_test.go:236:     c1/job/worker-1 AllocatedHyperNode="z0-r00" tasks=[job-pinned1:Binding@z0-r00-n0]
+    zz_review_analyst_targeted_test.go:236:     c1/job/worker-2 AllocatedHyperNode="z0-r00" tasks=[job-pinned2:Binding@z0-r00-n0]
+    zz_review_analyst_targeted_test.go:238:     fitError: pod group is ready, 1 Pending, 2 Binding, 2 minAvailable; Pending: 1 Schedulable.
+    zz_review_analyst_targeted_test.go:231: pinned first (control: normal search succeeds), repair(4) / exhaustive+detTies: placed 3/3 map[job-flexible:z0-r01-n0 job-pinned1:z0-r00-n0 job-pinned2:z0-r00-n0]
+    zz_review_analyst_targeted_test.go:236:     job.AllocatedHyperNode="z0"
+    zz_review_analyst_targeted_test.go:236:     c1/job/worker-0 AllocatedHyperNode="z0-r00" tasks=[job-pinned1:Binding@z0-r00-n0]
+    zz_review_analyst_targeted_test.go:236:     c1/job/worker-1 AllocatedHyperNode="z0-r00" tasks=[job-pinned2:Binding@z0-r00-n0]
+    zz_review_analyst_targeted_test.go:236:     c1/job/worker-2 AllocatedHyperNode="z0-r01" tasks=[job-flexible:Binding@z0-r01-n0]
+    zz_review_analyst_targeted_test.go:238:     fitError: pod group is ready, 2 minAvailable, 3 Binding.
+    zz_review_analyst_targeted_test.go:231: pinned first (control: normal search succeeds), repair(4) / ranked+fitBound: placed 3/3 map[job-flexible:z0-r01-n0 job-pinned1:z0-r00-n0 job-pinned2:z0-r00-n0]
+    zz_review_analyst_targeted_test.go:236:     job.AllocatedHyperNode="z0"
+    zz_review_analyst_targeted_test.go:236:     c1/job/worker-0 AllocatedHyperNode="z0-r00" tasks=[job-pinned1:Binding@z0-r00-n0]
+    zz_review_analyst_targeted_test.go:236:     c1/job/worker-1 AllocatedHyperNode="z0-r00" tasks=[job-pinned2:Binding@z0-r00-n0]
+    zz_review_analyst_targeted_test.go:236:     c1/job/worker-2 AllocatedHyperNode="z0-r01" tasks=[job-flexible:Binding@z0-r01-n0]
+    zz_review_analyst_targeted_test.go:238:     fitError: pod group is ready, 2 minAvailable, 3 Binding.
+--- PASS: TestReviewA2StaleSubJobDecisionAfterRepair (0.01s)
+=== RUN   TestReviewA3FailureDiagnosticsWithRepair
+    zz_review_analyst_targeted_test.go:273: repairBudget=0 placed 0/3; repair attempts=0; flagged search-incomplete=[]
+    zz_review_analyst_targeted_test.go:275:     fitError: pod group is not ready, 3 Pending, 3 minAvailable; Pending: 1 Schedulable, 2 Unschedulable.
+    zz_review_analyst_targeted_test.go:282:     task fit error: job-pinned1: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_analyst_targeted_test.go:282:     task fit error: job-pinned2: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_analyst_targeted_test.go:273: repairBudget=4 placed 0/3; repair attempts=4; flagged search-incomplete=[c1/job]
+    zz_review_analyst_targeted_test.go:275:     fitError: pod group is not ready, 3 Pending, 3 minAvailable; Pending: 3 Schedulable.
+    zz_review_analyst_targeted_test.go:282:     task fit error: job-pinned1: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_analyst_targeted_test.go:285:     job c1/job in z0: retry 1 with [c1/job/worker-1, c1/job/worker-2] first failed; still blocked: [c1/job/worker-2]
+    zz_review_analyst_targeted_test.go:285:     job c1/job in z0: retry 2 with [c1/job/worker-2, c1/job/worker-1] first failed; still blocked: [c1/job/worker-1]
+    zz_review_analyst_targeted_test.go:285:     job c1/job in <cluster-top-hypernode>: retry 3 with [c1/job/worker-1, c1/job/worker-2] first failed; still blocked: [c1/job/worker-2]
+    zz_review_analyst_targeted_test.go:285:     job c1/job in <cluster-top-hypernode>: retry 4 with [c1/job/worker-2, c1/job/worker-1] first failed; still blocked: [c1/job/worker-1]
+    zz_review_analyst_targeted_test.go:273: repairBudget=16 placed 0/3; repair attempts=4; flagged search-incomplete=[]
+    zz_review_analyst_targeted_test.go:275:     fitError: pod group is not ready, 3 Pending, 3 minAvailable; Pending: 3 Schedulable.
+    zz_review_analyst_targeted_test.go:282:     task fit error: job-pinned1: In hyperNode z0-r01: 0/1 nodes are unavailable: 1 node(s) didn't match Pod's node affinity/selector.
+    zz_review_analyst_targeted_test.go:285:     job c1/job in z0: retry 1 with [c1/job/worker-1, c1/job/worker-2] first failed; still blocked: [c1/job/worker-2]
+    zz_review_analyst_targeted_test.go:285:     job c1/job in z0: retry 2 with [c1/job/worker-2, c1/job/worker-1] first failed; still blocked: [c1/job/worker-1]
+    zz_review_analyst_targeted_test.go:285:     job c1/job in <cluster-top-hypernode>: retry 3 with [c1/job/worker-1, c1/job/worker-2] first failed; still blocked: [c1/job/worker-2]
+    zz_review_analyst_targeted_test.go:285:     job c1/job in <cluster-top-hypernode>: retry 4 with [c1/job/worker-2, c1/job/worker-1] first failed; still blocked: [c1/job/worker-1]
+--- PASS: TestReviewA3FailureDiagnosticsWithRepair (0.01s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	1.284s

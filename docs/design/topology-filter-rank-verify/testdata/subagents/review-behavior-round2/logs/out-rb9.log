@@ -1,0 +1,38 @@
+=== RUN   TestReviewRB9ForestVersusRegion
+    zz_review_behavior_r3_test.go:116: 600 single-job scenarios; today's search (exhaustive + deterministic ties) schedules 464
+    zz_review_behavior_r3_test.go:117: | configuration | scheduled | newly scheduled | lost | fewer pods | placed differently | more compact | same shape | less compact | wider tier | illegal |
+    zz_review_behavior_r3_test.go:118: |---|---|---|---|---|---|---|---|---|---|---|
+    zz_review_behavior_r3_test.go:121: | S7a forest-first | 467 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+    zz_review_behavior_r3_test.go:121: | S7b region-replaces-forest | 467 | 3 | 0 | 0 | 26 | 26 | 0 | 0 | 0 | 0 |
+    zz_review_behavior_r3_test.go:121: | S7b region-replaces-forest+repair(8) | 475 | 11 | 0 | 0 | 26 | 26 | 0 | 0 | 0 | 0 |
+    zz_review_behavior_r3_test.go:125: placements that differ under option b:
+        seed   8: today tier2/1z/2r/3n -> region tier1/1z/1r/2n (more compact) [topo 2x2x2; anchor in z0; required PAA tier 2; p0: 1 groups x 2 x 4cpu tier 1 pinned=true; p1: 2 groups x 1 x 4cpu tier 2 pinned=false]
+        seed  48: today tier2/1z/3r/3n -> region tier1/1z/1r/2n (more compact) [topo 3x3x2; anchor in z1; required PAA tier 2; p0: 2 groups x 2 x 6cpu tier 1 pinned=false; p1: 1 groups x 1 x 2cpu tier 2 pinned=false]
+        seed  50: today tier3/2z/2r/3n -> region tier1/1z/1r/2n (more compact) [topo 3x2x2; anchor in z0; required PAA tier 2; p0: 2 groups x 1 x 6cpu tier 2 pinned=true; p1: 1 groups x 1 x 6cpu tier 1 pinned=false]
+        seed  73: today tier2/1z/2r/2n -> region tier1/1z/1r/2n (more compact) [topo 3x2x2; anchor in z0; required PAA tier 2; p0: 1 groups x 1 x 8cpu tier 1 pinned=false; p1: 2 groups x 1 x 6cpu tier 2 pinned=false]
+        seed  78: today tier2/1z/2r/2n -> region tier1/1z/1r/1n (more compact) [topo 3x3x1; anchor in z1; required PAA tier 2; p0: 1 groups x 1 x 4cpu tier 1 pinned=true; p1: 1 groups x 1 x 4cpu tier 1 pinned=true]
+        seed  81: today tier2/1z/2r/3n -> region tier1/1z/1r/2n (more compact) [topo 2x3x2; anchor in z1; required PAA tier 2; p0: 2 groups x 1 x 2cpu tier 2 pinned=false; p1: 2 groups x 2 x 6cpu tier 1 pinned=false]
+        seed  84: today tier3/2z/2r/4n -> region tier1/1z/1r/2n (more compact) [topo 3x3x2; anchor in z0; required PAA tier 2; p0: 2 groups x 2 x 4cpu tier 1 pinned=true; p1: 1 groups x 2 x 6cpu tier 2 pinned=true]
+        seed 118: today tier2/1z/2r/3n -> region tier1/1z/1r/2n (more compact) [topo 3x3x2; anchor in z1; required PAA tier 2; p0: 2 groups x 1 x 4cpu tier 1 pinned=false; p1: 2 groups x 2 x 2cpu tier 2 pinned=false]
+        seed 164: today tier2/1z/2r/3n -> region tier1/1z/1r/2n (more compact) [topo 2x3x2; anchor in z0; required PAA tier 2; p0: 2 groups x 1 x 8cpu tier 2 pinned=false; p1: 2 groups x 1 x 4cpu tier 1 pinned=false]
+        seed 188: today tier2/1z/2r/2n -> region tier1/1z/1r/1n (more compact) [topo 2x2x1; anchor in z1; required PAA tier 2; p0: 1 groups x 2 x 2cpu tier 1 pinned=false; p1: 1 groups x 2 x 2cpu tier 2 pinned=false]
+        seed 190: today tier3/2z/2r/3n -> region tier1/1z/1r/2n (more compact) [topo 3x3x2; anchor in z0; required PAA tier 2; p0: 1 groups x 2 x 2cpu tier 1 pinned=true; p1: 2 groups x 1 x 6cpu tier 1 pinned=false]
+        seed 195: today tier3/2z/4r/4n -> region tier2/1z/2r/2n (more compact) [topo 3x3x1; anchor in z1; required PAA tier 2; p0: 2 groups x 1 x 8cpu tier 1 pinned=false; p1: 2 groups x 1 x 4cpu tier 1 pinned=false]
+        seed 262: today tier3/2z/2r/2n -> region tier2/1z/2r/2n (more compact) [topo 3x3x1; anchor in z1; required PAA tier 2; p0: 1 groups x 1 x 6cpu tier 1 pinned=true; p1: 1 groups x 2 x 8cpu tier 1 pinned=false]
+        seed 302: today tier2/1z/2r/2n -> region tier1/1z/1r/1n (more compact) [topo 3x3x1; anchor in z2; required PAA tier 2; p0: 1 groups x 1 x 2cpu tier 1 pinned=true; p1: 1 groups x 1 x 2cpu tier 2 pinned=false]
+        seed 306: today tier3/2z/3r/5n -> region tier1/1z/1r/2n (more compact) [topo 3x3x2; anchor in z2; required PAA tier 2; p0: 2 groups x 2 x 6cpu tier 1 pinned=false; p1: 1 groups x 2 x 4cpu tier 1 pinned=false]
+        seed 349: today tier2/1z/2r/2n -> region tier1/1z/1r/1n (more compact) [topo 3x2x2; anchor in z1; required PAA tier 2; p0: 1 groups x 1 x 6cpu tier 1 pinned=false; p1: 1 groups x 1 x 8cpu tier 1 pinned=false]
+        seed 361: today tier3/2z/2r/2n -> region tier1/1z/1r/1n (more compact) [topo 3x2x1; anchor in z1; required PAA tier 2; p0: 2 groups x 2 x 2cpu tier 2 pinned=false; p1: 1 groups x 1 x 2cpu tier 2 pinned=true]
+        seed 388: today tier3/2z/3r/6n -> region tier1/1z/1r/2n (more compact) [topo 3x3x2; anchor in z0; required PAA tier 2; p0: 2 groups x 2 x 2cpu tier 1 pinned=true; p1: 2 groups x 2 x 6cpu tier 2 pinned=true]
+        seed 401: today tier3/2z/2r/4n -> region tier1/1z/1r/2n (more compact) [topo 3x2x2; anchor in z2; required PAA tier 2; p0: 2 groups x 2 x 4cpu tier 1 pinned=false; p1: 1 groups x 1 x 2cpu tier 1 pinned=false]
+        seed 448: today tier2/1z/2r/2n -> region tier1/1z/1r/2n (more compact) [topo 3x3x2; anchor in z2; required PAA tier 2; p0: 1 groups x 1 x 2cpu tier 1 pinned=false; p1: 2 groups x 1 x 6cpu tier 1 pinned=false]
+        seed 465: today tier2/1z/2r/2n -> region tier1/1z/1r/1n (more compact) [topo 2x2x1; anchor in z1; required PAA tier 2; p0: 1 groups x 1 x 6cpu tier 1 pinned=false; p1: 1 groups x 1 x 6cpu tier 2 pinned=false]
+        seed 482: today tier3/2z/3r/5n -> region tier2/1z/2r/4n (more compact) [topo 3x2x2; anchor in z0; required PAA tier 2; p0: 1 groups x 2 x 6cpu tier 1 pinned=false; p1: 2 groups x 2 x 4cpu tier 2 pinned=false]
+        seed 506: today tier3/2z/3r/3n -> region tier2/1z/2r/2n (more compact) [topo 3x2x1; anchor in z1; required PAA tier 2; p0: 1 groups x 2 x 6cpu tier 1 pinned=false; p1: 2 groups x 2 x 2cpu tier 1 pinned=false]
+        seed 515: today tier2/1z/2r/4n -> region tier1/1z/1r/2n (more compact) [topo 2x3x2; anchor in z1; required PAA tier 2; p0: 1 groups x 2 x 8cpu tier 1 pinned=false; p1: 2 groups x 1 x 2cpu tier 2 pinned=false]
+        seed 585: today tier2/1z/2r/4n -> region tier1/1z/1r/2n (more compact) [topo 2x3x2; anchor in z1; required PAA tier 2; p0: 2 groups x 1 x 6cpu tier 1 pinned=false; p1: 1 groups x 2 x 8cpu tier 1 pinned=true]
+        seed 592: today tier2/1z/2r/2n -> region tier1/1z/1r/1n (more compact) [topo 3x3x1; anchor in z0; required PAA tier 2; p0: 2 groups x 1 x 4cpu tier 1 pinned=false; p1: 1 groups x 1 x 2cpu tier 2 pinned=true]
+--- PASS: TestReviewRB9ForestVersusRegion (249.01s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	249.203s
+done-rb9

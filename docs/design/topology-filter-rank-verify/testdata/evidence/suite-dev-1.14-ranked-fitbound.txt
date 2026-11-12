@@ -1,0 +1,51 @@
+ok  	volcano.sh/volcano/pkg/scheduler	0.057s
+--- FAIL: TestAllocateWithPVC (0.91s)
+    --- FAIL: TestAllocateWithPVC/static_pv_matched_and_node_with_enough_resources (0.45s)
+        allocate_test.go:2655: case 1(static pv matched and node with enough resources) check podgroup <c1/pg1> task status Binding: want 2, got 0
+FAIL
+FAIL	volcano.sh/volcano/pkg/scheduler/actions/allocate	91.929s
+ok  	volcano.sh/volcano/pkg/scheduler/actions/backfill	1.466s
+ok  	volcano.sh/volcano/pkg/scheduler/actions/enqueue	2.303s
+ok  	volcano.sh/volcano/pkg/scheduler/actions/preempt	10.483s
+ok  	volcano.sh/volcano/pkg/scheduler/actions/reclaim	4.581s
+ok  	volcano.sh/volcano/pkg/scheduler/actions/shuffle	0.494s
+ok  	volcano.sh/volcano/pkg/scheduler/api	0.125s
+ok  	volcano.sh/volcano/pkg/scheduler/api/devices/ascend/hami	0.024s
+ok  	volcano.sh/volcano/pkg/scheduler/api/devices/config	0.023s
+ok  	volcano.sh/volcano/pkg/scheduler/api/devices/nvidia/gpushare	0.013s
+ok  	volcano.sh/volcano/pkg/scheduler/api/devices/nvidia/vgpu	0.022s
+ok  	volcano.sh/volcano/pkg/scheduler/api/helpers	0.030s
+ok  	volcano.sh/volcano/pkg/scheduler/cache	0.449s
+ok  	volcano.sh/volcano/pkg/scheduler/capabilities/volumebinding	16.738s
+ok  	volcano.sh/volcano/pkg/scheduler/framework	0.066s
+ok  	volcano.sh/volcano/pkg/scheduler/metrics	0.045s
+ok  	volcano.sh/volcano/pkg/scheduler/metrics/source	0.041s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins	0.041s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/binpack	0.261s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/capacity	12.477s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/cdp	0.039s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/conformance	0.138s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/deviceshare	0.037s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/drf	0.252s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/extender	0.094s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/group-topology-affinity	0.033s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/network-topology-aware	2.207s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/nodegroup	0.637s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/nodeorder	3.340s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/numaaware/policy	0.023s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/numaaware/provider/cpumanager	0.023s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/overcommit	0.440s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/pdb	0.029s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/predicates	1.430s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/priority	0.936s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/proportion	11.819s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/resource-strategy-fit	1.583s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/resourcequota	0.431s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/sla	0.329s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/task-topology	0.023s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/tdm	8.450s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/usage	0.741s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/util/k8s	0.026s
+ok  	volcano.sh/volcano/pkg/scheduler/plugins/util/nodelock	0.016s
+ok  	volcano.sh/volcano/pkg/scheduler/util	0.026s
+FAIL

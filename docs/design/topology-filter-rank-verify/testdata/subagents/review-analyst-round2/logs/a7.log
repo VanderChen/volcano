@@ -1,0 +1,20 @@
+=== RUN   TestReviewA7StaticMostConstrainedFirst
+    zz_review_analyst_alternatives_test.go:143: R5 scenarios: 1000 scenarios, 410 with a legal placement (oracle)
+    zz_review_analyst_alternatives_test.go:144: | search (all: ranked + fitBound) | scheduled | missed | task attempts when the normal search fails |
+    zz_review_analyst_alternatives_test.go:145: |---|---|---|---|
+    zz_review_analyst_alternatives_test.go:146: | normal search only | 390 | 20 | 16790 |
+    zz_review_analyst_alternatives_test.go:147: | + blocked-first retry (4, reserve) | 409 | 1 | 21063 |
+    zz_review_analyst_alternatives_test.go:148: | + one more full pass in most-constrained-first order | 405 | 5 | 34603 |
+    zz_review_analyst_alternatives_test.go:149: | most-constrained-first as the normal order (behavior change) | 402 | 8 | - |
+    zz_review_analyst_alternatives_test.go:150: most-constrained-first as the normal order: of 390 Jobs the normal search schedules, 258 are placed differently and 3 are lost; 15 Jobs are rescued by both fallbacks
+    zz_review_analyst_alternatives_test.go:143: R4 scenarios: 1200 scenarios, 982 with a legal placement (oracle)
+    zz_review_analyst_alternatives_test.go:144: | search (all: ranked + fitBound + region) | scheduled | missed | task attempts when the normal search fails |
+    zz_review_analyst_alternatives_test.go:145: |---|---|---|---|
+    zz_review_analyst_alternatives_test.go:146: | normal search only | 957 | 25 | 5022 |
+    zz_review_analyst_alternatives_test.go:147: | + blocked-first retry (4, reserve) | 977 | 5 | 6763 |
+    zz_review_analyst_alternatives_test.go:148: | + one more full pass in most-constrained-first order | 976 | 6 | 10245 |
+    zz_review_analyst_alternatives_test.go:149: | most-constrained-first as the normal order (behavior change) | 974 | 8 | - |
+    zz_review_analyst_alternatives_test.go:150: most-constrained-first as the normal order: of 957 Jobs the normal search schedules, 168 are placed differently and 2 are lost; 18 Jobs are rescued by both fallbacks
+--- PASS: TestReviewA7StaticMostConstrainedFirst (27.58s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	28.317s

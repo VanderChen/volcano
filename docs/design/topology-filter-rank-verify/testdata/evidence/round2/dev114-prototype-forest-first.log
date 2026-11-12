@@ -1,0 +1,23 @@
+=== RUN   TestProto2R1fForestFirst
+    zz_probe_round2_dev114_test.go:28: | variant | legal placement exists | today | forest first, region on failure | region searched |
+    zz_probe_round2_dev114_test.go:29: |---|---|---|---|---|
+    zz_probe_round2_dev114_test.go:45: | HB1 reported bug: PAA tier 2 + prefill/decode SubGroups hard tier 1, 4 pods | true | 4/4 | 4/4 | false |
+    zz_probe_round2_dev114_test.go:45: | HB2 PAA tier 2, no SubGroup policy, 4 pods | true | 0/4 | 4/4 | true |
+    zz_probe_round2_dev114_test.go:45: | HB3 job hard tier 3 + PAA tier 2 + prefill/decode SubGroups, 4 pods | true | 0/4 | 4/4 | false |
+    zz_probe_round2_dev114_test.go:45: | HB4 job hard tier 3 + PAA tier 2, no SubGroup policy, 4 pods | true | 0/4 | 4/4 | false |
+    zz_probe_round2_dev114_test.go:45: | HB5 PAA tier 2 + SubGroups of 2 pods hard tier 2, 4 pods | true | 4/4 | 4/4 | false |
+    zz_probe_round2_dev114_test.go:45: | HB6 job soft tier 2 + PAA tier 2 + prefill/decode SubGroups, 4 pods | true | 4/4 | 4/4 | false |
+    zz_probe_round2_dev114_test.go:45: | control: 2 pods fit in B alone | true | 2/2 | 2/2 | false |
+    zz_probe_round2_dev114_test.go:45: | control: no PAA, 4 pods | true | 4/4 | 4/4 | false |
+    zz_probe_round2_dev114_test.go:45: | control: job hard tier 2 + PAA, 4 pods need two tier-2 domains | false | 0/4 | 0/4 | false |
+    zz_probe_round2_dev114_test.go:45: | control: PAA, 5 pods but only 4 nodes outside A | false | 0/5 | 0/5 | true |
+--- PASS: TestProto2R1fForestFirst (2.06s)
+=== RUN   TestProto2R3fForestFirstMonotonic
+    zz_probe_round2_dev114_test.go:97: 600 single-job scenarios; current search (exhaustive + deterministic ties) schedules 464
+    zz_probe_round2_dev114_test.go:98: | configuration | scheduled | newly scheduled | lost | placed differently | illegal | region searched after forest failed |
+    zz_probe_round2_dev114_test.go:99: |---|---|---|---|---|---|---|
+    zz_probe_round2_dev114_test.go:102: | ranked + forest first + region on failure | 467 | 3 | 0 | 0 | 0 | 34 |
+    zz_probe_round2_dev114_test.go:102: | ranked + forest first + region on failure + repair(8) | 475 | 11 | 0 | 0 | 0 | 34 |
+--- PASS: TestProto2R3fForestFirstMonotonic (186.12s)
+PASS
+ok  	volcano.sh/volcano/pkg/scheduler/actions/allocate	188.316s
