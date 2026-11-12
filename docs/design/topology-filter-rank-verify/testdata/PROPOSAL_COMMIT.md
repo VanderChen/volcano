@@ -758,7 +758,7 @@ VC_PROBE_REPAIR_BUDGET=4 VC_PROBE_REPAIR_ORDER=reserve go test ./pkg/scheduler/.
 | 远端与分支 | 同上：`origin` 的 `design/004-topology-filter-rank-verify`。普通推送，没有强制推送。没有推送到 `upstream`，没有创建 issue、PR 或评论 |
 | 起点 | 分支原来的顶端 `1356ba2d7` |
 | 内容 | `README.md` 更新为当前的 `DESIGN.md`（新增 §4.7、§4.8 及相关修改）；`testdata/` 更新为本目录其余内容的快照，新增第四轮的 `THEORY.md`、`theory/`、`probes/theory/`、`evidence/round4/`、三份第四轮报告，和第五轮的原型补丁、探测、`evidence/round5/`、三份第五轮报告 |
-| Commit | 待填：内容 commit 的哈希在提交之后才能得知，由随后的一个 commit 同步进本文件 |
+| Commit | `988af02adf7d72c8638fabb79163414bbccc6aea`：设计文档与配套材料。随后的一个 commit 只把这条哈希同步进本文件 |
 | 对实现代码的改动 | 无。分支相对基线仍然只新增 `docs/design/topology-filter-rank-verify/` 下的文件 |
 | 推送前的检查 | 与第一次相同：`go list ./...` 不包含该目录；对快照扫描了令牌、私钥、邮箱、IP 和本机会话路径；`*.log` 用 `git add -f` 加入。结果见下 |
 
