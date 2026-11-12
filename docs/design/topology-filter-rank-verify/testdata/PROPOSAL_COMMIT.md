@@ -747,7 +747,7 @@ VC_PROBE_REPAIR_BUDGET=4 VC_PROBE_REPAIR_ORDER=reserve go test ./pkg/scheduler/.
 | 分支 | `design/004-topology-filter-rank-verify` |
 | 基线 | 上游 `master` @ `d423e427c847d37271701bf44276156a97ee0346` |
 | 内容 | `docs/design/topology-filter-rank-verify/README.md`，即本目录的 `DESIGN.md`；`docs/design/topology-filter-rank-verify/testdata/`，即本目录其余内容的快照（`DESCRIPTION.md`、本文件、`probes/`、`evidence/`、`subagents/`） |
-| Commit | `97409ceae2eff4c4d6055143d55d57aa487e2ecd`：设计文档与配套材料。分支上随后的一个 commit 只把这条哈希记录同步进快照 |
+| Commit | `97409ceae2eff4c4d6055143d55d57aa487e2ecd`：设计文档与配套材料。分支上随后的 commit 只同步本文件里的这条哈希和清理记录，不改动设计文档 |
 | 对实现代码的改动 | 无。分支相对基线只新增 `docs/design/topology-filter-rank-verify/` 下的文件 |
 | 推送前的检查 | `go list ./...` 不包含该目录（`testdata/` 被 Go 工具链忽略，探测测试不会被编译）；对快照扫描了令牌、私钥、邮箱、IP 和本机会话路径，评审报告里两处本机会话路径已改成材料目录内的相对路径；`*.log` 被仓库的 `.gitignore` 忽略，日志用 `git add -f` 加入 |
 
@@ -768,7 +768,7 @@ VC_PROBE_REPAIR_BUDGET=4 VC_PROBE_REPAIR_ORDER=reserve go test ./pkg/scheduler/.
 
 - 五个探测用的临时 worktree（`/tmp/vc-probe-master`、`-master2`、`-master3`、`-dev114`、`-dev114-pristine`）已删除并 `git worktree prune`。删除前核对过：两份最终补丁与对应原型 worktree 的 `git diff` 逐字节相同。
 - 推送用的 worktree `/tmp/vc-design` 在推送完成后删除；本地分支 `design/004-topology-filter-rank-verify` 保留。
-- `/tmp` 下的编辑脚本、设计文档的分段草稿、套件重跑目录、工具输出的临时文件已删除。会话目录里两个评审子代理的探测副本已删除，内容与 `subagents/review-*-round2/` 相同。
+- `/tmp` 下本任务的编辑脚本、设计文档的分段草稿、套件重跑目录已删除。`/tmp` 里不属于本任务的文件没有动。会话目录里两个评审子代理的探测副本已删除，内容与 `subagents/review-*-round2/` 相同。
 - `volcano/` 仓库：主工作区干净，仍在 `archive/topology-scheduling-refactor-20261105`@`b231f3ea0`。新增的只有上面那个本地分支和它在 `origin` 上的同名分支。
 - 没有创建 Kind 集群，没有构建或加载镜像。Go 的缓存没有清理。
 - 第二、三轮的 Python 脚本全部通过 `uv run --no-project python` 运行。
